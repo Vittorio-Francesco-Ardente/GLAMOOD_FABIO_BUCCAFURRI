@@ -28,7 +28,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 <style is:global>
 .sx-tagli{display:contents;
 .tagli{position:relative;min-height:0;background:var(--cream);overflow:hidden;padding:clamp(60px,8vw,110px) 0 clamp(50px,6vw,90px);isolation:isolate;--ease:cubic-bezier(.2,.8,.2,1)}
-.tagli::before{content:"";position:absolute;inset:0;z-index:-1;background:url("/img/svg/pattern-liquido-crema.svg") center/cover;animation:refdrift 40s ease-in-out infinite alternate}
+.tagli::before{content:"";position:absolute;inset:0;z-index:-1;background:url("/img/pattern/ref/liquido-crema.webp") center/cover}
 .head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;padding:0 var(--gutter)}
 .head .giant-title{font-size:clamp(44px,10.5vw,200px);color:var(--petrol);margin-bottom:0}
 @media (max-width:767px){.head .giant-title{white-space:normal;line-height:.86}}
@@ -72,12 +72,12 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .cur.spine i{transform:scale(.72)}.cur.btn i{transform:scale(.55)}.cur.btn b{transform:scale(0)}
 .cur.open i{transform:scale(1.75);background:var(--petrol);border-color:var(--petrol)}.cur.open b{transform:scale(0)}.cur.open em{transform:scale(1)}
 /* detail sheet */
-.sheet{position:fixed;inset:0;z-index:var(--z-modal);background:var(--cream);overflow:auto;overscroll-behavior:contain;will-change:clip-path,transform}
+.sheet{position:fixed;inset:0;z-index:var(--z-modal);background:var(--cream);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .sheet[hidden]{display:none}
 .sheet .x{position:fixed;right:max(16px,env(safe-area-inset-right));top:16px;z-index:2;width:52px;height:52px;border-radius:16px;background:var(--petrol);color:#fff;display:grid;place-items:center}
 .sheet .in{position:relative;display:grid;gap:clamp(24px,4.5vw,72px);padding:clamp(76px,8vw,110px) var(--gutter) 64px;max-width:1240px;margin:auto;min-height:100%;grid-template-columns:1fr;justify-items:center;align-content:center;align-items:center}
 .sheet .in>div:last-child{width:100%;max-width:560px}
-.sheet::before{content:"";position:fixed;inset:-4%;z-index:0;background:url("/img/svg/pattern-liquido-crema.svg") center/cover;animation:refdrift 40s ease-in-out infinite alternate;pointer-events:none}
+.sheet::before{content:"";position:fixed;inset:0;z-index:0;background:url("/img/pattern/ref/liquido-crema.webp") center/cover;pointer-events:none}
 .sheet .in,.sheet .x{z-index:1}
 .sheet .big{box-sizing:border-box;border-radius:var(--r-media);overflow:hidden;aspect-ratio:var(--pa,.8);justify-self:center;border:8px solid #fff;box-shadow:var(--shadow);height:min(74svh,700px);width:auto;max-width:100%}
 @media (max-width:899px){.sheet .big{width:100%;height:auto}}
@@ -180,7 +180,7 @@ function render(dt: number) {
 }
 let raf = 0;
 function frame(now: number) {
-  raf = 0; const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; if (!vis) return;
+  raf = 0; const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; if (!vis || isOpen) return;
   raf = requestAnimationFrame(frame);
   if (RM) { s = Tg; sv = 0; } else { const st = drag && drag.moved ? 0.09 : 0.4, om = 2 / st, x = om * dt, e = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x), ch = s - Tg, tmp = (sv + om * ch) * dt; sv = (sv - om * tmp) * e; s = Tg + (ch + tmp) * e; if (Math.abs(Tg - s) < 1e-4 && Math.abs(sv) < 1e-3) { s = Tg; sv = 0; } }
   if (Math.abs(s) > N * 8) { const sh = N * Math.round(s / N); s -= sh; Tg -= sh; }
@@ -216,8 +216,8 @@ let inkRaf = 0;
 new IntersectionObserver((e, o) => { if (!e[0].isIntersecting) return; o.disconnect(); CUTS.forEach((c) => { const i = new Image(); i.src = T + c[1] + '-foto.webp'; }); }, { rootMargin: '400px' }).observe(shelf);
 function coverRect() { const v = Math.round(s); const t = tapes[((v % N) + N) % N]; return t.cv.getBoundingClientRect(); }
 const clipFor = (r: DOMRect) => `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
-function ink() { simg.getAnimations().forEach((x) => x.cancel()); simg.animate([{ clipPath: 'circle(0% at 50% 45%)', transform: 'scale(1.08)' }, { clipPath: 'circle(75% at 50% 45%)', transform: 'scale(1)' }], { duration: RM ? 1 : 1100, delay: RM ? 0 : 450, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'both' }); }
-function fitTitle() { const h = $('sh-t'); h.style.fontSize = ''; requestAnimationFrame(() => { const max = h.parentElement!.parentElement!.clientWidth || h.clientWidth; const w = h.scrollWidth; if (w > max) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px'; }); }
+function ink() { simg.getAnimations().forEach((x) => x.cancel()); simg.animate([{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'none' }], { duration: RM ? 1 : 700, delay: RM ? 0 : 350, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' }); }
+function fitTitle() { const h = $('sh-t'); h.style.fontSize = ''; requestAnimationFrame(() => { const max = Math.min(col.clientWidth, innerWidth - 32); const w = h.scrollWidth; if (w > max) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px'; }); }
 function openSheet() {
   if (isOpen) return; if (Math.abs(Tg - s) > 0.02) { Tg = Math.round(Tg); s = Tg; render(0.016); } else { Tg = s = Math.round(s); }
   const c = CUTS[idx()]; (simg as HTMLImageElement).src = T + c[1] + '-foto.webp'; (simg as HTMLImageElement).alt = c[0]; $('sbig').style.setProperty('--pa', String(LAB[c[1]].pa));
@@ -225,16 +225,18 @@ function openSheet() {
   $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
   ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
   const r = coverRect(); isOpen = true; sheet.hidden = false; lockScroll(true);
-  sheet.style.transformOrigin = `${r.left + r.width / 2}px ${r.top + r.height / 2}px`; sheet.scrollTop = 0;
+  sheet.style.transformOrigin = '50% 50%'; sheet.scrollTop = 0;
   const D = RM ? 1 : 1050;
-  sheet.animate([{ clipPath: clipFor(r), transform: 'rotate(-4.5deg)' }, { clipPath: 'inset(0px 0px 0px 0px round 0px)', transform: 'rotate(0deg)' }], { duration: D, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
+  const sc = Math.max(0.08, r.width / innerWidth);
+  sheet.animate([{ transform: `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${sc}) rotate(-4.5deg)`, opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: RM ? 1 : 750, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
   mis.forEach((m, i) => m.animate([{ transform: 'translateY(110%)' }, { transform: 'translateY(0)' }], { duration: RM ? 1 : 900, delay: RM ? 0 : 620 + i * 75, easing: EASE, fill: 'both' }));
   ink(); history.pushState({ sheet: 1 }, ''); sx.focus({ preventScroll: true });
 }
 function closeSheet() {
-  if (!isOpen) return; const r = coverRect(); sheet.style.transformOrigin = `${r.left + r.width / 2}px ${r.top + r.height / 2}px`;
-  const a = sheet.animate([{ clipPath: 'inset(0px 0px 0px 0px round 0px)', transform: 'rotate(0deg)' }, { clipPath: clipFor(r), transform: 'rotate(-4.5deg)' }], { duration: RM ? 1 : 850, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
-  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); isOpen = false; lockScroll(false); shelf.focus({ preventScroll: true }); };
+  if (!isOpen) return; const r = coverRect(); sheet.style.transformOrigin = '50% 50%';
+  const sc = Math.max(0.08, r.width / innerWidth);
+  const a = sheet.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${sc}) rotate(-4.5deg)`, opacity: 0 }], { duration: RM ? 1 : 600, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
+  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); isOpen = false; lockScroll(false); kick(); shelf.focus({ preventScroll: true }); };
 }
 sx.addEventListener('click', () => history.back());
 addEventListener('popstate', () => { if (isOpen) closeSheet(); });
