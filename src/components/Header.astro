@@ -126,8 +126,14 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 }
 /* Phone-only navigation: do not cover cards/footer; keep the entire menu scrollable. */
 @media (max-width:767px){
- .barra{bottom:max(10px,env(safe-area-inset-bottom))}
- &.mobile-scroll-down .barra,&.at-footer .barra,&:has(.menu.open) .barra{opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 48px))}
+ /* Always-on phone dock: no scroll-direction or footer visibility state. */
+ .barra,&.scorre .barra{
+   bottom:max(10px,env(safe-area-inset-bottom));
+   opacity:1;pointer-events:auto;transform:translate(-50%,0);
+   transition:none;
+ }
+ /* The full-screen menu is the only time the dock must be inert. */
+ &.menu-is-open .barra,&.scorre.menu-is-open .barra{opacity:0;pointer-events:none}
  .menu{height:100dvh;max-height:100dvh;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:calc(14px + env(safe-area-inset-top)) max(16px,var(--gutter)) calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
  .menu .top{position:sticky;top:0;flex:none;z-index:5;min-height:54px;margin:0;padding:2px 0 8px;background:var(--petrol-darker)}
  .menu ul{flex:none;align-self:stretch;justify-self:stretch;margin:0;gap:9px}
@@ -177,26 +183,8 @@ wireMaps(menu);
 // as soon as the page scrolls the top header fades up and the bottom bar slides in (same threshold as Vittorio's site)
 const onScroll = () => root.classList.toggle('scorre', scrollY > 4);
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
-// Phone dock appears when scrolling up and disappears during down-scroll and in the footer.
-// Desktop and tablet navigation behavior remains unchanged.
-const mobileDock = matchMedia('(max-width:767px)');
-let previousY = scrollY, downTravel = 0, upTravel = 0;
-const updateMobileDock = () => {
- const y = scrollY;
- if(!mobileDock.matches){root.classList.remove('mobile-scroll-down');previousY=y;return;}
- const delta = y - previousY;
- if(y<120){downTravel=0;upTravel=0;root.classList.remove('mobile-scroll-down');}
- else if(delta>0){downTravel+=delta;upTravel=0;if(downTravel>240)root.classList.add('mobile-scroll-down');}
- else if(delta<0){upTravel-=delta;downTravel=0;if(upTravel>22)root.classList.remove('mobile-scroll-down');}
- previousY=y;
-};
-addEventListener('scroll',updateMobileDock,{passive:true});
-addEventListener('resize',updateMobileDock);
-const footerTarget=document.getElementById('foot');
-if(footerTarget) new IntersectionObserver(entries=>{
- root.classList.toggle('at-footer',mobileDock.matches && entries[0].isIntersecting);
-},{threshold:0,rootMargin:'0px 0px 60px 0px'}).observe(footerTarget);
-updateMobileDock();
+// Phone dock remains visible at every scroll position; no IntersectionObserver
+// or direction-based hide class is needed. Desktop header behavior is unchanged.
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
 const cur = barra.querySelector('.cursore') as HTMLElement;
 const voci = [...barra.querySelectorAll<HTMLElement>('.voce:not(.menu-btn)')];
@@ -212,10 +200,15 @@ document.fonts.ready.then(() => go(target));
 // menu
 const open = (v: boolean) => {
   if (menu.classList.contains('open') === v) return;
-  menu.classList.toggle('open', v); [burger, burger2].forEach((b) => b.setAttribute('aria-expanded', String(v))); menu.toggleAttribute('inert', !v);
+  menu.classList.toggle('open', v); root.classList.toggle('menu-is-open', v);
+  [burger, burger2].forEach((b) => b.setAttribute('aria-expanded', String(v))); menu.toggleAttribute('inert', !v);
   lockScroll(v);
   if (v) setTimeout(() => (document.getElementById('menu-close') as HTMLElement).focus({ preventScroll: true }), reduced ? 0 : 300);
-  else (root.classList.contains('scorre') ? burger2 : burger).focus();
+  else {
+    const onPhone = matchMedia('(max-width:767px)').matches;
+    (onPhone ? (root.classList.contains('scorre') ? home : burger) : (root.classList.contains('scorre') ? burger2 : burger))
+      .focus({ preventScroll: true });
+  }
 };
 burger.addEventListener('click', () => open(true)); burger2.addEventListener('click', () => open(true));
 document.getElementById('menu-close')!.addEventListener('click', () => open(false));
