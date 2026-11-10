@@ -53,6 +53,14 @@ const igIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 .post.ticket .jar{position:absolute;right:6%;bottom:5%;width:34%;height:auto;transform:rotate(-10deg);filter:drop-shadow(0 20px 20px rgb(0 0 0 / .5))}
 .skel{position:absolute;inset:0;background:linear-gradient(100deg,#0A4A50 30%,#0F6870 50%,#0A4A50 70%) 0 0/300% 100%;animation:sk 1.4s linear infinite}
 @media (max-width:900px){.row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;scrollbar-width:none}.post{scroll-snap-align:center}}
+@media (max-width:767px){
+ .social{padding:56px 18px 88px}
+ .social .head{max-width:100%;padding:0 4px}
+ .social .sb{font-size:clamp(48px,14vw,68px);line-height:1.05;margin-bottom:22px;max-width:100%}
+ .social .head h2{font-size:clamp(28px,7vw,36px);line-height:1.08;overflow-wrap:break-word}
+ .social .head .btns{margin-top:24px}
+ .social .row{grid-auto-columns:86%;margin-top:28px}
+}
 }
 @keyframes sk{to{background-position:-150% 0}}
 </style>
