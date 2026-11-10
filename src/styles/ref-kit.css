@@ -118,7 +118,7 @@ p+.btn-pop,p+.cta,p+.btns{margin-top:clamp(18px,2vw,28px)}
 @font-face{font-family:"Glamood Bounce";src:url("/fonts/gluten-latin-800-normal.woff2") format("woff2");font-weight:800;font-display:swap}
 .bubble{display:inline-grid;justify-items:center;line-height:.82;pointer-events:auto;user-select:none}
 .bubble .bw{display:flex;align-items:center;justify-content:center;margin-top:.04em}
-.bubble .bl{display:inline-block;transform:translateY(var(--y)) rotate(var(--r)) scale(var(--s));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.bubble .bl{display:inline-block;transform:translateY(var(--y)) rotate(var(--r)) scale(var(--s));transition:transform .5s cubic-bezier(.34,1.56,.64,1);padding:.14em .1em .18em;margin:-.14em -.1em -.18em}
 .bubble:hover .bl{transform:translateY(calc(var(--y) - .06em)) rotate(calc(var(--r) * -1)) scale(calc(var(--s) * 1.06))}
 @media (prefers-reduced-motion:no-preference){.bubble .bl{animation:bubble-bob 3.2s ease-in-out infinite;animation-delay:calc(var(--d) * -1)}}
 @keyframes bubble-bob{50%{translate:0 -.05em}}
