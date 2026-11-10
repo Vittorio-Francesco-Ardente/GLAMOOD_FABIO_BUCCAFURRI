@@ -204,7 +204,7 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
  .top3 .t3-title{top:142px}
  .top3 .t3-parts .pt{max-width:80px;opacity:.72;pointer-events:none}
  .top3 .pt.p1{right:5%;left:auto;top:33%;width:15vw}
- .top3 .pt.p2{right:8%;left:auto;top:42%;width:16vw;transform:rotate(-14deg)}
+ .top3 .pt.p2{display:none} /* Remove the secondary floating prop on narrow screens: it collides with copy during entrance animation. */
  .top3 .t3-desc{left:22px;right:22px;bottom:clamp(214px,26svh,245px);z-index:7;max-width:none}
  .top3 .t3-desc h4{font-size:clamp(17px,4.4vw,20px);line-height:1.1}
  .top3 .t3-acc{left:22px;right:22px;bottom:clamp(145px,17svh,165px);z-index:7}
