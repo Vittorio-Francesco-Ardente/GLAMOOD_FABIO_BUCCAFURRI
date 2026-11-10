@@ -27,7 +27,7 @@ export function mountWaves(el, o = {}) {
   let lastT = 0;
   const draw = (t) => {
     lastT = t;
-    const dpr = Math.min(devicePixelRatio || 1, touch ? 1.35 : 1.85);
+    const dpr = Math.min(devicePixelRatio || 1, touch ? 1.15 : 1.5);
     const w = Math.max(1, (c.clientWidth * dpr) | 0), h = Math.max(1, (c.clientHeight * dpr) | 0);
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     gl.viewport(0, 0, w, h); gl.uniform2f(u('R'), w, h); gl.uniform1f(u('T'), t * opt.speed + 3); gl.drawArrays(gl.TRIANGLES, 0, 6);

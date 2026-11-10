@@ -8,7 +8,7 @@ import { business, wa, hoursLabel } from '../data/business';
 <div class="page-frame">
 <section class="panel panel-cream panel-outline dove" id="dove" aria-labelledby="dove-t">
   <div class="in">
-    <p class="marker" style="color:var(--ink-soft);margin-bottom:22px"><b>F</b>Dove siamo</p>
+    <p class="marker" style="color:var(--ink-soft);margin-bottom:22px">Dove siamo</p>
     <h2 id="dove-t">Passa a<br />trovarci</h2>
     <p class="sub">{business.city}, zona Sbarre. Tocca la foto per aprire le indicazioni.</p>
     <div class="grid">
@@ -49,7 +49,10 @@ import { business, wa, hoursLabel } from '../data/business';
 .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
 .photo-map{aspect-ratio:4/5;display:block;position:relative;border-radius:30px;text-decoration:none}
-.pm-fr{position:absolute;inset:0;border-radius:30px;padding:clamp(12px,1.2vw,18px);background:#12757E url("/img/svg/pattern-agrumi.svg") 0 0/240px;box-shadow:0 0 0 5px #F4EFE8,0 40px 70px -34px rgb(0 0 0 / .6);animation:pan 30s linear infinite;--pan-x:240px;--pan-y:-434px}
+.pm-fr{position:absolute;inset:0;border-radius:30px;padding:clamp(12px,1.2vw,18px);background:#12757E;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);box-shadow:0 0 0 5px #F4EFE8,0 40px 70px -34px rgb(0 0 0 / .6)}
+.pm-fr::before{content:"";position:absolute;z-index:-1;left:-240px;top:0;width:calc(100% + 480px);height:calc(100% + 480px);background:url("/img/svg/pattern-agrumi.svg") 0 0/240px;animation:frpan 30s linear infinite;will-change:transform}
+@keyframes frpan{to{transform:translate3d(240px,-240px,0)}}
+@media (prefers-reduced-motion:reduce){.pm-fr::before{animation:none}}
 .pm-fr img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:18px;box-shadow:0 0 0 4px #F4EFE8;transition:transform 1s var(--ease-out)}
 .photo-map:hover .pm-fr img{transform:scale(1.03)}
 .photo-map .pin-l{position:absolute;left:clamp(20px,2.4vw,34px);top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center}

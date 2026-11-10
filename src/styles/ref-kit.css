@@ -4,7 +4,7 @@
 /* PLATES MEAL / BRAMBLEROOT: the page lives inside a rounded framed panel on a deep backdrop */
 .page-frame{position:relative;background:var(--petrol-darker) url("/img/svg/pattern-liquido-tono.svg") center/cover no-repeat;padding:clamp(10px,2.4vw,40px)}
 .page-frame.deep{background:var(--petrol-darker) url("/img/pattern/organico-tono-su-tono.webp") center/620px}
-.panel{position:relative;border-radius:clamp(18px,2.4vw,34px);overflow:hidden;isolation:isolate}
+.panel{position:relative;border-radius:clamp(18px,2.4vw,34px);overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black)}
 .panel+.panel{margin-top:clamp(10px,2.4vw,40px)}
 .panel-cream{background:var(--cream);color:var(--ink)}
 .panel-petrol{background:var(--petrol);color:var(--cream)}
@@ -84,9 +84,9 @@
 .motif-layer{position:absolute;inset:0;z-index:0;pointer-events:none}
 
 /* REFERENCE TEXTURES (recoloured 1:1 from Vittorio's references). Full-bleed layer that floats slowly. */
-.bgref{position:absolute;inset:-8%;z-index:0;pointer-events:none;background-size:cover;background-position:center;will-change:transform;animation:refdrift 22s ease-in-out infinite alternate}
+.bgref{position:absolute;inset:-8%;z-index:0;pointer-events:none;background-size:cover;background-position:center;will-change:transform;backface-visibility:hidden;animation:refdrift 22s ease-in-out infinite alternate}
 .bgref.alt{animation-duration:28s;animation-direction:alternate-reverse}
-@keyframes refdrift{0%{transform:translate3d(-5%,-3%,0) scale(1.04) rotate(-1.2deg)}50%{transform:translate3d(3%,3%,0) scale(1.1) rotate(.8deg)}100%{transform:translate3d(5%,-2%,0) scale(1.06) rotate(1.5deg)}}
+@keyframes refdrift{0%{transform:translate3d(-5%,-3%,0)}50%{transform:translate3d(3%,3%,0)}100%{transform:translate3d(5%,-2%,0)}}
 @media (prefers-reduced-motion:reduce){.bgref{animation:none}}
 .r-blob{background-image:url("/img/pattern/ref/blob-grana.webp")}
 .r-corallo{background-image:url("/img/svg/pattern-corallo.svg")}

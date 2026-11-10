@@ -22,6 +22,9 @@ const { title, description, path = '/', jsonld = false, top, tone = 'dark' } = A
 <script>
 import { startMotion, ScrollTrigger } from '../scripts/motion.js';
 startMotion();
+// performance: CSS animations of off-screen blocks are paused, resumed as they approach the viewport
+const sleepIO = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('anim-off', !e.isIntersecting)), { rootMargin: '200px 0px' });
+document.querySelectorAll('main section, main .page-frame, footer, .build, .cut-wrap').forEach((el) => sleepIO.observe(el));
 document.fonts.ready.then(() => ScrollTrigger.refresh());
 addEventListener('load', () => ScrollTrigger.refresh());
 </script>

@@ -7,11 +7,14 @@ import Lenis from 'lenis';
 import { reduced } from './core.js';
 
 gsap.registerPlugin(ScrollTrigger, Flip);
+// fewer recalculations while scrolling: no refresh on mobile address-bar resize, callbacks only when they change state
+ScrollTrigger.config({ ignoreMobileResize: true, limitCallbacks: true });
 let started = false;
 export function startMotion() {
   if (started) return; started = true;
   if (reduced) return;
-  const lenis = new Lenis({ lerp: 0.075, smoothWheel: true, wheelMultiplier: 0.9, touchMultiplier: 1.2, syncTouch: false });
+  // smooth but responsive: a touch less floaty than the demo (lerp .075 -> .1), wheel steps evened out
+  const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 1.2, syncTouch: false, anchors: false });
   window.lenis = lenis;
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
