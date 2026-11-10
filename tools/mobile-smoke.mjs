@@ -89,7 +89,7 @@ try {
  const result=await page.evaluate(async ()=>{
    const keys=JSON.parse(document.getElementById('tagli-data').textContent).CUTS.map(c=>c[1]);
    const unique=new Set(keys);
-   const prefix=location.pathname.replace(/\\/tagli(?:\\.html)?\\/?$/,'')+'/img/tagli/';
+   const prefix=location.pathname.slice(0,location.pathname.lastIndexOf('/'))+'/img/tagli/';
    const names=keys.flatMap(k=>['spine','front','lato','foto'].map(x=>k+'-'+x+'.webp'));
    const images=await Promise.all(names.map(async name=>{
      const response=await fetch(prefix+name);
