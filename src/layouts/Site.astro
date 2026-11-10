@@ -4,12 +4,14 @@ import Base from './Base.astro';
 import Loader from '../components/Loader.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import PageTransition from '../components/PageTransition.astro';
 interface Props { title?: string; description?: string; path?: string; jsonld?: boolean; top?: string; tone?: 'light' | 'dark' }
 const { title, description, path = '/', jsonld = false, top, tone = 'dark' } = Astro.props;
 ---
 <Base title={title} description={description} path={path} jsonld={jsonld}>
   <slot name="head" slot="head" />
   <a class="skip-link" href="#main">Salta al contenuto</a>
+  <PageTransition />
   <Loader />
   <Header tone={tone} />
   <main id="main" class:list={[top && 'page-top']} style={top ? `--top-bg:${top}` : undefined}>

@@ -1,5 +1,5 @@
 ---
-// Kit 04: the link tree intro. GLAMOOD letters pop in one by one, the signature draws itself,
+// Kit 04: the link tree intro. The GLAMOOD wordmark rises whole from a mask, a light sweep crosses it,
 // then the curtain lifts and the site enters. About 2.6 s, once per session, click/Enter/Esc skips.
 // The hero renders underneath from the first paint (the loader never delays the LCP image download).
 import art from './loader-art.txt?raw';
@@ -24,13 +24,13 @@ import art from './loader-art.txt?raw';
 @keyframes ld-b{from{transform:translate(26px,-8px)}to{transform:translate(-26px,10px)}}
 @keyframes ld-c{from{transform:translate(0,-18px)}to{transform:translate(8px,18px)}}
 .intro-logo{width:min(82vw,640px);display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vw,18px)}
-.intro-wm{width:100%;height:auto;overflow:visible;color:#0F6870}
-.intro-wm .lt{opacity:0;transform-box:view-box}
-.intro-firma{width:34%;height:auto;color:#0F6870;opacity:0;-webkit-mask-image:linear-gradient(90deg,#000 45%,transparent 55%);mask-image:linear-gradient(90deg,#000 45%,transparent 55%);-webkit-mask-size:240% 100%;mask-size:240% 100%;-webkit-mask-position:100% 0;mask-position:100% 0}
-.gioca .intro-wm .lt{animation:ld-pop .62s cubic-bezier(.2,.9,.25,1.25) both;animation-delay:calc(.15s + var(--i) * 95ms)}
-.gioca .intro-firma{animation:ld-firma 1.1s cubic-bezier(.45,.05,.3,1) 1s both}
-@keyframes ld-pop{0%{opacity:0;transform:translateY(60px) scale(.82) rotate(-4deg)}60%{opacity:1}100%{opacity:1;transform:none}}
-@keyframes ld-firma{0%{opacity:1;-webkit-mask-position:100% 0;mask-position:100% 0}100%{opacity:1;-webkit-mask-position:0 0;mask-position:0 0}}
+.ld-mask{display:block;overflow:hidden;padding:2% 0}
+.intro-wm{display:block;width:100%;height:auto;overflow:visible;color:#0F6870;transform:translateY(115%);will-change:transform}
+.gioca .intro-wm{animation:ld-rise 1.15s cubic-bezier(.16,1,.3,1) .15s both}
+@keyframes ld-rise{0%{transform:translateY(115%) rotate(2.5deg)}100%{transform:none}}
+.ld-sheen{transform:skewX(-18deg);opacity:0}
+.gioca .ld-sheen{animation:ld-sheen 1.05s cubic-bezier(.65,0,.35,1) 1.15s both}
+@keyframes ld-sheen{0%{opacity:1;transform:skewX(-18deg) translateX(0)}100%{opacity:1;transform:skewX(-18deg) translateX(4600px)}}
 @media (prefers-reduced-motion:reduce){.gl-intro{display:none}}
 </style>
 <script>
@@ -48,7 +48,7 @@ if (intro && html.classList.contains('loading')) {
   const onKey = (e: KeyboardEvent) => { if (['Escape', 'Enter', ' '].includes(e.key)) fine(); };
   intro.addEventListener('click', fine); addEventListener('keydown', onKey);
   let started = false;
-  const go = () => { if (started) return; started = true; requestAnimationFrame(() => requestAnimationFrame(() => { intro.classList.add('gioca'); t = window.setTimeout(fine, 2650); })); };
+  const go = () => { if (started) return; started = true; requestAnimationFrame(() => requestAnimationFrame(() => { intro.classList.add('gioca'); t = window.setTimeout(fine, 2450); })); };
   if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
   setTimeout(go, 1200);
 } else intro?.remove();

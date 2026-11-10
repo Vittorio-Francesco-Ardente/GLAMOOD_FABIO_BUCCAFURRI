@@ -42,7 +42,7 @@
 
 /* COVER: rigid hardcover board. Printed white/petrol wave stripes (the t-shirt motif), woven book-cloth grain,
    hinge groove near the spine, the real Glamood business card pasted in the centre, brass foil title. */
-.cover{background:#F4EFE8 url("/img/pattern/ref/macchie.webp") center/cover;border-radius:3px 12px 12px 3px;
+.cover{background:#F4EFE8 url("/img/svg/pattern-macchie.svg") center/cover;border-radius:3px 12px 12px 3px;
  box-shadow:inset 0 0 0 1px rgb(0 0 0 / .18),inset 8px 0 12px -8px rgb(0 0 0 / .4)}
 .cover::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:url("/img/texture/carta-grana.webp") center/420px;mix-blend-mode:multiply;opacity:.18}
 .cover::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;background:linear-gradient(90deg,transparent 7%,rgb(255 255 255 / .35) 7.6%,transparent 9.5%)}
@@ -60,7 +60,7 @@
 .base{position:absolute;left:50%;top:0;width:var(--pw);height:var(--ph);border-radius:3px 12px 12px 3px;background:#0A4A50;transform:translateZ(-6px);
  box-shadow:1px 1px 0 #f3ece0,2px 2px 0 #e7dece,3px 3px 0 #f3ece0,4px 4px 0 #e2d8c6,5px 5px 0 #efe7da,6px 6px 0 #0A4A50,7px 7px 0 #08393E,0 30px 50px -20px rgb(0 0 0 / .5)}
 .base.l{left:calc(50% - var(--pw));border-radius:12px 3px 3px 12px;box-shadow:-1px 1px 0 #f3ece0,-2px 2px 0 #e7dece,-3px 3px 0 #f3ece0,-4px 4px 0 #e2d8c6,-5px 5px 0 #efe7da,-6px 6px 0 #0A4A50,-7px 7px 0 #08393E,0 30px 50px -20px rgb(0 0 0 / .5);opacity:0}
-.backcover{position:absolute;inset:0;background:#0F6870 url("/img/pattern/ref/swirl-retro.webp") center/cover;border-radius:12px 3px 3px 12px;color:var(--cream);display:grid;place-items:center;text-align:center}
+.backcover{position:absolute;inset:0;background:#0F6870 url("/img/svg/pattern-swirl-retro.svg") center/cover;border-radius:12px 3px 3px 12px;color:var(--cream);display:grid;place-items:center;text-align:center}
 .backcover::before{content:"";position:absolute;inset:0;background:url("/img/texture/carta-grana.webp") center/420px;mix-blend-mode:multiply;opacity:.18;pointer-events:none}
 .backcover .in{position:relative;background:var(--petrol);border:3px solid #FFFFFF;border-radius:16px;box-shadow:0 12px 24px -10px rgb(0 0 0 / .6)}
 .backcover .in{display:grid;gap:14px;justify-items:center;padding:9% 10%;width:76%}

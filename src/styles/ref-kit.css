@@ -2,7 +2,7 @@
    re-skinned in Glamood colours. Each class names its source so production can trace it.  */
 
 /* PLATES MEAL / BRAMBLEROOT: the page lives inside a rounded framed panel on a deep backdrop */
-.page-frame{position:relative;background:var(--petrol-darker) url("/img/pattern/ref/liquido-tono.webp") 0 0/900px;padding:clamp(10px,2.4vw,40px);animation:pan 60s linear infinite;--pan-x:900px;--pan-y:-1370px}
+.page-frame{position:relative;background:var(--petrol-darker) url("/img/svg/pattern-liquido-tono.svg") center/cover no-repeat;padding:clamp(10px,2.4vw,40px)}
 .page-frame.deep{background:var(--petrol-darker) url("/img/pattern/organico-tono-su-tono.webp") center/620px}
 .panel{position:relative;border-radius:clamp(18px,2.4vw,34px);overflow:hidden;isolation:isolate}
 .panel+.panel{margin-top:clamp(10px,2.4vw,40px)}
@@ -89,16 +89,16 @@
 @keyframes refdrift{0%{transform:translate3d(-5%,-3%,0) scale(1.04) rotate(-1.2deg)}50%{transform:translate3d(3%,3%,0) scale(1.1) rotate(.8deg)}100%{transform:translate3d(5%,-2%,0) scale(1.06) rotate(1.5deg)}}
 @media (prefers-reduced-motion:reduce){.bgref{animation:none}}
 .r-blob{background-image:url("/img/pattern/ref/blob-grana.webp")}
-.r-corallo{background-image:url("/img/pattern/ref/corallo.webp")}
-.r-corallo-tono{background-image:url("/img/pattern/ref/corallo-tono.webp")}
-.r-geometrico{background-image:url("/img/pattern/ref/geometrico.webp")}
-.r-liquido-crema{background-image:url("/img/pattern/ref/liquido-crema.webp")}
-.r-liquido-tono{background-image:url("/img/pattern/ref/liquido-tono.webp")}
-.r-macchie{background-image:url("/img/pattern/ref/macchie.webp")}
-.r-macchie-tono{background-image:url("/img/pattern/ref/macchie-tono.webp")}
-.r-strati{background-image:url("/img/pattern/ref/onde-strati.webp")}
+.r-corallo{background-image:url("/img/svg/pattern-corallo.svg")}
+.r-corallo-tono{background-image:url("/img/svg/pattern-corallo-tono.svg")}
+.r-geometrico{background-image:url("/img/svg/pattern-geometrico.svg")}
+.r-liquido-crema{background-image:url("/img/svg/pattern-liquido-crema.svg")}
+.r-liquido-tono{background-image:url("/img/svg/pattern-liquido-tono.svg")}
+.r-macchie{background-image:url("/img/svg/pattern-macchie.svg")}
+.r-macchie-tono{background-image:url("/img/svg/pattern-macchie-tono.svg")}
+.r-strati{background-image:url("/img/svg/pattern-onde-strati.svg")}
 .r-rilievo{background-image:url("/img/pattern/ref/rilievo.webp")}
-.r-swirl{background-image:url("/img/pattern/ref/swirl-retro.webp")}
+.r-swirl{background-image:url("/img/svg/pattern-swirl-retro.svg")}
 .has-bgref{position:relative;overflow:hidden;isolation:isolate}
 .has-bgref>*:not(.bgref){position:relative;z-index:1}
 
@@ -108,9 +108,9 @@ h2.type-pop,.giant-title,.h2,.big,.title{margin-bottom:clamp(14px,1.8vw,26px)}
 h2+.script-over,.title .script-over{margin-top:.25em}
 .script-over+p,h2+p,.giant-title+p{margin-top:clamp(10px,1.2vw,18px)}
 p+.btn-pop,p+.cta,p+.btns{margin-top:clamp(18px,2vw,28px)}
-.r-swirl-teal{background-image:url("/img/pattern/ref/swirl-teal.webp")}
-.r-agrumi{background-image:url("/img/pattern/ref/agrumi.webp")}
-.r-agrumi-tono{background-image:url("/img/pattern/ref/agrumi-tono.webp")}
+.r-swirl-teal{background-image:url("/img/svg/pattern-swirl-teal.svg")}
+.r-agrumi{background-image:url("/img/svg/pattern-agrumi.svg")}
+.r-agrumi-tono{background-image:url("/img/svg/pattern-agrumi-tono.svg")}
 
 /* BUBBLE LETTERING (refs: "expansion", "Kamashek"). Fonts self-hosted in shared/fonts. */
 @font-face{font-family:"Glamood Bubble";src:url("/fonts/bagel-fat-one-latin-400-normal.woff2") format("woff2");font-display:swap}

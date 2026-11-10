@@ -9,12 +9,12 @@ const baseLen = import.meta.env.BASE_URL.replace(/\/$/, '').length;
 const here = Astro.url.pathname.slice(baseLen).replace(/\.html$/, '').replace(/^\/|\/$/g, '');
 const cur = (id: string) => (here === id ? 'page' : undefined);
 const ico: Record<string, string> = {
-  '': '<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z"/>',
-  salone: '<rect x="8" y="3" width="8" height="18" rx="4"/><path d="M8 9l8-3M8 14l8-3M8 19l8-3"/>',
-  tagli: '<circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M8.3 15.7 16 4M15.7 15.7 8 4"/>',
-  listino: '<path d="M3 12.6V4.5A1.5 1.5 0 0 1 4.5 3h8.1c.4 0 .78.16 1.06.44l7 7a1.5 1.5 0 0 1 0 2.12l-8.1 8.1a1.5 1.5 0 0 1-2.12 0l-7-7A1.5 1.5 0 0 1 3 12.6Z"/><circle cx="8" cy="8" r="1.6"/>',
-  prodotti: '<rect x="5" y="3.5" width="14" height="4" rx="1.5"/><path d="M6 7.5h12v11a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 6 18.5Z"/><path d="M6 13.5c2-1.5 4-1.5 6 0s4 1.5 6 0"/>',
-  dove: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>',
+  '': '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  salone: '<path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2M19 18v2"/>',
+  tagli: '<circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>',
+  listino: '<path d="M5 2.5v19l2-1.2 2 1.2 2-1.2 2 1.2 2-1.2 2 1.2 2-1.2v-19l-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2Z" transform="translate(-1 0)"/><path d="M8 8h7M8 12h7M8 16h4"/>',
+  prodotti: '<rect x="7" y="2.5" width="10" height="3.5" rx="1"/><path d="M6 6h12v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M6 11.5h12"/>',
+  dove: '<path d="M20 10c0 5-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
 };
 const tabs: [string, string][] = [['', 'Home'], ['salone', 'Salone'], ['tagli', 'Tagli'], ['listino', 'Listino'], ['prodotti', 'Prodotti'], ['dove', 'Dove']];
 const phone = tel();
@@ -35,8 +35,8 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 </header>
 <nav class="barra" id="barra" aria-label="Pagine">
   <span class="cursore" aria-hidden="true"></span>
-  {tabs.map(([id, t]) => <a class="voce" href={`/${id}`} data-voce={id} aria-current={cur(id)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ico[id]} /><span>{t}</span></a>)}
-  <button class="voce menu-btn" id="burger2" type="button" aria-controls="menu" aria-label="Apri il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg><span>Menu</span></button>
+  {tabs.map(([id, t]) => <a class="voce" href={`/${id}`} data-voce={id} aria-current={cur(id)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ico[id]} /><span>{t}</span></a>)}
+  <button class="voce menu-btn" id="burger2" type="button" aria-controls="menu" aria-label="Apri il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button>
 </nav>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" inert>
   <div class="top"><span class="lab">Menu, Glamood</span><button class="x" id="menu-close" aria-label="Chiudi il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -99,7 +99,7 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 /* ---------- full-screen menu ---------- */
 .menu{position:fixed;inset:0;z-index:var(--z-menu);color:#fff;background:radial-gradient(120% 80% at 80% 0%,#12757E 0%,transparent 55%),radial-gradient(90% 70% at 0% 100%,#0C5A61 0%,transparent 60%),var(--petrol-darker);display:grid;grid-template-rows:auto 1fr auto;padding:max(22px,env(safe-area-inset-top)) var(--gutter) max(22px,env(safe-area-inset-bottom));visibility:hidden;clip-path:circle(0% at calc(100% - 46px) 44px);transition:clip-path .7s var(--ease-io),visibility 0s .7s;overflow:hidden}
 .menu.open{visibility:visible;clip-path:circle(150% at calc(100% - 46px) 44px);transition:clip-path .8s var(--ease-io)}
-.menu::before{content:"";position:absolute;inset:-8%;z-index:0;background:url("/img/pattern/ref/liquido-tono.webp") center/cover;opacity:.9;animation:refdrift 28s ease-in-out infinite alternate;pointer-events:none}
+.menu::before{content:"";position:absolute;inset:-8%;z-index:0;background:url("/img/svg/pattern-liquido-tono.svg") center/cover;opacity:.9;animation:refdrift 28s ease-in-out infinite alternate;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.menu::before{animation:none}}
 .menu .top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
 .menu .lab{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.75}

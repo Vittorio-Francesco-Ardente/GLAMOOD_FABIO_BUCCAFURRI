@@ -39,8 +39,8 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .track-wrap{position:relative;z-index:2}
 .track{display:flex;gap:clamp(24px,3.4vw,64px);align-items:center;padding:30px var(--gutter) clamp(70px,9vw,120px)}
 .card{position:relative;flex:none;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px}
-.card .fr{padding:clamp(12px,1.1vw,18px);background:#12757E url("/img/pattern/ref/agrumi.webp") center/240px;box-shadow:0 0 0 5px #F4EFE8,0 30px 60px -28px rgb(0 0 0 / .7);animation:pan 30s linear infinite;--pan-x:240px;--pan-y:-240px}
-.card:nth-child(even) .fr{background-image:url("/img/pattern/ref/onde-strati.webp");background-size:200px;--pan-x:200px;--pan-y:-443px}
+.card .fr{padding:clamp(12px,1.1vw,18px);background:#12757E url("/img/svg/pattern-agrumi.svg") center/240px;box-shadow:0 0 0 5px #F4EFE8,0 30px 60px -28px rgb(0 0 0 / .7);animation:pan 30s linear infinite;--pan-x:240px;--pan-y:-240px}
+.card:nth-child(even) .fr{background-image:url("/img/svg/pattern-onde-strati.svg");background-size:200px;--pan-x:200px;--pan-y:-443px}
 .card .ph{overflow:hidden;background:#082f33;box-shadow:0 0 0 4px #F4EFE8}
 .card .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.12);will-change:transform}
 .card figcaption{position:static!important;font:800 clamp(12px,.95vw,14px)/1 var(--f-display)!important;letter-spacing:.12em;text-transform:uppercase;color:var(--petrol);background:var(--cream);padding:9px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 16px -10px rgb(0 0 0 / .5)}
