@@ -44,6 +44,10 @@ try {
  const flat=await page.locator('#mobile-page>.face').evaluate(el=>getComputedStyle(el).transform);
  check(flat==='none','Mobile page is flat rather than flipped/mirrored');
  await open(page,'/');
+ const navVisible=()=>page.locator('#barra').evaluate(el=>{const c=getComputedStyle(el),r=el.getBoundingClientRect();return Number(c.opacity)>.95 && c.pointerEvents==='auto' && r.top>=0 && r.bottom<=innerHeight+1;});
+ check(await navVisible(),'Mobile navbar is visible immediately at the top');
+ check(await page.locator('#h-ds').isVisible(),'Non-foliage scissor decoration stays present');
+ check(await page.evaluate(()=>[...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].length===6 && [...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].every(el=>getComputedStyle(el).display==='none')),'Only decorative foliage is disabled on home and footer');
  // Bigger mobile bar must have legible icons, visible labels and six touch targets.
  await page.evaluate(() => { window.lenis?.scrollTo(160,{immediate:true}); window.scrollTo(0,160); });
  await page.waitForTimeout(850);
@@ -57,11 +61,15 @@ try {
  });
  check(bar.width>=340 && bar.height>=75,'Mobile navbar must occupy a readable full-width pill');
  check(bar.links.length===6 && bar.links.every(v=>v.height>=66 && v.svg>=26 && Number(v.label)>=.9),'All six mobile navigation icons and labels must be visible and tap-sized');
- check(bar.opacity>.9,'Mobile navigation should be visible near page top');
+ check(bar.opacity>.9,'Mobile navigation should remain visible after scrolling');
+ await page.evaluate(()=>{window.lenis?.scrollTo(900,{immediate:true});window.scrollTo(0,900)});
+ await page.waitForTimeout(400);
+ check(await navVisible(),'Mobile navbar stays visible while scrolling down');
  await page.evaluate(()=>{window.lenis?.scrollTo(0,{immediate:true});window.scrollTo(0,0)});
  await page.waitForTimeout(320);
  await page.locator('#burger').click();
  check(await page.locator('#menu').evaluate(el=>el.classList.contains('open')),'Menu opens');
+ check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Nav stays inert while fullscreen menu is open');
  await page.locator('#menu').evaluate(el=>el.scrollTop=el.scrollHeight);
  await page.waitForTimeout(200);
  const last=await page.locator('#menu .pills a').last().boundingBox();
@@ -69,8 +77,14 @@ try {
  await page.locator('#menu-close').click();
  await page.locator('#foot').scrollIntoViewIfNeeded();
  await page.waitForTimeout(400);
- check(await page.locator('.sx-header').evaluate(el=>el.classList.contains('at-footer')),'Phone dock must hide over footer');
+ check(await navVisible(),'Mobile navbar remains visible when footer enters viewport');
+ await page.evaluate(()=>{window.lenis?.scrollTo(document.documentElement.scrollHeight,{immediate:true});window.scrollTo(0,document.documentElement.scrollHeight)});
+ await page.waitForTimeout(350);
+ check(await navVisible(),'Mobile navbar remains visible at absolute bottom of page');
+ check(await page.locator('#foot .legal').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)>=110),'Footer retains clearance below its final links');
  check(await page.evaluate(()=>getComputedStyle(document.body).paddingBottom==='0px'),'No double bottom padding');
+ await open(page,'/salone');
+ check(await page.locator('.sx-salone img.hang').evaluate(el=>getComputedStyle(el).display==='none'),'Salone hanging foliage is disabled');
  await open(page,'/prodotti');
  const separation=await page.evaluate(()=>{
   const item=document.querySelector('.t3.on');
@@ -116,6 +130,9 @@ try {
  await open(desktop,'/storia');
  check(await desktop.locator('#scroller').isVisible(),'Original 3D book remains on desktop');
  check(!(await desktop.locator('.mobile-reader').isVisible()),'Mobile reader stays hidden on desktop');
+ await open(desktop,'/');
+ check(await desktop.locator('#h-ds').isVisible(),'Non-foliage decorations remain on desktop');
+ check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
  check(await desktop.locator('#tg-stage>.tape').count()===8,'Desktop also uses eight unique VHS, with cyclic navigation');
  await desktop.close();await desk.close();
