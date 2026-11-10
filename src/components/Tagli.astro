@@ -39,10 +39,10 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .shelf{position:relative;height:calc(70px + var(--H) + var(--ledge));margin-top:clamp(20px,4vh,50px);perspective:2200px;perspective-origin:50% 50%;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline:none}
 .shelf:focus-visible{outline:3px solid var(--brass);outline-offset:-6px}
 @media (pointer:fine){.shelf{cursor:none}}
-.stage{position:absolute;left:50%;top:calc(70px + var(--H)/2);width:0;height:0;transform-style:preserve-3d}
-.tape{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.stage{position:absolute;left:50%;top:calc(70px + var(--H)/2);width:0;height:0;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
+.tape{position:absolute;left:0;top:0;width:0;height:0;-webkit-transform-style:preserve-3d;transform-style:preserve-3d;will-change:transform}
 .face{position:absolute;top:calc(var(--H)/-2);height:var(--H);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--tex) center/100% 100% no-repeat}
-.face::before,.face::after{content:"";position:absolute;inset:0;pointer-events:none;-webkit-mask:var(--tex) center/100% 100% no-repeat;mask:var(--tex) center/100% 100% no-repeat}
+.face::before,.face::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit}
 .face::before{background:#000;opacity:var(--shade,0);z-index:5;will-change:opacity}
 .face::after{background:linear-gradient(115deg,rgb(255 255 255 / .12),transparent 30%,transparent 70%,rgb(0 0 0 / .12))}
 .sp{width:calc(var(--H)*var(--sar));left:calc(var(--H)*var(--sar)/-2);transform:translateZ(calc(var(--H)*var(--ar)/2))}

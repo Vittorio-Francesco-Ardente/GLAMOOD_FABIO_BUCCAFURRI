@@ -85,7 +85,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .toggle{right:12px;top:auto;bottom:calc(100% - var(--hdr) - var(--fh) + 14svh)}
 #h-ds{display:none}
 /* TABLET */
-@media (min-width:768px){
+@media (min-width:768px) and (max-width:1023px){
  .hero{--gy:calc(var(--hdr) + 3vh);--fh:min(64svh,90vw);--st:120px;padding-bottom:120px}
  .copy{display:block;margin-top:-6svh;background:linear-gradient(transparent,var(--petrol) 30%)}
  .copy>*{max-width:640px}
@@ -94,16 +94,18 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
  .toggle{left:auto;right:5%;top:calc(var(--hdr) + 8px);bottom:auto}
 }
 /* DESKTOP */
-@media (min-width:1200px){
+@media (min-width:1024px){
  .hero{--gy:calc(var(--hdr) + 5vh);--fh:min(88svh,90vw);--st:150px;display:block;padding:0}
  .stage{position:absolute;inset:0}
  .copy{position:absolute;left:var(--gutter);top:46%;width:min(30vw,440px);margin:0;padding:0;background:none}
- .card{right:calc(var(--gutter) + 20px);top:54%}
- .stamp{right:calc(var(--gutter) + 230px);top:auto;bottom:14%}
+ .card{display:block;right:calc(var(--gutter) + 20px);top:54%}
+ .stamp{display:block;right:calc(var(--gutter) + 230px);top:auto;bottom:14%}
  .toggle{left:auto;right:var(--gutter);top:calc(var(--hdr) + 8px)}
  #h-ds{display:block;left:calc(50% + var(--fh)*.22)!important;top:calc(var(--hdr) + var(--fh)*.08)!important;transform:rotate(30deg) scaleX(-1)!important}
 }
-@media (min-width:1200px) and (max-height:780px){.copy{top:40%}.hero{--fh:86svh}}
+@media (min-width:1024px) and (max-height:780px){.copy{top:40%}.hero{--fh:86svh}}
+/* small desktops and landscape tablets: Fabio narrower so he never touches the copy; stamp under the card */
+@media (min-width:1024px) and (max-width:1279px){.hero{--fh:min(80svh,46vw)}.copy{width:min(32vw,400px)}.card{top:auto;bottom:24%;right:var(--gutter)}.stamp{display:none}#h-dm2{display:none}}
 }
 </style>
 

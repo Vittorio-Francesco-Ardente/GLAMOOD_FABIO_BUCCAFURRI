@@ -34,7 +34,7 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .salone .bgref{z-index:-1}
 .salone::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgb(10 74 80 / .35),rgb(10 74 80 / .1) 40%,rgb(10 74 80 / .55))}
 .head{position:relative;z-index:2;padding:clamp(70px,10vw,130px) var(--gutter) 10px}
-.head .giant-title{font-size:clamp(46px,12.5vw,260px);color:var(--cream);text-shadow:0 .05em 0 #08393E}
+.head .giant-title{font-size:clamp(46px,min(12.5vw,13vh),200px);color:var(--cream);text-shadow:0 .05em 0 #08393E}
 .head p{max-width:34ch;color:#d6e8e6;margin-top:14px}
 .track-wrap{position:relative;z-index:2}
 .track{display:flex;gap:clamp(24px,3.4vw,64px);align-items:center;padding:30px var(--gutter) clamp(70px,9vw,120px)}

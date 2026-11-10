@@ -40,7 +40,7 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 </nav>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" inert>
   <div class="top"><span class="lab">Menu, Glamood</span><button class="x" id="menu-close" aria-label="Chiudi il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <ul id="mlist">{[['', 'Home'] as [string, string], ...items].map(([id, t], i) => <li><a href={`/${id}`} aria-current={cur(id)}><span style={`transition-delay:${120 + i * 70}ms`}>{t}</span><Fragment set:html={sc} /></a></li>)}</ul>
+  <ul id="mlist">{[['', 'Home'] as [string, string], ...items].map(([id, t], i) => <li><a href={`/${id}`} aria-current={cur(id)}><span style={`transition-delay:${120 + i * 70}ms`}>{t}</span></a></li>)}</ul>
   <div class="pills">
     <a href={wa()} target="_blank" rel="noopener" class="wide">Prenota su WhatsApp</a>
     {phone && <a href={phone}>Chiama</a>}
@@ -109,7 +109,8 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 .menu li a{display:inline-flex;align-items:center;gap:.25em;font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.03em;text-decoration:none;font-size:clamp(40px,8.4vw,104px);line-height:1.02;overflow:hidden}
 .menu li a span{display:inline-block;transform:translateY(110%);transition:transform .8s var(--ease-out)}
 .menu.open li a span{transform:none}
-.menu li a:hover span,.menu li a:focus-visible span{color:var(--petrol-pale)}
+.menu li a:hover span,.menu li a:focus-visible span,.menu li a[aria-current] span{color:var(--petrol-pale)}
+.menu li a:focus{outline:none}.menu li a:focus-visible span{text-decoration:underline;text-decoration-color:var(--brass);text-underline-offset:.12em;text-decoration-thickness:.06em}
 .menu li a svg{width:.42em;height:.42em;opacity:0;transform:translateX(-40%) rotate(-90deg);transition:.4s var(--ease-out)}
 .menu li a:hover svg,.menu li a:focus-visible svg{opacity:1;transform:none}
 .menu .pills{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:10px}
@@ -153,7 +154,7 @@ const open = (v: boolean) => {
   if (menu.classList.contains('open') === v) return;
   menu.classList.toggle('open', v); [burger, burger2].forEach((b) => b.setAttribute('aria-expanded', String(v))); menu.toggleAttribute('inert', !v);
   lockScroll(v);
-  if (v) setTimeout(() => (menu.querySelector('a') as HTMLElement).focus(), reduced ? 0 : 300);
+  if (v) setTimeout(() => (document.getElementById('menu-close') as HTMLElement).focus({ preventScroll: true }), reduced ? 0 : 300);
   else (root.classList.contains('scorre') ? burger2 : burger).focus();
 };
 burger.addEventListener('click', () => open(true)); burger2.addEventListener('click', () => open(true));
