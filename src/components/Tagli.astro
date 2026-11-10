@@ -71,6 +71,8 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .cur em{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font:800 10px/1.25 var(--f-display);font-style:normal;letter-spacing:.1em;color:#fff;transform:scale(0);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
 .cur.spine i{transform:scale(.72)}.cur.btn i{transform:scale(.55)}.cur.btn b{transform:scale(0)}
 .cur.open i{transform:scale(1.75);background:var(--petrol);border-color:var(--petrol)}.cur.open b{transform:scale(0)}.cur.open em{transform:scale(1)}
+/* The cursor must never sit above an opened detail dialog. */
+.sx-tagli:has(#tg-sheet:not([hidden])) #tg-cur{visibility:hidden!important}
 /* detail sheet */
 .sheet{position:fixed;inset:0;z-index:var(--z-modal);background:var(--cream);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .sheet[hidden]{display:none}
@@ -224,7 +226,12 @@ function openSheet() {
   $('sh-t').textContent = c[0]; fitTitle(); $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
   $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
   ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
-  const r = coverRect(); isOpen = true; sheet.hidden = false; lockScroll(true);
+  const r = coverRect(); isOpen = true;
+  // The RAF stops while the sheet is open: hide the custom cursor explicitly
+  // instead of leaving the previous APRI badge fixed over the dialog.
+  cur.style.visibility = 'hidden'; cur.className = 'cur';
+  inSec = false; onCover = false; hover = -1;
+  sheet.hidden = false; lockScroll(true);
   sheet.style.transformOrigin = '50% 50%'; sheet.scrollTop = 0;
   const D = RM ? 1 : 1050;
   const sc = Math.max(0.08, r.width / innerWidth);
@@ -236,7 +243,7 @@ function closeSheet() {
   if (!isOpen) return; const r = coverRect(); sheet.style.transformOrigin = '50% 50%';
   const sc = Math.max(0.08, r.width / innerWidth);
   const a = sheet.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${sc}) rotate(-4.5deg)`, opacity: 0 }], { duration: RM ? 1 : 600, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
-  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); isOpen = false; lockScroll(false); kick(); shelf.focus({ preventScroll: true }); };
+  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); isOpen = false; cur.style.visibility = 'hidden'; lockScroll(false); kick(); shelf.focus({ preventScroll: true }); };
 }
 sx.addEventListener('click', () => history.back());
 addEventListener('popstate', () => { if (isOpen) closeSheet(); });

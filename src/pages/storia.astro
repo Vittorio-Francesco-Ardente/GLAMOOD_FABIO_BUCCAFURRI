@@ -22,9 +22,10 @@ import { wa } from '../data/business';
 <div class="top"><a class="chip-back" href="/">&larr; Torna al sito</a><span class="count" id="count">Copertina</span></div>
 <p class="hint" id="hint">scorri per sfogliare<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></p>
 
+<nav class="storia-nav" aria-label="Navigazione del libro"><button type="button" id="st-prev" aria-label="Pagina precedente">← Indietro</button><button type="button" id="st-next" aria-label="Pagina successiva">Avanti →</button></nav>
 <div class="scroller" id="scroller">
  <div class="stage"><div class="float" id="float"><div class="book" id="book" role="region" aria-label="Il libro di Fabio: la storia di Glamood, dagli inizi al salone di oggi">
-  <div class="floor"></div><span class="base l" id="baseL"></span><span class="base" id="baseR"></span><span class="ribbon" id="ribbon"></span>
+  <div class="floor"></div><span class="base l" id="baseL"></span><span class="base" id="baseR"></span>
  </div></div></div>
 </div>
 <div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Pagina ingrandita"><div class="sheet paper" id="sheet"></div><button class="x" id="zx" aria-label="Chiudi">&times;</button></div>
@@ -51,7 +52,7 @@ const ph=(src,cap,pos='50% 30%',tilt=0,extra='')=>`<figure class="photo" style="
 const P=[
  [`<div class="face front cover"><span class="spine"></span><span class="hinge"></span><div class="label"><img src="${wm}" alt="Glamood"><span class="rule"></span><span class="t">La storia di Fabio</span><span class="s">Dagli inizi a oggi</span></div></div>`,
   `<div class="pg ex"><div class="lbl"><img src="${G}" alt=""><small>Questo libro appartiene a</small><b>Fabio Buccafurri</b><i></i><small>barbiere · Reggio Calabria</small></div><span class="no">ii</span></div>`],
- [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 1</p><h3>Gli inizi</h3><p>Un paio di forbici, tanta pazienza e la voglia di fare le cose per bene. Da qui parte la storia di Glamood.</p></div>${ph(S+'ritratto.webp','Fabio Buccafurri','50% 18%',2,'grid-area:ph')}<span class="no">01</span></div>`,
+ [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 1</p><h3>Gli inizi</h3><p>Un paio di forbici, tanta pazienza e la voglia di fare le cose per bene. Da qui parte la storia di Glamood.</p></div>${ph(S+'ritratto.webp','Fabio Buccafurri','50% 6%',2,'grid-area:ph')}<span class="no">01</span></div>`,
   `<div class="pg duo">${ph(S+'forbici.webp','Le forbici','50% 30%',-2)}${ph(S+'taglio.webp','Al lavoro','50% 40%',2)}<p class="quote">Ogni taglio si fa con calma. Si parla, si sceglie insieme.</p><span class="no">02</span></div>`],
  [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 2</p><h3>L'idea di Glamood</h3><p>Un salone curato come un posto dove stare bene: verde petrolio, ottone, piante e un marchio tutto suo.</p></div><figure class="card-ph" style="grid-area:ph"><img src="${A}brand/biglietto-fronte.webp" alt="Il biglietto da visita Glamood"><img src="${A}brand/biglietto-retro.webp" alt="" class="back"></figure><span class="no">03</span></div>`,
   `<div class="full"><img src="${A}salone/salone-12-facciata.webp" alt="La facciata del salone Glamood"><p class="cap"><span>Si apre</span>Via Sbarre<br>Centrali 282/G</p></div>`],
@@ -88,13 +89,15 @@ function render(p){ // p from 0 to N
  edgeL.style.opacity=p>.5?1:0;edgeR.style.opacity=p<N-.5?1:0;
  count.textContent=labels[Math.min(labels.length-1,Math.round(p))];
  hint.style.opacity=p>.15?0:1;
+ document.getElementById('st-prev')?.toggleAttribute('disabled',p<.15);
+ document.getElementById('st-next')?.toggleAttribute('disabled',p>N-.15);
 }
 render(0);
 if(!reduced)gsap.from('#float',{y:80,rotateX:24,opacity:0,duration:1.6,ease:'expo.out',delay:.15});
-document.getElementById('scroller').style.height=(N*110+100)+'vh';
+document.getElementById('scroller').style.height=(N*68+100)+'vh';
 const st={p:0};
-ScrollTrigger.create({trigger:'#scroller',start:'top top',end:'bottom bottom',scrub:reduced?true:1.4,
- onUpdate:s=>gsap.to(st,{p:s.progress*N,duration:reduced?0:.9,ease:'power3.out',overwrite:true,onUpdate:()=>render(st.p)})});
+ScrollTrigger.create({trigger:'#scroller',start:'top top',end:'bottom bottom',scrub:true,
+ onUpdate:s=>gsap.to(st,{p:s.progress*N,duration:reduced?0:.16,ease:'power2.out',overwrite:true,onUpdate:()=>render(st.p)})});
 addEventListener('resize',()=>render(st.p));
 // mobile: tap a page to read it full size
 const zoom=document.getElementById('zoom'),sheet=document.getElementById('sheet');
@@ -102,12 +105,23 @@ const closeZ=()=>{zoom.classList.remove('on');window.lenis&&lenis.start()};
 document.getElementById('zx').onclick=closeZ;zoom.addEventListener('click',e=>{if(e.target===zoom)closeZ()});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeZ()});
 function openZ(face){const c=face.cloneNode(true);c.classList.remove('face','front','back');c.style.cssText='position:absolute;inset:0';sheet.className='sheet '+(face.classList.contains('paper')?'paper':'');sheet.innerHTML='';sheet.append(c);zoom.classList.add('on');window.lenis&&lenis.stop()}
+// Buttons, clicks and arrows advance exactly one page; wheel remains smooth.
+function goPage(dir: number) {
+ const sc = document.getElementById('scroller')!;
+ const tgt = Math.max(0, Math.min(N, Math.round(st.p) + dir));
+ const start = scrollY + sc.getBoundingClientRect().top;
+ const y = start + (tgt / N) * Math.max(0, sc.offsetHeight - innerHeight);
+ window.lenis ? window.lenis.scrollTo(y, {duration: reduced ? 0 : .5}) : scrollTo({top:y, behavior:reduced?'auto':'smooth'});
+}
+document.getElementById('st-prev')!.addEventListener('click', () => goPage(-1));
+document.getElementById('st-next')!.addEventListener('click', () => goPage(1));
 // tap the right half / left half to jump one page (small effort, like Apple)
 book.addEventListener('click',e=>{if(e.target.closest('a'))return;
  if(mobile.matches){const r0=book.getBoundingClientRect(),right=e.clientX>r0.left+r0.width/2;const n=Math.round(st.p);let leaf,face;if(right&&n<N){leaf=leaves[n];face=leaf.querySelector('.face.front')}else if(!right&&n>0){leaf=leaves[n-1];face=leaf.querySelector('.face.back')}if(face){openZ(face);return}}
-const r=book.getBoundingClientRect();const dir=(e.clientX>r.left+r.width/2)?1:-1;
- const sc=document.getElementById('scroller');const tgt=Math.round(st.p)+dir;const y=sc.offsetTop+(Math.max(0,Math.min(N,tgt))/N)*(sc.offsetHeight-innerHeight);
- window.lenis?lenis.scrollTo(y,{duration:1.2}):scrollTo({top:y,behavior:'smooth'})});
-addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const sc=document.getElementById('scroller');const tgt=Math.round(st.p)+(e.key==='ArrowRight'?1:-1);const y=sc.offsetTop+(Math.max(0,Math.min(N,tgt))/N)*(sc.offsetHeight-innerHeight);window.lenis?lenis.scrollTo(y,{duration:1.2}):scrollTo(0,y)}});
+const r=book.getBoundingClientRect();goPage(e.clientX>r.left+r.width/2?1:-1);});
+addEventListener('keydown', e => {
+ if (zoom.classList.contains('on') || (e.target as Element)?.closest?.('input,textarea,[contenteditable]')) return;
+ if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); goPage(e.key === 'ArrowRight' ? 1 : -1); }
+});
 
 </script>
