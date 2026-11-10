@@ -116,15 +116,32 @@ try {
  check(result.keys===8 && result.unique===8,'Every VHS must represent one distinct haircut');
  check(result.images.length===32 && result.images.every(x=>x.valid),'All 8 haircut photographs, sleeves, sides and spines must load');
  check(result.cover.includes(result.prefix),'Cassette cover must resolve inside the GitHub Pages project subpath');
+ // Open a centered VHS by keyboard, then close by real tap on X.
  await page.locator('#shelf').focus();
  await page.keyboard.press('Enter');
  await page.locator('#tg-sheet').waitFor({state:'visible'});
- const fullPhoto=await page.locator('#simg').evaluate(async img=>{
-   try{await img.decode()}catch{}
-   return {loaded:img.complete && img.naturalWidth>0,url:img.currentSrc||img.src};
- });
- check(fullPhoto.loaded && fullPhoto.url.includes(result.prefix),'Expanded haircut photo must decode and display');
+ check(await page.locator('#sx').isVisible(),'Close X must be visible when VHS opens');
+ const loaded=await page.locator('#simg').evaluate(async img=>{try{await img.decode()}catch{}return img.complete&&img.naturalWidth>0;});
+ check(loaded,'Haircut photo loads and decodes when detail opens');
+ check(await page.locator('#photo-state').isHidden(),'Loading indicator disappears after photo loads');
+ await page.locator('#sx').click({timeout:4000});
+ check(await page.locator('#tg-sheet').isHidden(),'X closes sheet immediately on phone');
+ check(await page.evaluate(()=>document.documentElement.style.overflow!=='hidden'),'Closing X unlocks page scroll');
+ // A later cassette opens its own photo without teleporting the shelf.
+ await page.locator('#shelf').focus();
+ for(let i=0;i<3;i++) await page.keyboard.press('ArrowRight');
+ await page.waitForTimeout(900);
+ const before=await page.locator('#tg-stage>.tape[data-v="3"]').evaluate(el=>el.style.transform);
+ await page.locator('#tg-stage>.tape[data-v="3"] .face.cv').dispatchEvent('click');
+ await page.locator('#tg-sheet').waitFor({state:'visible'});
+ const chosen=await page.locator('#simg').getAttribute('src');
+ const expected=await page.evaluate(()=>{const c=JSON.parse(document.getElementById('tagli-data').textContent).CUTS[3];return c[1]+'-foto.webp'});
+ check(chosen.endsWith(expected),'Tapping tape 4 opens tape 4 photo rather than the previous active cut');
+ check(await page.locator('#tg-stage>.tape[data-v="3"]').evaluate((el,before)=>el.style.transform===before,before),'Tapping a VHS does not move the shelf behind the dialog');
+ await page.locator('#sx').click({timeout:4000});
+ check(await page.locator('#tg-sheet').isHidden(),'X closes the fourth VHS too');
  await page.close();await mobile.close();
+
  const desk=await browser.newContext({viewport:{width:1440,height:900}});
  const desktop=await desk.newPage();
  await open(desktop,'/storia');
@@ -134,7 +151,11 @@ try {
  check(await desktop.locator('#h-ds').isVisible(),'Non-foliage decorations remain on desktop');
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
- check(await desktop.locator('#tg-stage>.tape').count()===8,'Desktop also uses eight unique VHS, with cyclic navigation');
+ check(await desktop.locator('#tg-stage>.tape').count()===8,'Desktop also uses eight unique VHS');
+ await desktop.locator('#shelf').focus();await desktop.keyboard.press('Enter');
+ await desktop.locator('#tg-sheet').waitFor({state:'visible'});
+ await desktop.locator('#sx').click({timeout:4000});
+ check(await desktop.locator('#tg-sheet').isHidden(),'Desktop X immediately closes VHS detail');
  await desktop.close();await desk.close();
  // Fresh session: intro must self-dismiss quickly even if the full page load is slow.
  const fresh=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
