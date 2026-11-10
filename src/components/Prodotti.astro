@@ -13,14 +13,14 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 <div class="page-frame">
 <section class="panel panel-cream panel-outline" id="prodotti" aria-labelledby="prodotti-t">
   <div class="band"><div class="bgref r-rilievo"></div>
-    <p class="band-k">Prodotti · la linea del salone</p>
-    <h2 class="band-t" id="prodotti-t" aria-label="La linea Glamood">La linea</h2>
+    <p class="band-k">La linea Glamood · lo stile si porta a casa</p>
+    <h2 class="band-t" id="prodotti-t" aria-label="La linea Glamood">Fatti tuoi</h2>
     <div class="jars"><img class="j1" {...img('prodotti/barattolo-cera', 960)} alt="Barattolo Glamood cera" loading="lazy" /><img class="j2" {...img('prodotti/barattolo-pomata', 960)} alt="Barattolo Glamood pomata" loading="lazy" /></div>
     <img class="peel" {...img('sticker/top', 480)} alt="Adesivo TOP" loading="lazy" style="right:clamp(16px,8vw,140px);bottom:22%" />
     <a class="btn-pop" href={wa(waText.info('i prodotti Glamood'))} target="_blank" rel="noopener">Chiedili in salone!</a>
   </div>
   <div class="top3" id="top3" style="--bg:#0F6870">
-    <div class="t3-head"><p class="t3-k">I più amati · top 3</p><div class="t3-dots" role="tablist" aria-label="Prodotti">{top3.map((p, i) => <button role="tab" aria-label={`0${i + 1} ${p.n}`} data-i={i}>0{i + 1}</button>)}</div></div>
+    <div class="t3-head"><p class="t3-k">I tre che Fabio usa di più</p><div class="t3-dots" role="tablist" aria-label="Prodotti">{top3.map((p, i) => <button role="tab" aria-label={`0${i + 1} ${p.n}`} data-i={i}>0{i + 1}</button>)}</div></div>
     {top3.map((p, i) => (
       <article class="t3" data-i={i} data-bg={p.bg} style={`--tc:${p.tc};--ink:${p.ink}`} aria-label={p.n}>
         <p class="t3-num">0{i + 1}</p>
@@ -38,14 +38,9 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
     <div class="t3-nav"><button class="t3-prev" aria-label="Prodotto precedente" set:html={arrow('M15 5l-7 7 7 7')} /><button class="t3-next" aria-label="Prodotto successivo" set:html={arrow('M9 5l7 7-7 7')} /></div>
   </div>
   <div class="cat" id="cat">
-    <ul class="cat-social" aria-label="Social">
-      {business.instagram && <li><a href={instagramUrl()} target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a></li>}
-      <li><a href={business.facebook} target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3c-2.8 0-4 1.8-4 4.3V10H7v4h3v8h4v-8h3l1-4h-4V8.6c0-.4.3-.6.6-.6Z"/></svg></a></li>
-      <li><a href={wa()} target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7Z"/></svg></a></li>
-    </ul>
     <div class="cat-line" aria-hidden="true"><i id="catLine"></i></div>
     <div class="cat-grid" id="catGrid">
-      <div class="cat-head"><p class="t3-k">Tutta la linea</p><h3>I prodotti Glamood</h3></div>
+      <div class="cat-head"><p class="t3-k">Tutta la linea</p><h3>Scegli il tuo barattolo</h3></div>
       <div class="cat-row">{Object.entries(catalog).map(([k, v]) => <button class="ci" data-k={k} aria-label={`Apri la scheda: ${v.n}`}><img {...img(v.img, 480)} alt="" loading="lazy" /><span>{v.n}</span></button>)}</div>
       <p class="cat-hint">Tocca un barattolo per la scheda</p>
     </div>
@@ -53,7 +48,6 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
       <div class="cd-panel">
         <button class="cd-back" id="cdBack" aria-label="Torna a tutti i prodotti" set:html={arrow('M19 12H5M11 6l-6 6 6 6')} />
         <h3 id="cdName"></h3><p id="cdDesc"></p>
-        <p class="cd-k">Scheda</p><div class="cd-facts" id="cdFacts"></div>
         <a class="btn-pop" id="cdWa" href={wa()} target="_blank" rel="noopener">Chiedi info su WhatsApp</a>
       </div>
       <div class="cd-jar"><img id="cdJar" alt="" width="960" height="960" /></div>
@@ -64,12 +58,12 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
   <div class="checker"></div>
   <div class="split">
     <div class="ph"><img {...img('prodotti/barattolo-crema-styling', 960)} alt="" loading="lazy" /></div>
-    <div class="tx"><h2 class="type-pop" id="uso-t">Poco prodotto.<br />Molto stile.</h2>
+    <div class="tx"><h2 class="type-pop" id="uso-t">Una noce.<br />Tutto il giorno.</h2>
       <p>Fabio usa questi barattoli ogni giorno sulla poltrona. Ti mostra quanto metterne e come stenderlo, così a casa il taglio resta come appena uscito dal salone.</p>
       <p class="soft">Descrizioni, formati e prezzi li trovi in salone.</p></div>
   </div>
   <div class="how">
-    <h2 class="type-pop">Come si usano</h2>
+    <h2 class="type-pop">Il trucco del barbiere</h2>
     <p class="lead">Tre passaggi, quelli che Fabio ti spiega alla fine del taglio.</p>
     <div class="cards wrap2">
       <div class="c"><Img src="salone/salone-03" alt="" sizes="(min-width:1024px) 30vw, 90vw" style="object-position:50% 40%" /><h3>Capello asciutto</h3><p>Si parte da capelli puliti e asciutti</p></div>
@@ -178,8 +172,8 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 }
 /* split + how */
 .split{display:grid;grid-template-columns:5fr 7fr}
-.split .ph{position:relative;background:var(--petrol) url("/img/pattern/liquido-petrolio.webp") center/600px;min-height:360px;overflow:hidden}
-.split .ph img{position:absolute;left:50%;bottom:8%;width:70%;height:auto;transform:translateX(-50%) rotate(-6deg);filter:drop-shadow(0 30px 30px rgb(0 0 0 / .5))}
+.split .ph{position:relative;background:var(--petrol) url("/img/pattern/liquido-petrolio.webp") center/600px;min-height:420px;overflow:hidden}
+.split .ph img{position:absolute;left:50%;top:54%;width:min(62%,420px);height:auto;transform:translate(-50%,-50%) rotate(-6deg);filter:drop-shadow(0 30px 30px rgb(0 0 0 / .5))}
 .split .tx{padding:clamp(36px,5vw,80px)}
 .split .tx h2{font-size:clamp(36px,4.4vw,72px)}
 .split .tx p{margin-top:22px;max-width:52ch;font-weight:600;text-transform:uppercase;font-size:14px;letter-spacing:.03em;line-height:1.7;color:var(--ink)}
@@ -247,7 +241,6 @@ import { gsap, ScrollTrigger, Flip } from '../scripts/motion.js';
   function openP(k: string, btn: HTMLElement) {
     const d = D[k]; open = { k, btn }; const src = btn.querySelector('img')!;
     document.getElementById('cdName')!.textContent = d.n; document.getElementById('cdDesc')!.textContent = d.d;
-    document.getElementById('cdFacts')!.innerHTML = d.f.map(([a, b]: string[]) => `<div><small>${a}</small><b>${b}</b></div>`).join('');
     (document.getElementById('cdWa') as HTMLAnchorElement).href = d.wa;
     jar.src = d.img; jar.alt = 'Barattolo Glamood ' + d.n;
     const state = Flip.getState(src); det.hidden = false; src.style.visibility = 'hidden';

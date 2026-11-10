@@ -13,7 +13,7 @@ const year = new Date().getFullYear();
   <div class="stage">
     <p class="kick">{business.address} · {business.city}</p>
     <h2 class="big" aria-label="Ci vediamo da Glamood">Ci vediamo<span class="fb" data-bubble="da" data-style="bounce" data-seed="9" style="--bc:#B8935A"></span>Glamood</h2>
-    <div class="peekwrap"><img class="pk-body" {...img('mascotte/pose/spunta', 960)} alt="La mascotte Glamood saluta da dietro il bordo" loading="lazy" /><img class="pk-hand" {...img('mascotte/pose/spunta-mani', 960)} alt="" loading="lazy" /></div>
+    <div class="peekwrap"><img class="pk-body" {...img('mascotte/pose/spunta', 960)} alt="La mascotte Glamood saluta da dietro il bordo" loading="lazy" /></div>
   </div>
   <img class="leaf-frame l" {...img('piante/09_monstera_grande', 960)} alt="" loading="lazy" />
   <img class="leaf-frame r" {...img('piante/12_palma_areca', 960)} alt="" loading="lazy" style="transform:scaleX(-1)" />
@@ -21,7 +21,7 @@ const year = new Date().getFullYear();
   <div class="checker" style="position:relative;z-index:5"></div>
   <div class="cols">
     <div><img class="logo" src="/img/brand/wordmark-petrolio-trasparente-480.webp" alt="Glamood" width="480" height="81" loading="lazy" /><p style="margin-top:12px">Barber shop di {business.owner}.</p><p>{business.address}, {business.city}</p></div>
-    <div><h4>Salone</h4><a href="#salone">Il salone</a><a href="#tagli">I tagli</a><a href="#listino">Listino</a><a href="#prodotti">Prodotti</a></div>
+    <div><h4>Salone</h4><a href="/salone">Il salone</a><a href="/tagli">I tagli</a><a href="/listino">Listino</a><a href="/prodotti">Prodotti</a><a href="/dove">Dove siamo</a></div>
     <div><h4>Contatti</h4><a href={wa()} target="_blank" rel="noopener">WhatsApp</a>{business.instagram && <a href={instagramUrl()} target="_blank" rel="noopener">Instagram</a>}<a href={business.facebook} target="_blank" rel="noopener">Facebook</a><a href={business.linktree} target="_blank" rel="noopener">Tutti i link</a></div>
     <div><h4>Orari</h4><p>{hoursLabel()}</p></div>
   </div>
@@ -43,7 +43,7 @@ const year = new Date().getFullYear();
 .peekwrap img{display:block;width:100%;height:auto}
 .peekwrap .pk-body{position:relative;z-index:2}
 .peekwrap .pk-hand{position:absolute;inset:0;z-index:4;pointer-events:none;filter:drop-shadow(0 6px 4px rgb(8 57 62 / .3))}
-.cta{position:relative;z-index:3;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;width:min(100% - 2*var(--gutter),640px);margin:calc(clamp(200px,24vw,380px)*-.105) auto clamp(40px,5vw,70px);padding:calc(clamp(200px,24vw,380px)*.09 + 16px) clamp(18px,2vw,26px) clamp(18px,2vw,26px);background:var(--cream);border-radius:28px;box-shadow:0 26px 50px -26px rgb(0 0 0 / .55)}
+.cta{position:relative;z-index:6;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;width:min(100% - 2*var(--gutter),640px);margin:calc(clamp(200px,24vw,380px)*-.2) auto clamp(40px,5vw,70px);padding:clamp(18px,2vw,26px);background:var(--cream);border-radius:28px;box-shadow:0 26px 50px -26px rgb(0 0 0 / .55)}
 .cta .btn-pop{flex:1 1 220px}
 .leaf-frame{height:auto}
 .leaf-frame.l{left:-4%;top:34%;width:clamp(140px,20vw,360px)}
@@ -74,7 +74,7 @@ const foot = document.getElementById('foot')!;
 bubbles(foot); wireMaps(foot);
 if (!reduced) {
   gsap.from('#foot .big', { scrollTrigger: { trigger: '#foot', start: 'top 70%' }, yPercent: 30, opacity: 0, duration: 1.3, ease: 'expo.out' });
-  gsap.from('#foot .peekwrap img', { scrollTrigger: { trigger: '#foot .peekwrap', start: 'top 95%' }, yPercent: 60, duration: 1.1, ease: 'back.out(1.4)' });
+  gsap.from('#foot .peekwrap .pk-body', { scrollTrigger: { trigger: '#foot .peekwrap', start: 'top 95%' }, yPercent: 60, duration: 1.1, ease: 'back.out(1.4)' });
   gsap.from('#foot .leaf-frame.l', { scrollTrigger: { trigger: '#foot', start: 'top 80%', end: 'bottom bottom', scrub: 1 }, xPercent: -40, rotate: -10 });
   gsap.from('#foot .leaf-frame.r', { scrollTrigger: { trigger: '#foot', start: 'top 80%', end: 'bottom bottom', scrub: 1 }, xPercent: 40, rotate: 10 });
 }

@@ -1,0 +1,25 @@
+---
+// Shared page shell: intro (once per session), header + menu + phone tab bar, footer, motion engine.
+import Base from './Base.astro';
+import Loader from '../components/Loader.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+interface Props { title?: string; description?: string; path?: string; jsonld?: boolean; top?: string }
+const { title, description, path = '/', jsonld = false, top } = Astro.props;
+---
+<Base title={title} description={description} path={path} jsonld={jsonld}>
+  <slot name="head" slot="head" />
+  <a class="skip-link" href="#main">Salta al contenuto</a>
+  <Loader />
+  <Header />
+  <main id="main" class:list={[top && 'page-top']} style={top ? `--top-bg:${top}` : undefined}>
+    <slot />
+  </main>
+  <Footer />
+</Base>
+<script>
+import { startMotion, ScrollTrigger } from '../scripts/motion.js';
+startMotion();
+document.fonts.ready.then(() => ScrollTrigger.refresh());
+addEventListener('load', () => ScrollTrigger.refresh());
+</script>

@@ -25,7 +25,7 @@ const run = Array(4).fill(txt.map((t) => `<span>${t} <i class="sep" aria-hidden=
 
 <style is:global>
 .sx-fasce{display:contents;
-.build{position:relative;height:300vh;background:var(--petrol)}
+.build{position:relative;height:140vh;background:var(--petrol)}
 .pin{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;align-content:center}
 .plank{position:relative;height:clamp(40px,8.6vh,92px);will-change:transform;overflow:hidden}
 .plank.p{background:var(--petrol-deep)}.plank.c{background:var(--cream)}
@@ -52,8 +52,8 @@ import { gsap, ScrollTrigger } from '../scripts/motion.js';
 import { img } from '../data/img';
 const planks = [...document.querySelectorAll<HTMLElement>('#build .plank')];
 if (!reduced) {
-  const tl = gsap.timeline({ scrollTrigger: { trigger: '#build', start: 'top 85%', end: '+=210%', scrub: 1.2 } });
-  planks.forEach((p, i) => tl.fromTo(p, { xPercent: 110 * +p.dataset.d! }, { xPercent: 0, ease: 'power3.out', duration: 1 }, i * 0.18));
+  const tl = gsap.timeline({ scrollTrigger: { trigger: '#build', start: 'top 90%', end: '+=95%', scrub: 0.8 } });
+  planks.forEach((p, i) => tl.fromTo(p, { xPercent: 110 * +p.dataset.d! }, { xPercent: 0, ease: 'power3.out', duration: 1 }, i * 0.1));
   // marquee speed reacts to scroll velocity and reverses on scroll up; runs only while the band is on screen
   const mqs = [...document.querySelectorAll<HTMLElement>('#build [data-mq]')];
   let x = 0, dir = 1, on = false;

@@ -4,7 +4,7 @@
 import Img from './Img.astro';
 import { wa, waText } from '../data/business';
 const items: [k: string, t: string, s: string, src: string, alt: string][] = [
-  ['T-shirt', 'G peperoncino', 'Fronte, bianca', 'merch/merch-maglia-G-peperoncino-gruccia', 'Maglia bianca con la G a peperoncino appesa a una gruccia'],
+  ['T-shirt', 'Peperoncino', 'Fronte, bianca', 'merch/merch-maglia-G-peperoncino-gruccia', 'Maglia bianca con la G a peperoncino appesa a una gruccia'],
   ['T-shirt', 'Glamood', 'Scritta in petrolio', 'merch/merch-maglia-GLAMOOD-bolle-cubo', 'Maglia bianca con scritta Glamood piegata su un cubo'],
   ['T-shirt', 'La faccia', 'Retro, mascotte', 'merch/merch-maglia-retro-faccia-arco', 'Retro della maglia con la faccia della mascotte'],
   ['T-shirt', 'Piegata', 'G peperoncino', 'merch/merch-maglia-G-peperoncino-piegata', 'Maglia piegata con la G a peperoncino e forbici'],
@@ -14,8 +14,7 @@ const go = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 <div class="sx-merch">
 <section class="merch has-bgref" id="merch" aria-labelledby="merch-t"><div class="bgref r-macchie-tono"></div>
   <div class="block">
-    <span class="bubble-deco mb" data-bubble="indossa|glamood" data-style="bounce" data-seed="11" style="--bc:#F4EFE8"></span>
-    <div class="bar"><h2 id="merch-t">Glamood <em>da indossare</em></h2><a class="pill" href={wa(waText.info('il merch Glamood'))} target="_blank" rel="noopener">Chiedila in salone <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="bar"><h2 id="merch-t">Porta il salone <em>addosso</em></h2><a class="pill" href={wa(waText.info('il merch Glamood'))} target="_blank" rel="noopener">Chiedila in salone <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
     <div class="cards" id="merch-cards">
       {items.map(([k, t, s, src, alt]) => (
         <a class="card" href={wa(waText.info(`la maglia ${t}`))} target="_blank" rel="noopener"><span class="k">{k}</span><h3>{t}</h3><span class="s">{s}</span><div class="img"><Img src={src} alt={alt} sizes="(min-width:1024px) 22vw, (min-width:600px) 45vw, 90vw" /></div><span class="go" set:html={go} /></a>

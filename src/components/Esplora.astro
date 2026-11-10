@@ -1,0 +1,46 @@
+---
+// Home: one card per page (salone, tagli, listino, prodotti, dove siamo), in the cream "ticket" style.
+import Img from './Img.astro';
+const cards: [href: string, k: string, t: string, src: string, alt: string][] = [
+  ['/salone', 'Via Sbarre Centrali', 'Il salone', 'salone/salone-05', 'Le postazioni del salone Glamood'],
+  ['/tagli', 'Scegli il tuo', 'I tagli', 'tagli/sfumato-basso-foto', 'Uno sfumato basso fatto da Glamood'],
+  ['/listino', 'Senza sorprese', 'Listino', 'salone/salone-11-titolare', 'Fabio al lavoro in salone'],
+  ['/prodotti', 'Da portare a casa', 'Prodotti', 'prodotti/barattoli-4-insieme', 'I quattro barattoli Glamood'],
+  ['/dove', 'Ci trovi qui', 'Dove siamo', 'salone/salone-12-facciata', "L'ingresso del salone Glamood"],
+];
+---
+<div class="sx-esplora">
+<section class="esplora" aria-labelledby="esplora-t">
+  <div class="in">
+    <p class="marker"><b>A</b>Esplora</p>
+    <h2 class="type-pop on-petrol" id="esplora-t">Accomodati</h2>
+    <div class="grid">
+      {cards.map(([href, k, t, src, alt], i) => (
+        <a class={`c c${i}`} href={href}><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1024px) 30vw, 90vw" /></div><span class="k">{k}</span><b>{t}</b><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      ))}
+    </div>
+  </div>
+</section>
+</div>
+<style is:global>
+.sx-esplora{display:contents;
+.esplora{position:relative;background:var(--petrol);padding:clamp(60px,8vw,120px) var(--gutter);color:var(--cream)}
+.in{max-width:1320px;margin:0 auto}
+.marker{color:#cfe3e1}
+h2{font-size:clamp(48px,8vw,130px)}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(14px,2vw,26px);margin-top:clamp(30px,4vw,56px)}
+.c{grid-column:span 2;position:relative;display:grid;gap:4px;background:var(--cream);color:var(--ink);border-radius:22px;padding:12px 12px 18px;text-decoration:none;box-shadow:0 30px 60px -30px rgb(0 0 0 / .6);transition:transform .5s var(--ease-out)}
+.c0,.c1{grid-column:span 3}
+.c:hover{transform:translateY(-6px) rotate(-.6deg)}
+.ph{border-radius:14px;overflow:hidden;aspect-ratio:16/10;margin-bottom:10px;background:var(--petrol-pale)}
+.ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
+.c3 .ph img{object-fit:contain;padding:10px}
+.c:hover .ph img{transform:scale(1.06)}
+.k{font:600 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);padding:0 6px}
+b{font:900 clamp(26px,2.6vw,40px)/.95 var(--f-display);text-transform:uppercase;color:var(--petrol);padding:0 6px}
+.go{position:absolute;right:16px;bottom:16px;width:44px;height:44px;border-radius:50%;background:var(--petrol);color:var(--cream);display:grid;place-items:center}
+.go svg{width:20px}
+@media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.c,.c0,.c1{grid-column:span 1}.c0{grid-column:span 2}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}.c,.c0{grid-column:span 1}}
+}
+</style>

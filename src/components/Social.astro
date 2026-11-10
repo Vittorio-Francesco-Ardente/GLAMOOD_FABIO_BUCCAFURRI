@@ -12,13 +12,13 @@ const igIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 <section class="panel panel-petrol social grainy" id="social" aria-labelledby="social-t"><div class="bgref r-blob" style="opacity:.14"></div>
   <div class="head">
     <span class="sb" data-bubble="dal|salone" data-seed="3" style="--bc:#F4EFE8"></span>
-    <h2 id="social-t">Ogni giorno un taglio nuovo, una barba sistemata, una storia sul profilo. Gli ultimi post arrivano qui da soli.</h2>
+    <h2 id="social-t">Ogni giorno una testa nuova esce dal salone. Guarda le ultime.</h2>
     <div class="btns"><a class="btn-pop" href={follow} target="_blank" rel="noopener">{business.instagram ? 'Seguici su Instagram' : 'Seguici su Facebook'}</a>{business.instagram && <a class="btn-pop fill" href={business.facebook} target="_blank" rel="noopener">Facebook</a>}</div>
   </div>
   <div class="row" id="social-row" aria-live="polite">
     <a class="post" href={follow} target="_blank" rel="noopener"><img class="cover" {...img('post-social/post-3D-forbici-piedistallo', 960)} alt="Post: forbici Glamood su piedistallo" loading="lazy" /><div class="cap"><span class="script-over">Gli attrezzi</span><b>Forbici<br />pronte</b></div><div class="meta"><span class="chip">Post</span></div><span class="ig" set:html={igIcon} /></a>
     <a class="post" href={follow} target="_blank" rel="noopener"><img class="cover" {...img('post-social/post-3D-maglia-faccia-monstera', 960)} alt="Post: maglia con la faccia della mascotte" loading="lazy" /><div class="cap"><span class="script-over">Novità</span><b>La maglia<br />Glamood</b></div><div class="meta"><span class="chip">Post</span></div><span class="ig" set:html={igIcon} /></a>
-    <a class="post ticket" href="#listino"><div class="t"><svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="M14 28h42v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6Z" fill="#17292C"/><path d="M22 30C22 6 48 6 48 30" fill="none" stroke="#B8935A" stroke-width="4"/></svg><h3>Taglio + barba</h3><p>Modellatura barba e taglio, con calma.</p><div class="pr"><span class="chip" style="color:var(--ink)">Totale</span><b>23 €</b></div><div class="bars"></div></div><img class="jar" {...img('prodotti/barattolo-pomata', 480)} alt="" loading="lazy" /></a>
+    <a class="post ticket" href="/listino"><div class="t"><svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="M14 28h42v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6Z" fill="#17292C"/><path d="M22 30C22 6 48 6 48 30" fill="none" stroke="#B8935A" stroke-width="4"/></svg><h3>Taglio + barba</h3><p>Modellatura barba e taglio, con calma.</p><div class="pr"><span class="chip" style="color:var(--ink)">Totale</span><b>23 €</b></div><div class="bars"></div></div><img class="jar" {...img('prodotti/barattolo-pomata', 480)} alt="" loading="lazy" /></a>
   </div>
 </section>
 </div>

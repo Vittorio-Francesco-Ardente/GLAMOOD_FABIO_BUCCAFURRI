@@ -391,12 +391,13 @@
   ]
  },
  "pattern/labirinto-petrolio": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/liquido-pale": {
@@ -416,30 +417,33 @@
   ]
  },
  "pattern/meandri-crema": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/meandri-petrolio": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/meandri-tono": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/onde-diagonali-crema": {
@@ -477,21 +481,23 @@
   ]
  },
  "pattern/ref/agrumi-tono": {
-  "w": 1326,
-  "h": 2400,
+  "w": 2652,
+  "h": 4800,
   "widths": [
    480,
    960,
-   1326
+   1600,
+   2400
   ]
  },
  "pattern/ref/agrumi": {
-  "w": 1326,
-  "h": 2400,
+  "w": 2652,
+  "h": 4800,
   "widths": [
    480,
    960,
-   1326
+   1600,
+   2400
   ]
  },
  "pattern/ref/blob-grana": {
@@ -504,77 +510,83 @@
   ]
  },
  "pattern/ref/corallo-tono": {
-  "w": 1578,
-  "h": 2400,
+  "w": 3200,
+  "h": 4867,
   "widths": [
    480,
    960,
-   1578
+   1600,
+   2400
   ]
  },
  "pattern/ref/corallo": {
-  "w": 1578,
-  "h": 2400,
+  "w": 3200,
+  "h": 4867,
   "widths": [
    480,
    960,
-   1578
+   1600,
+   2400
   ]
  },
  "pattern/ref/geometrico": {
-  "w": 1326,
-  "h": 2400,
+  "w": 3200,
+  "h": 5792,
   "widths": [
    480,
    960,
-   1326
+   1600,
+   2400
   ]
  },
  "pattern/ref/liquido-crema": {
-  "w": 1579,
-  "h": 2400,
+  "w": 3200,
+  "h": 4864,
   "widths": [
    480,
    960,
-   1579
+   1600,
+   2400
   ]
  },
  "pattern/ref/liquido-tono": {
-  "w": 1579,
-  "h": 2400,
+  "w": 3200,
+  "h": 4864,
   "widths": [
    480,
    960,
-   1579
+   1600,
+   2400
   ]
  },
  "pattern/ref/macchie-tono": {
-  "w": 1890,
-  "h": 2400,
+  "w": 3200,
+  "h": 4063,
   "widths": [
    480,
    960,
    1600,
-   1890
+   2400
   ]
  },
  "pattern/ref/macchie": {
-  "w": 1890,
-  "h": 2400,
+  "w": 3200,
+  "h": 4063,
   "widths": [
    480,
    960,
    1600,
-   1890
+   2400
   ]
  },
  "pattern/ref/onde-strati": {
-  "w": 1083,
-  "h": 2400,
+  "w": 2166,
+  "h": 4800,
   "widths": [
    480,
    960,
-   1083
+   1600,
+   2166
   ]
  },
  "pattern/ref/rilievo": {
@@ -587,22 +599,23 @@
   ]
  },
  "pattern/ref/swirl-retro": {
-  "w": 1327,
-  "h": 2400,
-  "widths": [
-   480,
-   960,
-   1327
-  ]
- },
- "pattern/ref/swirl-teal": {
-  "w": 1781,
-  "h": 2400,
+  "w": 3200,
+  "h": 5787,
   "widths": [
    480,
    960,
    1600,
-   1781
+   2400
+  ]
+ },
+ "pattern/ref/swirl-teal": {
+  "w": 3200,
+  "h": 4312,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
   ]
  },
  "pattern/rilievo-petrolio": {
@@ -614,39 +627,43 @@
   ]
  },
  "pattern/swirl-petrolio": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/vermicelli-crema": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/vermicelli-petrolio": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "pattern/vermicelli-tono": {
-  "w": 1024,
-  "h": 1024,
+  "w": 2048,
+  "h": 2048,
   "widths": [
    480,
    960,
-   1024
+   1600,
+   2048
   ]
  },
  "piante/09_monstera_grande-back": {

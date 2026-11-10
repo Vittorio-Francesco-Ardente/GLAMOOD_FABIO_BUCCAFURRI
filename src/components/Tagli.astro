@@ -8,7 +8,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 ---
 <div class="sx-tagli">
 <section class="tagli" id="tagli" aria-roledescription="carosello" aria-labelledby="tagli-t">
-  <div class="head"><h2 class="giant-title" id="tagli-t">I tag<span>li</span></h2><p class="hint">Tocca la scatola per aprirla</p></div>
+  <div class="head"><h2 class="giant-title" id="tagli-t">Scegli il tu<span>o</span></h2><p class="hint">Tocca la scatola per aprirla</p></div>
   <div class="shelf" id="shelf" tabindex="0" aria-label="Scaffale dei tagli. Usa le frecce per scorrere, Invio per aprire"><i class="probe" id="probe"></i><div class="stage" id="tg-stage"></div><div class="ledge"></div></div>
   <div class="cap" aria-live="polite"><button class="arr" id="tg-prev" aria-label="Taglio precedente"><svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 1L1 5l4 4M1 5h16"/></svg></button><h3 class="m" id="cn"></h3><p class="m" id="cd"></p><button class="arr r" id="tg-next" aria-label="Taglio successivo"><svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13 1l4 4-4 4M17 5H1"/></svg></button></div>
   <noscript><ul class="nojs">{CUTS.map((c) => <li><b>{c[0]}</b> · {c[3]} · {c[2]}</li>)}</ul></noscript>
@@ -102,7 +102,7 @@ const shelf = $('shelf'), stage = $('tg-stage'), probe = $('probe'), cur = $('tg
 const NC = CUTS.length;
 const AR = CUTS.reduce((a, c) => a + LAB[c[1]].ar, 0) / NC, SAR = CUTS.reduce((a, c) => a + LAB[c[1]].sar, 0) / NC;
 let H = 0, ws = 0, d = 0, gap = 0, W = 0;
-const measure = () => { H = probe.offsetHeight; ws = H * SAR; d = H * AR; gap = H * 0.03; W = shelf.clientWidth; };
+const measure = () => { H = probe.offsetHeight; ws = H * SAR; d = H * AR; gap = H * 0.055; W = shelf.clientWidth; };
 measure();
 const COPIES = Math.max(3, Math.ceil((Math.max(innerWidth, screen.width) / (ws + gap) + 8) / NC)), N = NC * COPIES;
 type Tape = { el: HTMLElement; sp: HTMLElement; cv: HTMLElement; lt: HTMLElement; lift: number; hid: boolean };
@@ -133,7 +133,7 @@ function fitLabels() {
 Promise.all([document.fonts.load('900 100px Archivo'), document.fonts.ready]).then(fitLabels, fitLabels);
 const sm = (x: number) => x * x * (3 - 2 * x);
 const Bf = (r: number) => (Math.abs(r) < 1 ? (r + Math.sin(Math.PI * r) / Math.PI) / 2 : Math.sign(r) * 0.5);
-const F = (r: number) => r * (ws + gap) + (d - ws + 1.6 * gap) * Bf(r);
+const F = (r: number) => r * (ws + gap) + (d - ws + 2.4 * gap + d * 0.22) * Bf(r);
 const relr = (v: number, s: number) => { const r = v - s; return r - N * Math.round(r / N); };
 /* ---- state ---- */
 let s = NC * 2, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;

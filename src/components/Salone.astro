@@ -1,6 +1,6 @@
 ---
 // Kit 08: deep petrol with the coral texture (tone on tone). Desktop pins and pans horizontally through
-// salon photos in pattern frames (arch, wide pill, circle, tall, blob) with a dashed brass line;
+// salon photos in pattern frames (arch, wide pill, circle, tall, blob);
 // tablet and phone use native swipe with snap.
 import Img from './Img.astro';
 import { img } from '../data/img';
@@ -17,13 +17,12 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 <div class="sx-salone">
 <section class="salone" id="salone" aria-labelledby="salone-t"><div class="bgref r-corallo-tono"></div>
   <img class="hang" {...img('piante/13_pothos_variegato')} alt="" loading="lazy" style="width:clamp(90px,9vw,160px);right:1.5%" />
-  <div class="head"><p class="kicker" style="color:#cfe3e1">{business.address}</p><h2 class="giant-title" id="salone-t">Il salone</h2><p>Pareti petrolio, rovere, ottone e poltrone vintage: un posto che si fa guardare.</p></div>
+  <div class="head"><p class="kicker" style="color:#cfe3e1">{business.address}</p><h2 class="giant-title" id="salone-t">Benvenuto</h2><p>Pareti petrolio, rovere, ottone e poltrone vintage. Siediti, il resto lo facciamo noi.</p></div>
   <div class="track-wrap" id="tw"><div class="track" id="track" tabindex="0" aria-label="Foto del salone, scorri in orizzontale">
     {cards.map(([shape, src, alt, cap, pos]) => (
       <figure class={`card ${shape}`}><div class="fr"><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1200px) 40vw, 82vw" style={pos ? `object-position:${pos}` : undefined} /></div></div><figcaption>{cap}</figcaption></figure>
     ))}
-  </div>
-  <svg class="line" id="ln" aria-hidden="true"><path id="lp" /></svg></div>
+  </div></div>
   <p class="credit">{business.architect ? `Progetto degli interni: ${business.architect}.` : "Progetto degli interni: nome dell'architetto da confermare."}</p>
   <div class="bottom-edge"></div>
 </section>
@@ -51,8 +50,6 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .tall .ph{width:clamp(220px,22vw,340px);aspect-ratio:3/4.6}.tall .fr{border-radius:30px}.tall .ph{border-radius:20px}
 .wide .ph{width:clamp(300px,40vw,640px);aspect-ratio:16/10}.wide .fr,.wide .ph{border-radius:999px}
 .credit{position:relative;z-index:2;padding:0 var(--gutter) 40px;font-size:14px;color:#cfe3e1}
-.line{position:absolute;z-index:1;left:0;top:0;width:100%;height:100%;pointer-events:none}
-.line path{fill:none;stroke:var(--brass);stroke-width:2;stroke-dasharray:6 8;opacity:.8}
 .hang{position:absolute;z-index:3;pointer-events:none;top:-10px;height:auto}
 @media (max-width:1199px){.hang{display:none}}
 .bottom-edge{position:relative;z-index:2;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover}
@@ -71,33 +68,24 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
  .track{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:60px}
  .track::-webkit-scrollbar{display:none}
  .card{scroll-snap-align:center}
- .line{display:none}
  .card .ph img{transform:scale(1.04)}
  .arch .ph,.tall .ph{width:min(68vw,340px)}.blob .ph,.wide .ph{width:min(82vw,520px)}.circle .ph{width:min(64vw,320px)}
 }
 @media (min-width:1200px) and (prefers-reduced-motion:reduce){
- .salone{height:auto}.track{overflow-x:auto;scroll-snap-type:x mandatory}.line{display:none}
+ .salone{height:auto}.track{overflow-x:auto;scroll-snap-type:x mandatory}
 }
 }
 </style>
 
 <script>
 import { gsap } from '../scripts/motion.js';
-const track = document.getElementById('track')!, tw = document.getElementById('tw')!, ln = document.getElementById('ln')!, lp = document.getElementById('lp')!;
+const track = document.getElementById('track')!;
 const mm = gsap.matchMedia();
 mm.add('(min-width:1200px) and (prefers-reduced-motion:no-preference)', () => {
   const dist = () => track.scrollWidth - innerWidth;
   const tween = gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '#salone', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
   track.querySelectorAll<HTMLElement>('.card .ph img').forEach((im) => gsap.fromTo(im, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: im.closest('.card')!, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } }));
-  const draw = () => {
-    const r = tw.getBoundingClientRect(); const x0 = +gsap.getProperty(track, 'x');
-    const pts = [...track.querySelectorAll('.ph')].map((p) => { const b = p.getBoundingClientRect(); return [b.left - r.left + b.width / 2 - x0, b.top - r.top + b.height / 2]; });
-    ln.setAttribute('width', String(track.scrollWidth)); ln.style.width = track.scrollWidth + 'px';
-    lp.setAttribute('d', pts.map((p, i) => (i ? `S ${p[0] - 80} ${p[1] + (i % 2 ? 90 : -90)} ${p[0]} ${p[1]}` : `M ${p[0]} ${p[1]}`)).join(' '));
-  };
-  draw(); addEventListener('resize', draw);
-  tween.eventCallback('onUpdate', () => gsap.set(ln, { x: gsap.getProperty(track, 'x') }));
-  return () => { removeEventListener('resize', draw); gsap.set(track, { clearProps: 'all' }); };
+  return () => { gsap.set(track, { clearProps: 'all' }); };
 });
 mm.add('(prefers-reduced-motion:no-preference)', () => {
   gsap.from('#salone .head .giant-title', { scrollTrigger: { trigger: '#salone', start: 'top 80%' }, yPercent: 40, opacity: 0, duration: 1.2, ease: 'expo.out' });

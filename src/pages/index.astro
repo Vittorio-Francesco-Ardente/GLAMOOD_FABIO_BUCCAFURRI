@@ -1,44 +1,16 @@
 ---
-import Base from '../layouts/Base.astro';
-import Loader from '../components/Loader.astro';
-import Header from '../components/Header.astro';
+import Site from '../layouts/Site.astro';
 import Hero from '../components/Hero.astro';
 import Fasce from '../components/Fasce.astro';
-import Salone from '../components/Salone.astro';
-import Tagli from '../components/Tagli.astro';
-import Taglio from '../components/Taglio.astro';
-import Listino from '../components/Listino.astro';
-import Prodotti from '../components/Prodotti.astro';
-import Merch from '../components/Merch.astro';
+import Esplora from '../components/Esplora.astro';
 import Social from '../components/Social.astro';
 import Gioco from '../components/Gioco.astro';
-import Dove from '../components/Dove.astro';
-import Footer from '../components/Footer.astro';
 ---
-<Base jsonld>
+<Site jsonld>
   <link slot="head" rel="preload" as="image" type="image/avif" imagesrcset="/img/hero/fabio-foto-480.avif 480w, /img/hero/fabio-foto-960.avif 960w, /img/hero/fabio-foto-1600.avif 1600w, /img/hero/fabio-foto-1800.avif 1800w" imagesizes="(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh" fetchpriority="high" />
-  <a class="skip-link" href="#salone">Salta al contenuto</a>
-  <Loader />
-  <Header />
-  <main id="main" class="site-enter">
-    <Hero />
-    <Fasce />
-    <Salone />
-    <Tagli />
-    <Taglio />
-    <Listino />
-    <Prodotti />
-    <Merch />
-    <Social />
-    <Gioco />
-    <Dove />
-  </main>
-  <Footer />
-</Base>
-<script>
-import { startMotion, ScrollTrigger } from '../scripts/motion.js';
-startMotion();
-// pinned sections depend on fonts and images: refresh once everything is in place
-document.fonts.ready.then(() => ScrollTrigger.refresh());
-addEventListener('load', () => ScrollTrigger.refresh());
-</script>
+  <Hero />
+  <Fasce />
+  <Esplora />
+  <Social />
+  <Gioco />
+</Site>
