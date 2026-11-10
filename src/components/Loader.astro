@@ -23,13 +23,13 @@ import art from './loader-art.txt?raw';
 @keyframes ld-a{from{transform:translate(-30px,6px)}to{transform:translate(30px,-10px)}}
 @keyframes ld-b{from{transform:translate(26px,-8px)}to{transform:translate(-26px,10px)}}
 @keyframes ld-c{from{transform:translate(0,-18px)}to{transform:translate(8px,18px)}}
-.intro-logo{width:min(82vw,640px);display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vw,18px)}
-.ld-mask{display:block;overflow:hidden;padding:2% 0}
-.intro-wm{display:block;width:100%;height:auto;overflow:visible;color:#0F6870;transform:translateY(115%);will-change:transform}
-.gioca .intro-wm{animation:ld-rise 1.15s cubic-bezier(.16,1,.3,1) .15s both}
-@keyframes ld-rise{0%{transform:translateY(115%) rotate(2.5deg)}100%{transform:none}}
+.intro-logo{width:min(84vw,980px);display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vw,18px)}
+.ld-mask{display:block;width:100%}
+.intro-wm{display:block;width:100%;height:auto;overflow:visible;color:#0F6870;opacity:0;-webkit-mask-image:linear-gradient(90deg,#000 40%,transparent 60%);mask-image:linear-gradient(90deg,#000 40%,transparent 60%);-webkit-mask-size:260% 100%;mask-size:260% 100%;-webkit-mask-position:100% 0;mask-position:100% 0;transform:scale(1.04);filter:blur(6px)}
+.gioca .intro-wm{animation:ld-reveal 1.25s cubic-bezier(.65,0,.35,1) .2s both}
+@keyframes ld-reveal{0%{opacity:1;-webkit-mask-position:100% 0;mask-position:100% 0;transform:scale(1.04);filter:blur(6px)}60%{filter:blur(0)}100%{opacity:1;-webkit-mask-position:0 0;mask-position:0 0;transform:none;filter:none}}
 .ld-sheen{transform:skewX(-18deg);opacity:0}
-.gioca .ld-sheen{animation:ld-sheen 1.05s cubic-bezier(.65,0,.35,1) 1.15s both}
+.gioca .ld-sheen{animation:ld-sheen 1s cubic-bezier(.65,0,.35,1) 1.35s both}
 @keyframes ld-sheen{0%{opacity:1;transform:skewX(-18deg) translateX(0)}100%{opacity:1;transform:skewX(-18deg) translateX(4600px)}}
 @media (prefers-reduced-motion:reduce){.gl-intro{display:none}}
 </style>

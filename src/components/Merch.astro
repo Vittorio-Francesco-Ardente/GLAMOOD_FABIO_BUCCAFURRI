@@ -59,7 +59,5 @@ import { gsap } from '../scripts/motion.js';
 import { bubbles } from '../scripts/bubble.js';
 bubbles(document.getElementById('merch')!);
 if (!reduced) {
-  gsap.from('#merch .block', { scrollTrigger: { trigger: '#merch', start: 'top 80%' }, y: 80, scale: 0.96, opacity: 0, duration: 1.2, ease: 'expo.out' });
-  gsap.from('#merch-cards .card', { scrollTrigger: { trigger: '#merch-cards', start: 'top 85%' }, y: 80, rotate: (i: number) => [-4, 3, -2, 4][i], opacity: 0, stagger: 0.09, duration: 1.1, ease: 'expo.out', clearProps: 'transform' });
 }
 </script>

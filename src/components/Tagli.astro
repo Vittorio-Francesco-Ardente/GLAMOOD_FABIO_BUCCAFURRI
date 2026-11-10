@@ -16,7 +16,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 <div class="cur" id="tg-cur" aria-hidden="true"><i></i><b></b><em>APRI</em></div>
 <div class="sheet" id="tg-sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" hidden>
   <button class="x" id="sx" aria-label="Chiudi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  <div class="in"><div class="big" id="sbig"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="inkf" x="-50%" y="-50%" width="200%" height="200%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="110" xChannelSelector="R" yChannelSelector="G"/></filter><mask id="inkm" maskUnits="userSpaceOnUse" x="-300" y="-300" width="1000" height="1100"><g filter="url(#inkf)" fill="#fff"><circle cx="130" cy="190" r="0"/><circle cx="290" cy="330" r="0"/><circle cx="220" cy="70" r="0"/><circle cx="80" cy="430" r="0"/><circle cx="340" cy="150" r="0"/><circle cx="230" cy="470" r="0"/><circle cx="200" cy="260" r="0"/></g></mask></defs><rect width="400" height="500" fill="#0F6870"/><image id="simg" width="400" height="500" preserveAspectRatio="xMidYMid slice" mask="url(#inkm)"/></svg></div>
+  <div class="in"><div class="big" id="sbig"><img id="simg" alt="" decoding="async" /></div>
   <div><p class="kicker">Taglio</p><h2 id="sh-t"></h2><p class="lead" id="sdesc" style="margin-top:16px"></p>
     <div class="facts"><div><b id="spr"></b>prezzo</div><div><b>1:1</b>consulenza</div><div><b>WA</b>prenoti</div></div>
     <p><b>A chi sta bene:</b> <span id="ssuit"></span></p><p style="margin-top:8px"><b>Come mantenerlo:</b> <span id="scare"></span></p>
@@ -81,7 +81,8 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .sheet .in,.sheet .x{z-index:1}
 .sheet .big{box-sizing:border-box;border-radius:var(--r-media);overflow:hidden;aspect-ratio:var(--pa,.8);justify-self:center;border:8px solid #fff;box-shadow:var(--shadow);height:min(74svh,700px);width:auto;max-width:100%}
 @media (max-width:899px){.sheet .big{width:100%;height:auto}}
-.sheet .big svg{display:block;width:100%;height:100%}
+.sheet .big{background:#0F6870}
+.sheet .big img{display:block;width:100%;height:100%;object-fit:cover}
 .mk{overflow:hidden}.mk>.mi{will-change:transform;padding-bottom:.08em}
 .sheet h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;white-space:nowrap;font-size:clamp(44px,7vw,110px);line-height:.88;letter-spacing:-.04em;color:var(--petrol)}
 .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
@@ -210,16 +211,16 @@ let wt = 0; shelf.addEventListener('wheel', (e) => { if (isOpen || Math.abs(e.de
 const sheet = $('tg-sheet'), simg = $('simg'), sx = $('sx');
 const col = sheet.querySelector('.in > div:last-child')!;
 const mis = [...col.children].map((ch) => { const mk = document.createElement('div'); mk.className = 'mk'; const mi = document.createElement('div'); mi.className = 'mi'; ch.replaceWith(mk); mi.append(ch); mk.append(mi); return mi; });
-const blobs = [...sheet.querySelectorAll('#inkm circle')], BD = [0, 120, 220, 300, 360, 420, 180]; let inkRaf = 0;
+let inkRaf = 0;
+// preload the haircut photos once the shelf is on screen, so the sheet opens instantly
+new IntersectionObserver((e, o) => { if (!e[0].isIntersecting) return; o.disconnect(); CUTS.forEach((c) => { const i = new Image(); i.src = T + c[1] + '-foto.webp'; }); }, { rootMargin: '400px' }).observe(shelf);
 function coverRect() { const v = Math.round(s); const t = tapes[((v % N) + N) % N]; return t.cv.getBoundingClientRect(); }
 const clipFor = (r: DOMRect) => `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
-function ink() { cancelAnimationFrame(inkRaf); blobs.forEach((b) => b.setAttribute('r', '0')); const t0 = performance.now() + (RM ? -5000 : 520);
-  const step = (n: number) => { let done = true; blobs.forEach((b, i) => { const p = Math.max(0, Math.min(1, (n - t0 - BD[i]) / 1250)); if (p < 1) done = false; b.setAttribute('r', (520 * (1 - Math.pow(1 - p, 3))).toFixed(1)); }); if (!done) inkRaf = requestAnimationFrame(step); }; inkRaf = requestAnimationFrame(step); }
+function ink() { simg.getAnimations().forEach((x) => x.cancel()); simg.animate([{ clipPath: 'circle(0% at 50% 45%)', transform: 'scale(1.08)' }, { clipPath: 'circle(75% at 50% 45%)', transform: 'scale(1)' }], { duration: RM ? 1 : 1100, delay: RM ? 0 : 450, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'both' }); }
 function fitTitle() { const h = $('sh-t'); h.style.fontSize = ''; requestAnimationFrame(() => { const max = h.parentElement!.parentElement!.clientWidth || h.clientWidth; const w = h.scrollWidth; if (w > max) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px'; }); }
 function openSheet() {
   if (isOpen) return; if (Math.abs(Tg - s) > 0.02) { Tg = Math.round(Tg); s = Tg; render(0.016); } else { Tg = s = Math.round(s); }
-  const c = CUTS[idx()]; simg.setAttribute('href', T + c[1] + '-foto.webp');
-  { const pa = LAB[c[1]].pa, vh = 400 / pa; const sv_ = sheet.querySelector('#sbig svg')!; sv_.setAttribute('viewBox', `0 0 400 ${vh}`); simg.setAttribute('height', String(vh)); $('sbig').style.setProperty('--pa', pa); sv_.querySelector('rect')!.setAttribute('height', String(vh)); }
+  const c = CUTS[idx()]; (simg as HTMLImageElement).src = T + c[1] + '-foto.webp'; (simg as HTMLImageElement).alt = c[0]; $('sbig').style.setProperty('--pa', String(LAB[c[1]].pa));
   $('sh-t').textContent = c[0]; fitTitle(); $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
   $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
   ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
@@ -233,7 +234,7 @@ function openSheet() {
 function closeSheet() {
   if (!isOpen) return; const r = coverRect(); sheet.style.transformOrigin = `${r.left + r.width / 2}px ${r.top + r.height / 2}px`;
   const a = sheet.animate([{ clipPath: 'inset(0px 0px 0px 0px round 0px)', transform: 'rotate(0deg)' }, { clipPath: clipFor(r), transform: 'rotate(-4.5deg)' }], { duration: RM ? 1 : 850, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
-  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); cancelAnimationFrame(inkRaf); isOpen = false; lockScroll(false); shelf.focus({ preventScroll: true }); };
+  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); isOpen = false; lockScroll(false); shelf.focus({ preventScroll: true }); };
 }
 sx.addEventListener('click', () => history.back());
 addEventListener('popstate', () => { if (isOpen) closeSheet(); });
