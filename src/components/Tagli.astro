@@ -98,7 +98,11 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 <script>
 import { reduced, lockScroll, trapTab } from '../scripts/core.js';
 const { CUTS, LAB, wa: WA } = JSON.parse(document.getElementById('tagli-data')!.textContent!) as { CUTS: [string, string, string, string][]; LAB: Record<string, any>; wa: string };
-const T = '/img/tagli/';
+// Astro knows the project subpath on GitHub Pages. Avoid runtime /img URLs,
+// which point to the wrong root when the site is published under a repository name.
+const T = `${import.meta.env.BASE_URL}img/tagli/`;
+const urlFor = (key: string, kind: string) => `${T}${key}-${kind}.webp`;
+const brandUrl = (name: string) => `${import.meta.env.BASE_URL}img/brand/${name}`;
 const pos_ = (r: number[]) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
 const RM = reduced, EASE = 'cubic-bezier(.2,.8,.2,1)';
 const $ = (id: string) => document.getElementById(id)!;
@@ -108,14 +112,15 @@ const AR = CUTS.reduce((a, c) => a + LAB[c[1]].ar, 0) / NC, SAR = CUTS.reduce((a
 let H = 0, ws = 0, d = 0, gap = 0, W = 0;
 const measure = () => { H = probe.offsetHeight; ws = H * SAR; d = H * AR; gap = H * 0.055; W = shelf.clientWidth; };
 measure();
-const COPIES = Math.max(3, Math.ceil((Math.max(innerWidth, screen.width) / (ws + gap) + 8) / NC)), N = NC * COPIES;
+// Eight unique VHS: cyclic positioning, never duplicated DOM elements.
+const N = NC;
 type Tape = { el: HTMLElement; sp: HTMLElement; cv: HTMLElement; lt: HTMLElement; lift: number; hid: boolean };
 const tapes: Tape[] = [];
 const frag = document.createDocumentFragment();
 for (let v = 0; v < N; v++) {
   const c = CUTS[v % NC], L = LAB[c[1]]; const el = document.createElement('div'); el.className = 'tape'; el.dataset.v = String(v);
   el.style.setProperty('--ar', L.ar); el.style.setProperty('--sar', L.sar);
-  el.innerHTML = `<div class="face sp" style="--tex:url(${T + c[1]}-spine.webp)"><div class="lb q" style="${pos_(L.sq)}"><img src="/img/brand/G-rasoio-petrolio-trasparente-480.webp" alt="" draggable="false"></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="/img/brand/faccia-petrolio-trasparente-480.webp" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${T + c[1]}-front.webp)"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="Glamood" data-r="bot" style="${pos_(L.bot)}"><span>Glamood</span></div></div><div class="face lt" style="--tex:url(${T + c[1]}-lato.webp)"></div>`;
+  el.innerHTML = `<div class="face sp" style="--tex:url(${urlFor(c[1], 'spine')})"><div class="lb q" style="${pos_(L.sq)}"><img src="${brandUrl('G-rasoio-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="${brandUrl('faccia-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${urlFor(c[1], 'front')})"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="Glamood" data-r="bot" style="${pos_(L.bot)}"><span>Glamood</span></div></div><div class="face lt" style="--tex:url(${urlFor(c[1], 'lato')})"></div>`;
   frag.append(el); tapes.push({ el, sp: el.children[0] as HTMLElement, cv: el.children[1] as HTMLElement, lt: el.children[2] as HTMLElement, lift: 0, hid: false });
 }
 stage.append(frag);
@@ -140,7 +145,7 @@ const Bf = (r: number) => (Math.abs(r) < 1 ? (r + Math.sin(Math.PI * r) / Math.P
 const F = (r: number) => r * (ws + gap) + (d - ws + 2.4 * gap + d * 0.22) * Bf(r);
 const relr = (v: number, s: number) => { const r = v - s; return r - N * Math.round(r / N); };
 /* ---- state ---- */
-let s = NC * 2, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
+let s = 0, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
 const fine = matchMedia('(pointer:fine)').matches;
 const idx = () => ((Math.round(s) % NC) + NC) % NC;
 /* ---- caption: each change slides through a mask ---- */
@@ -215,14 +220,14 @@ const col = sheet.querySelector('.in > div:last-child')!;
 const mis = [...col.children].map((ch) => { const mk = document.createElement('div'); mk.className = 'mk'; const mi = document.createElement('div'); mi.className = 'mi'; ch.replaceWith(mk); mi.append(ch); mk.append(mi); return mi; });
 let inkRaf = 0;
 // preload the haircut photos once the shelf is on screen, so the sheet opens instantly
-new IntersectionObserver((e, o) => { if (!e[0].isIntersecting) return; o.disconnect(); CUTS.forEach((c) => { const i = new Image(); i.src = T + c[1] + '-foto.webp'; }); }, { rootMargin: '400px' }).observe(shelf);
+new IntersectionObserver((e, o) => { if (!e[0].isIntersecting) return; o.disconnect(); CUTS.forEach((c) => { const i = new Image(); i.src = urlFor(c[1], 'foto'); }); }, { rootMargin: '400px' }).observe(shelf);
 function coverRect() { const v = Math.round(s); const t = tapes[((v % N) + N) % N]; return t.cv.getBoundingClientRect(); }
 const clipFor = (r: DOMRect) => `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
 function ink() { simg.getAnimations().forEach((x) => x.cancel()); simg.animate([{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'none' }], { duration: RM ? 1 : 700, delay: RM ? 0 : 350, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' }); }
 function fitTitle() { const h = $('sh-t'); h.style.fontSize = ''; requestAnimationFrame(() => { const max = Math.min(col.clientWidth, innerWidth - 32); const w = h.scrollWidth; if (w > max) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px'; }); }
 function openSheet() {
   if (isOpen) return; if (Math.abs(Tg - s) > 0.02) { Tg = Math.round(Tg); s = Tg; render(0.016); } else { Tg = s = Math.round(s); }
-  const c = CUTS[idx()]; (simg as HTMLImageElement).src = T + c[1] + '-foto.webp'; (simg as HTMLImageElement).alt = c[0]; $('sbig').style.setProperty('--pa', String(LAB[c[1]].pa));
+  const c = CUTS[idx()]; (simg as HTMLImageElement).src = urlFor(c[1], 'foto'); (simg as HTMLImageElement).alt = c[0]; $('sbig').style.setProperty('--pa', String(LAB[c[1]].pa));
   $('sh-t').textContent = c[0]; fitTitle(); $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
   $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
   ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
