@@ -11,9 +11,11 @@ try { pw = require('playwright'); }
 catch { pw = require(require('node:child_process').execSync('npm root -g').toString().trim() + '/playwright'); }
 const { chromium } = pw;
 const port = 4329;
+const base = (process.env.BASE || '').replace(/\/$/, '');
 const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.avif':'image/avif','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'};
 const server = createServer(async (req,res)=>{
  let path=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
+ if(base && path.startsWith(base+'/'))path=path.slice(base.length);
  if(path.startsWith('/api/')){res.writeHead(200,{'content-type':'application/json'});return res.end('[]');}
  if(path.endsWith('/'))path+='index.html';
  else if(!extname(path))path+='.html';
@@ -23,7 +25,7 @@ const server = createServer(async (req,res)=>{
 const browser=await chromium.launch({headless:true});
 let checks=0;
 const check=(condition,msg)=>{assert(condition,msg);checks++;};
-const open=async(page,path)=>{await page.goto('http://localhost:'+port+path,{waitUntil:'networkidle'});await page.waitForTimeout(300);};
+const open=async(page,path)=>{await page.goto('http://localhost:'+port+base+path,{waitUntil:'networkidle'});await page.waitForTimeout(300);};
 try {
  const mobile=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  await mobile.addInitScript(()=>{try{sessionStorage.setItem('glamood-intro','1')}catch{}});
