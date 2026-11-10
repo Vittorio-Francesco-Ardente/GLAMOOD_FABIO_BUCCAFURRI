@@ -1,0 +1,113 @@
+---
+// Easter egg (kit 17): the 3D hardcover book in the link tree room. Scroll turns the pages, click the
+// left/right half or use the arrow keys to jump one page; phone: tap a page to read it full screen.
+// Reached from the footer G (3 taps), the Konami code, typing "fabio", or /storia.
+import Base from '../layouts/Base.astro';
+import '../styles/storia.css';
+import { wa } from '../data/business';
+---
+<Base title="Il libro di Fabio | Glamood" description="La storia di Glamood e di Fabio Buccafurri, dagli inizi al salone di oggi in Via Sbarre Centrali a Reggio Calabria." path="/storia" bodyClass="storia-page">
+<div id="storia-data" data-wa={wa()} hidden></div>
+<main>
+
+<div class="sfondo" aria-hidden="true"><svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+ <rect width="1000" height="1000" fill="var(--bg)"/>
+ <path class="b b1" fill="var(--w2)" d="M-80 430C120 370 300 500 470 580 650 665 830 680 1080 620V1080H-80Z"/>
+ <path class="b b2" fill="var(--w3)" d="M-80 640C170 590 360 690 560 780 700 845 880 870 1080 845V1080H-80Z"/>
+ <path class="b b3" fill="var(--w1)" d="M-80 830C150 800 330 850 520 910 640 950 820 960 1080 945V1080H-80Z"/>
+ <path class="b b4" fill="var(--w2)" d="M480-80C560 90 760 190 1080 220V-80Z"/>
+ <path class="b b5" fill="var(--w3)" d="M720-80C770 40 880 100 1080 116V-80Z"/>
+ <path class="b b6" fill="var(--w2)" d="M-80 180C60 210 130 300 118 400 108 470 50 510-80 520Z"/>
+</svg></div>
+<div class="top"><a class="chip-back" href="/">&larr; Torna al sito</a><span class="count" id="count">Copertina</span></div>
+<p class="hint" id="hint">scorri per sfogliare<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></p>
+
+<div class="scroller" id="scroller">
+ <div class="stage"><div class="float" id="float"><div class="book" id="book" role="region" aria-label="Il libro di Fabio: la storia di Glamood, dagli inizi al salone di oggi">
+  <div class="floor"></div><span class="base l" id="baseL"></span><span class="base" id="baseR"></span><span class="ribbon" id="ribbon"></span>
+ </div></div></div>
+</div>
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Pagina ingrandita"><div class="sheet paper" id="sheet"></div><button class="x" id="zx" aria-label="Chiudi">&times;</button></div>
+<p class="zoom-tip">tocca una pagina per leggerla</p>
+<section class="after"><div><h2>Fine.<br>Per ora.</h2><p>La prossima pagina la scriviamo con te, sulla poltrona.</p><a class="btn-pop fill" href={wa()} target="_blank" rel="noopener">Prenota da Fabio</a></div></section>
+
+
+</main>
+</Base>
+<script>
+// @ts-nocheck: ported 1:1 from the kit demo (sections/17-easter-egg-404)
+
+import { reduced } from '../scripts/core.js';
+import { gsap, ScrollTrigger, startMotion } from '../scripts/motion.js';
+startMotion();
+const WA = (document.getElementById('storia-data') as HTMLElement).dataset.wa!;
+const A='/img/';
+const wm=A+'brand/wordmark-petrolio-trasparente.webp', G=A+'brand/G-rasoio-petrolio-trasparente.webp', Gc=A+'brand/G-rasoio-crema-trasparente.webp';
+const todo=t=>`<span class="todo-ph" style="width:100%;height:100%">${t}</span>`;
+// Each leaf = [front (right page), back (left page of the next spread)]. Photos marked TODO come from Fabio.
+const S=A+'storia/';
+// Each leaf = [front (right page), back (left page of the next spread)]. Pages use grid layouts: photos never cover text.
+const ph=(src,cap,pos='50% 30%',tilt=0,extra='')=>`<figure class="photo" style="--t:${tilt}deg;${extra}"><span class="tape"></span><img src="${src}" alt="${cap}" style="object-position:${pos}"><figcaption>${cap}</figcaption></figure>`;
+const P=[
+ [`<div class="face front cover"><span class="spine"></span><span class="hinge"></span><div class="label"><img src="${wm}" alt="Glamood"><span class="rule"></span><span class="t">La storia di Fabio</span><span class="s">Dagli inizi a oggi</span></div></div>`,
+  `<div class="pg ex"><div class="lbl"><img src="${G}" alt=""><small>Questo libro appartiene a</small><b>Fabio Buccafurri</b><i></i><small>barbiere · Reggio Calabria</small></div><span class="no">ii</span></div>`],
+ [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 1</p><h3>Gli inizi</h3><p>Un paio di forbici, tanta pazienza e la voglia di fare le cose per bene. Da qui parte la storia di Glamood.</p></div>${ph(S+'ritratto.webp','Fabio Buccafurri','50% 18%',2,'grid-area:ph')}<span class="no">01</span></div>`,
+  `<div class="pg duo">${ph(S+'forbici.webp','Le forbici','50% 30%',-2)}${ph(S+'taglio.webp','Al lavoro','50% 40%',2)}<p class="quote">Ogni taglio si fa con calma. Si parla, si sceglie insieme.</p><span class="no">02</span></div>`],
+ [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 2</p><h3>L'idea di Glamood</h3><p>Un salone curato come un posto dove stare bene: verde petrolio, ottone, piante e un marchio tutto suo.</p></div><figure class="card-ph" style="grid-area:ph"><img src="${A}brand/biglietto-fronte.webp" alt="Il biglietto da visita Glamood"><img src="${A}brand/biglietto-retro.webp" alt="" class="back"></figure><span class="no">03</span></div>`,
+  `<div class="full"><img src="${A}salone/salone-12-facciata.webp" alt="La facciata del salone Glamood"><p class="cap"><span>Si apre</span>Via Sbarre<br>Centrali 282/G</p></div>`],
+ [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 3</p><h3>Il salone</h3><p>L'insegna d'oro sulla parete petrolio, le poltrone, gli specchi: ogni dettaglio scelto.</p></div><div class="stack" style="grid-area:ph">${ph(A+'salone/salone-14-insegna-oro-frontale.webp','L\'insegna','50% 22%',-2)}${ph(A+'salone/salone-05.webp','Le postazioni','50% 50%',3)}</div><span class="no">05</span></div>`,
+  `<div class="pg quad"><p class="ch">Una giornata</p><div class="g4">${ph(S+'caffe.webp','Il caffè','50% 25%',-2)}${ph(S+'scopa.webp','In ordine','50% 8%',2)}${ph(S+'selfie.webp','La pausa','50% 35%',1)}${ph(S+'sorriso.webp','E si ride','50% 30%',-1)}</div><span class="no">06</span></div>`],
+ [`<div class="pg split"><div class="txt"><p class="ch">Capitolo 4</p><h3>Oggi</h3><p>Il salone è aperto e la poltrona ti aspetta. Il prossimo capitolo lo scriviamo insieme.</p><a class="btn-pop fill" href="${WA}" target="_blank" rel="noopener" style="margin-top:6%;min-height:40px;font-size:calc(var(--pw)*.026)">Prenota</a></div>${ph(A+'salone/salone-11-titolare.webp','Fabio, oggi','72% 40%',-2,'grid-area:ph')}<span class="no">07</span></div>`,
+  `<div class="backcover"><div class="in"><img src="${Gc}" alt="" style="width:26%"><p>Il resto<br>lo scriviamo insieme</p><a class="btn-pop" href="${WA}" target="_blank" rel="noopener">Prenota</a></div></div>`]
+];
+const book=document.getElementById('book')!;const leaves=[];
+P.forEach(([f,b],i)=>{const l=document.createElement('div');l.className='leaf';
+ const frontIsCover=f.includes('face front cover');
+ l.innerHTML=(frontIsCover?f:`<div class="face front paper">${f}<span class="shade"></span></div>`)+(b.includes('backcover')?`<div class="face back">${b}</div>`:`<div class="face back paper">${b}<span class="shade"></span></div>`);
+ book.append(l);leaves.push(l)});
+const N=leaves.length, labels=['Copertina','Gli inizi','L\'idea','Il salone','Oggi','Fine'];
+const count=document.getElementById('count'),hint=document.getElementById('hint'),edgeL=document.getElementById('baseL'),edgeR=document.getElementById('baseR');
+const mobile=matchMedia('(max-width:767px)');
+function render(p){ // p from 0 to N
+ const pw=parseFloat(getComputedStyle(book).width)/2, m=mobile.matches;
+ const E=leaves.map((l,i)=>{const t=Math.min(1,Math.max(0,p-i));return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2});
+ leaves.forEach((l,i)=>{const e=E[i],lift=Math.sin(e*Math.PI);
+  // stack depth: no z-fighting between resting leaves; the turning leaf lifts off the block
+  const rest=e>.5?(i+1)*.8:(N-i)*.8;
+  l.style.transform=`translateZ(${rest+lift*36}px) rotateY(${-180*e}deg)`;
+  l.style.zIndex=e>.5?i+1:N-i;
+  const fs=l.querySelector('.face.front .shade'),bs=l.querySelector('.face.back .shade');
+  // self shading while turning + shadow cast on the pages underneath
+  // the right page under a turning leaf darkens near the spine, and the left page above which a leaf lands
+  if(fs)fs.style.opacity=Math.max(lift*.9,(e<.5&&i>0)?Math.sin(E[i-1]*Math.PI)*.75:0);
+  if(bs)bs.style.opacity=Math.max(lift*.9,(e>=.5&&i+1<N&&E[i+1]>0&&E[i+1]<1)?Math.sin(E[i+1]*Math.PI)*.75:0);
+ });
+ let x; const sm=v=>v*v*(3-2*v);
+ {x=p<1?-.5+.5*sm(p):(p>N-1?sm(p-(N-1))*.5:0)}
+ book.style.transform=`translateX(${x*pw}px) rotateX(${8-6*Math.min(1,p)}deg)`;
+ edgeL.style.opacity=p>.5?1:0;edgeR.style.opacity=p<N-.5?1:0;
+ count.textContent=labels[Math.min(labels.length-1,Math.round(p))];
+ hint.style.opacity=p>.15?0:1;
+}
+render(0);
+if(!reduced)gsap.from('#float',{y:80,rotateX:24,opacity:0,duration:1.6,ease:'expo.out',delay:.15});
+document.getElementById('scroller').style.height=(N*110+100)+'vh';
+const st={p:0};
+ScrollTrigger.create({trigger:'#scroller',start:'top top',end:'bottom bottom',scrub:reduced?true:1.4,
+ onUpdate:s=>gsap.to(st,{p:s.progress*N,duration:reduced?0:.9,ease:'power3.out',overwrite:true,onUpdate:()=>render(st.p)})});
+addEventListener('resize',()=>render(st.p));
+// mobile: tap a page to read it full size
+const zoom=document.getElementById('zoom'),sheet=document.getElementById('sheet');
+const closeZ=()=>{zoom.classList.remove('on');window.lenis&&lenis.start()};
+document.getElementById('zx').onclick=closeZ;zoom.addEventListener('click',e=>{if(e.target===zoom)closeZ()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeZ()});
+function openZ(face){const c=face.cloneNode(true);c.classList.remove('face','front','back');c.style.cssText='position:absolute;inset:0';sheet.className='sheet '+(face.classList.contains('paper')?'paper':'');sheet.innerHTML='';sheet.append(c);zoom.classList.add('on');window.lenis&&lenis.stop()}
+// tap the right half / left half to jump one page (small effort, like Apple)
+book.addEventListener('click',e=>{if(e.target.closest('a'))return;
+ if(mobile.matches){const r0=book.getBoundingClientRect(),right=e.clientX>r0.left+r0.width/2;const n=Math.round(st.p);let leaf,face;if(right&&n<N){leaf=leaves[n];face=leaf.querySelector('.face.front')}else if(!right&&n>0){leaf=leaves[n-1];face=leaf.querySelector('.face.back')}if(face){openZ(face);return}}
+const r=book.getBoundingClientRect();const dir=(e.clientX>r.left+r.width/2)?1:-1;
+ const sc=document.getElementById('scroller');const tgt=Math.round(st.p)+dir;const y=sc.offsetTop+(Math.max(0,Math.min(N,tgt))/N)*(sc.offsetHeight-innerHeight);
+ window.lenis?lenis.scrollTo(y,{duration:1.2}):scrollTo({top:y,behavior:'smooth'})});
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const sc=document.getElementById('scroller');const tgt=Math.round(st.p)+(e.key==='ArrowRight'?1:-1);const y=sc.offsetTop+(Math.max(0,Math.min(N,tgt))/N)*(sc.offsetHeight-innerHeight);window.lenis?lenis.scrollTo(y,{duration:1.2}):scrollTo(0,y)}});
+
+</script>

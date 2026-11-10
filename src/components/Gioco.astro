@@ -1,0 +1,66 @@
+---
+// Kit 14: Play Strong layout: lettered marker, giant headline left, copy right, wide game preview in a
+// cream-bordered frame with glass chips, 3D figurine and a giant stat. Geometric chevron texture (ref).
+// "Coming soon": no fake play button.
+import Img from './Img.astro';
+import { wa, waText } from '../data/business';
+const notify = wa(waText.info('il gioco Glamood, avvisami quando esce'));
+---
+<div class="sx-gioco">
+<section class="gioco has-bgref" id="gioco" aria-labelledby="gioco-t"><div class="bgref r-geometrico"></div>
+  <div class="in">
+    <p class="marker"><b>E</b>Il gioco</p>
+    <div class="top">
+      <h2 id="gioco-t">Corri sul bancone<span class="gb" data-bubble="presto!" data-style="bounce" data-seed="4" style="--bc:#B8935A"></span></h2>
+      <div><p>Prossimamente: corri sul bancone del salone mentre aspetti il tuo turno. Un piccolo gioco 2D, la mascotte salta gli spuntoni e schiva le forbici volanti. Si gioca dal telefono, in pausa caffè.</p><a class="btn-pop" href={notify} target="_blank" rel="noopener" style="margin-top:20px">Avvisami quando esce</a></div>
+    </div>
+    <div class="media">
+      <div class="screen"><Img src="post-social/gioco-anteprima" alt="Anteprima del gioco: la mascotte corre sul bancone del salone" sizes="(min-width:900px) 60vw, 92vw" />
+        <div class="ui"><span>Prossimamente<small>anteprima grafica</small></span><span>Tocca per saltare<small>un dito, tutto qui</small></span><a href={notify} target="_blank" rel="noopener" aria-label="Avvisami quando esce"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div></div>
+      <div class="side">
+        <div class="fig"><Img src="mascotte/mascotte-figurina-3D" alt="Figurina 3D della mascotte" sizes="(min-width:900px) 30vw, 46vw" /></div>
+        <div class="num"><span class="stat">1</span><div><p>Un solo comando:<br />salta.</p><ul><li>Spuntoni a onde</li><li>Forbici volanti</li><li>Punteggio sul bancone</li></ul></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<style is:global>
+.sx-gioco{display:contents;
+.gioco{padding:clamp(56px,7vw,110px) var(--gutter);background:var(--petrol);color:var(--cream)}
+.in{max-width:1320px;margin:0 auto}
+.marker{color:#cfe3e1}
+.top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,4vw,60px);align-items:end;margin-top:clamp(26px,3vw,40px)}
+.top h2{font:900 clamp(48px,7vw,120px)/.86 var(--f-display);text-transform:uppercase;letter-spacing:-.035em;color:var(--cream);text-shadow:0 .05em 0 #08393E}
+.top h2 .gb{display:inline-grid;font-size:.55em;margin-left:.25em;vertical-align:middle;text-shadow:none;letter-spacing:-.04em}
+.top p{color:#d9ebe8;max-width:44ch}
+.media{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(30px,4vw,56px);align-items:start}
+.screen{position:relative;border-radius:22px;overflow:hidden;background:#08393E;border:5px solid var(--cream);aspect-ratio:16/9;box-shadow:0 40px 70px -40px rgb(10 74 80 / .8)}
+.screen img{width:100%;height:100%;object-fit:cover}
+.screen .ui{position:absolute;left:14px;right:14px;bottom:14px;display:flex;gap:10px;flex-wrap:wrap}
+.screen .ui span{background:rgb(8 57 62 / .7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--cream);border-radius:12px;padding:12px 16px;font:800 clamp(14px,1.2vw,18px)/1.1 var(--f-display);text-transform:uppercase}
+.screen .ui span small{display:block;font:500 11px/1.2 var(--f-body);text-transform:none;opacity:.8;margin-top:4px}
+.screen .ui a{margin-left:auto;width:52px;height:52px;border-radius:12px;background:var(--cream);display:grid;place-items:center;color:var(--petrol)}
+.side{display:grid;grid-template-rows:auto 1fr;gap:clamp(14px,2vw,24px)}
+.side .fig{position:relative;border-radius:22px;overflow:hidden;background:var(--petrol);border:5px solid var(--cream)}
+.side .fig img{width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 60%}
+.side .num{display:flex;align-items:center;gap:16px;padding:6px 4px}
+.side .num .stat{font-size:clamp(70px,7vw,120px)}
+.side .num p{font:600 15px/1.3 var(--f-body);color:var(--cream)}
+.side ul{list-style:none;margin-top:8px;font-size:14px;color:#cfe3e1}
+.side ul li::before{content:"• ";color:var(--brass)}
+@media (max-width:900px){.top,.media{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr;grid-template-rows:none;align-items:center}}
+@media (max-width:560px){.side{grid-template-columns:1fr}.screen .ui span:nth-child(2){display:none}}
+}
+</style>
+<script>
+import { reduced } from '../scripts/core.js';
+import { gsap } from '../scripts/motion.js';
+import { bubbles } from '../scripts/bubble.js';
+bubbles(document.getElementById('gioco')!);
+if (!reduced) {
+  gsap.from('#gioco .top h2', { scrollTrigger: { trigger: '#gioco', start: 'top 75%' }, yPercent: 40, opacity: 0, duration: 1.2, ease: 'expo.out' });
+  gsap.from('#gioco .screen', { scrollTrigger: { trigger: '#gioco .media', start: 'top 85%' }, clipPath: 'inset(20% 20% 20% 20% round 22px)', duration: 1.4, ease: 'expo.out' });
+  gsap.from('#gioco .side>*', { scrollTrigger: { trigger: '#gioco .media', start: 'top 80%' }, y: 60, opacity: 0, stagger: 0.12, duration: 1, ease: 'expo.out' });
+}
+</script>

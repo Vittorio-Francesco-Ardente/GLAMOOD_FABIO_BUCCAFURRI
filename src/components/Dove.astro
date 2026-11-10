@@ -1,0 +1,70 @@
+---
+// Kit 15: Margarita "Bar map": huge title, storefront photo in a sliding pattern frame (no map iframe,
+// no cookies), venue rows with dashed separators, pop buttons. Apple Maps on Apple devices, Google elsewhere.
+import Img from './Img.astro';
+import { business, wa, hoursLabel } from '../data/business';
+---
+<div class="sx-dove">
+<div class="page-frame">
+<section class="panel panel-cream panel-outline dove" id="dove" aria-labelledby="dove-t">
+  <div class="in">
+    <p class="marker" style="color:var(--ink-soft);margin-bottom:22px"><b>F</b>Dove siamo</p>
+    <h2 id="dove-t">Ci trovi<br />in via Sbarre</h2>
+    <p class="sub">{business.city}, zona Sbarre. Tocca la foto per aprire le indicazioni.</p>
+    <div class="grid">
+      <a class="map photo-map" href="https://www.google.com/maps/search/?api=1&query=Glamood%2C%20Via%20Sbarre%20Centrali%20282%2FG%2C%20Reggio%20Calabria" data-maps id="dove-map" aria-label={`Apri le indicazioni per Glamood, ${business.address}`}>
+        <span class="pm-fr"><Img src="salone/salone-12-facciata" alt={`L'ingresso del salone Glamood in ${business.address}`} sizes="(min-width:900px) 50vw, 92vw" /></span>
+        <span class="pin-l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z" fill="#0F6870"/><circle cx="12" cy="10" r="2.6" fill="#F4EFE8"/></svg>Glamood<small>{business.address}</small></span>
+        <span class="pm-go">Apri in Mappe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+      </a>
+      <div class="info">
+        <h3>{business.city}</h3>
+        <div class="rows">
+          <div class="row"><b>Indirizzo</b><span>{business.address}, {business.city}</span><span class="t">Sbarre</span></div>
+          <div class="row"><b>Orari</b><span>{hoursLabel()}</span><span class="t">Orari</span></div>
+          <div class="row"><b>Prenotazioni</b><span>Su WhatsApp, Fabio risponde appena ha le mani libere</span><span class="t">WhatsApp</span></div>
+        </div>
+        <div class="btns"><a class="btn-pop fill" href="https://www.google.com/maps/search/?api=1&query=Glamood%2C%20Via%20Sbarre%20Centrali%20282%2FG%2C%20Reggio%20Calabria" data-maps>Portami da Glamood</a><a class="btn-pop" href={wa()} target="_blank" rel="noopener">Prenota</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<style is:global>
+.sx-dove{display:contents;
+.dove{padding:clamp(50px,7vw,110px) var(--gutter)}
+.in{max-width:1320px;margin:0 auto}
+.dove h2{font:900 clamp(56px,10vw,170px)/.84 var(--f-display);text-transform:uppercase;letter-spacing:-.04em;color:var(--petrol)}
+.dove .sub{color:var(--ink-soft);margin-top:12px}
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,4vw,70px);margin-top:clamp(30px,4vw,56px);align-items:center}
+.pin-l{background:var(--cream);border:3px solid var(--petrol);border-radius:14px;padding:8px 12px;font:900 14px/1.1 var(--f-display);text-transform:uppercase;color:var(--petrol);box-shadow:4px 5px 0 var(--petrol);white-space:nowrap}
+.pin-l small{display:block;font:500 12px var(--f-body);text-transform:none;color:var(--ink-soft)}
+.info h3{font:900 clamp(26px,2.4vw,38px)/1 var(--f-display);color:var(--petrol);text-transform:uppercase}
+.rows{margin-top:22px;border-left:3px solid var(--petrol);padding-left:22px}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center;padding:18px 0;border-bottom:1.5px dashed #c9d6d4}
+.row b{font:800 16px var(--f-display);text-transform:uppercase;color:var(--ink)}
+.row span{color:var(--ink-soft);font-size:15px;grid-column:1}
+.row .t{grid-column:2;grid-row:1/span 2;font:800 15px var(--f-display);color:var(--petrol-light);text-transform:uppercase;text-align:right}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.photo-map{aspect-ratio:4/5;display:block;position:relative;border-radius:30px;text-decoration:none}
+.pm-fr{position:absolute;inset:0;border-radius:30px;padding:clamp(12px,1.2vw,18px);background:#12757E url("/img/pattern/ref/agrumi.webp") 0 0/240px;box-shadow:0 0 0 5px #F4EFE8,0 40px 70px -34px rgb(0 0 0 / .6);animation:pan 30s linear infinite;--pan-x:240px;--pan-y:-434px}
+.pm-fr img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:18px;box-shadow:0 0 0 4px #F4EFE8;transition:transform 1s var(--ease-out)}
+.photo-map:hover .pm-fr img{transform:scale(1.03)}
+.photo-map .pin-l{position:absolute;left:clamp(20px,2.4vw,34px);top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center}
+.photo-map .pin-l svg{grid-row:1/span 2;width:28px;height:28px}
+.pm-go{position:absolute;right:clamp(20px,2.4vw,34px);bottom:clamp(20px,2.4vw,34px);display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:999px;background:#0F6870;color:#F4EFE8;font:800 13px var(--f-display);letter-spacing:.08em;text-transform:uppercase;box-shadow:0 10px 20px -10px rgb(0 0 0 / .6)}
+.pm-go svg{width:16px}
+}
+</style>
+<script>
+import { reduced, wireMaps } from '../scripts/core.js';
+import { gsap } from '../scripts/motion.js';
+wireMaps(document.getElementById('dove')!);
+if (!reduced) {
+  gsap.from('#dove h2', { scrollTrigger: { trigger: '#dove', start: 'top 75%' }, yPercent: 30, opacity: 0, duration: 1.2, ease: 'expo.out' });
+  gsap.from('#dove .pin-l', { scrollTrigger: { trigger: '#dove-map', start: 'top 70%' }, scale: 0.6, opacity: 0, delay: 0.8, duration: 0.6, ease: 'back.out(2)' });
+  gsap.from('#dove .row', { scrollTrigger: { trigger: '#dove .rows', start: 'top 80%' }, x: 40, opacity: 0, stagger: 0.1, duration: 0.9, ease: 'expo.out' });
+}
+</script>

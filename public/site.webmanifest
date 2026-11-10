@@ -1,0 +1,14 @@
+{
+  "name": "Glamood, barber shop a Reggio Calabria",
+  "short_name": "Glamood",
+  "lang": "it",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F6870",
+  "theme_color": "#0F6870",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

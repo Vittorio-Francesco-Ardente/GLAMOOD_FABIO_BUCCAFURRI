@@ -1,0 +1,1456 @@
+{
+ "attrezzi/01_forbici_aperte": {
+  "w": 2400,
+  "h": 853,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "attrezzi/02_forbici_chiuse": {
+  "w": 2400,
+  "h": 1375,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "attrezzi/03_rasoio_mano_libera": {
+  "w": 2400,
+  "h": 1047,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "attrezzi/05_pettine_petrolio": {
+  "w": 2400,
+  "h": 516,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "attrezzi/06_forbici_spazzola_incrociate": {
+  "w": 2400,
+  "h": 2244,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "attrezzi/07_ciocca_capelli": {
+  "w": 2400,
+  "h": 2282,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "attrezzi/08_nastro_onde_3d": {
+  "w": 2400,
+  "h": 966,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/G-rasoio-crema-trasparente": {
+  "w": 1736,
+  "h": 1764,
+  "widths": [
+   480,
+   960,
+   1600,
+   1736
+  ]
+ },
+ "brand/G-rasoio-petrolio-trasparente": {
+  "w": 1736,
+  "h": 1764,
+  "widths": [
+   480,
+   960,
+   1600,
+   1736
+  ]
+ },
+ "brand/banner-facebook-HD": {
+  "w": 2400,
+  "h": 913,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/biglietto-fronte": {
+  "w": 2400,
+  "h": 1553,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/biglietto-retro": {
+  "w": 2400,
+  "h": 1550,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/faccia-petrolio-trasparente": {
+  "w": 1993,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1993
+  ]
+ },
+ "brand/logo-firma-bianco-trasparente": {
+  "w": 1559,
+  "h": 386,
+  "widths": [
+   480,
+   960,
+   1559
+  ]
+ },
+ "brand/logo-glamood-con-firma-bianco-su-nero": {
+  "w": 2400,
+  "h": 1003,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/logo-glamood-con-firma-petrolio": {
+  "w": 2400,
+  "h": 1351,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/onde-bande-maglia-1920": {
+  "w": 2400,
+  "h": 1350,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/onde-piatte-petrolio-bianco": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/onde-tono-su-tono": {
+  "w": 2400,
+  "h": 1553,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "brand/wordmark-petrolio-trasparente": {
+  "w": 2400,
+  "h": 406,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "hero/fabio-cartoon": {
+  "w": 1800,
+  "h": 2396,
+  "widths": [
+   480,
+   960,
+   1600,
+   1800
+  ]
+ },
+ "hero/fabio-foto": {
+  "w": 1800,
+  "h": 2396,
+  "widths": [
+   480,
+   960,
+   1600,
+   1800
+  ]
+ },
+ "mascotte/mascotte-espressioni": {
+  "w": 2400,
+  "h": 1600,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "mascotte/mascotte-figurina-3D": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "mascotte/mascotte-indica-listino-crop": {
+  "w": 1270,
+  "h": 2356,
+  "widths": [
+   480,
+   960,
+   1270
+  ]
+ },
+ "mascotte/mascotte-indica-listino-occhiolino": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "mascotte/mascotte-indica-listino": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "mascotte/mascotte-master": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "mascotte/mascotte-turnaround": {
+  "w": 2400,
+  "h": 1600,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "mascotte/pose/confuso": {
+  "w": 1152,
+  "h": 1996,
+  "widths": [
+   480,
+   960,
+   1152
+  ]
+ },
+ "mascotte/pose/forbici": {
+  "w": 1224,
+  "h": 2000,
+  "widths": [
+   480,
+   960,
+   1224
+  ]
+ },
+ "mascotte/pose/pollice": {
+  "w": 1052,
+  "h": 1908,
+  "widths": [
+   480,
+   960,
+   1052
+  ]
+ },
+ "mascotte/pose/saluto": {
+  "w": 1084,
+  "h": 1912,
+  "widths": [
+   480,
+   960,
+   1084
+  ]
+ },
+ "mascotte/pose/shh": {
+  "w": 1012,
+  "h": 2000,
+  "widths": [
+   480,
+   960,
+   1012
+  ]
+ },
+ "mascotte/pose/spunta-mani": {
+  "w": 1464,
+  "h": 1184,
+  "widths": [
+   480,
+   960,
+   1464
+  ]
+ },
+ "mascotte/pose/spunta": {
+  "w": 1464,
+  "h": 1184,
+  "widths": [
+   480,
+   960,
+   1464
+  ]
+ },
+ "merch/merch-maglia-G-peperoncino-gruccia": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "merch/merch-maglia-G-peperoncino-piegata": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "merch/merch-maglia-GLAMOOD-bolle-cubo": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "merch/merch-maglia-retro-faccia-arco": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "pattern/labirinto-petrolio": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/liquido-pale": {
+  "w": 640,
+  "h": 640,
+  "widths": [
+   480,
+   640
+  ]
+ },
+ "pattern/liquido-petrolio": {
+  "w": 640,
+  "h": 640,
+  "widths": [
+   480,
+   640
+  ]
+ },
+ "pattern/meandri-crema": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/meandri-petrolio": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/meandri-tono": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/onde-diagonali-crema": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/onde-diagonali": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/organico-petrolio-crema": {
+  "w": 640,
+  "h": 640,
+  "widths": [
+   480,
+   640
+  ]
+ },
+ "pattern/organico-tono-su-tono": {
+  "w": 640,
+  "h": 640,
+  "widths": [
+   480,
+   640
+  ]
+ },
+ "pattern/ref/agrumi-tono": {
+  "w": 1326,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1326
+  ]
+ },
+ "pattern/ref/agrumi": {
+  "w": 1326,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1326
+  ]
+ },
+ "pattern/ref/blob-grana": {
+  "w": 1579,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1579
+  ]
+ },
+ "pattern/ref/corallo-tono": {
+  "w": 1578,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1578
+  ]
+ },
+ "pattern/ref/corallo": {
+  "w": 1578,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1578
+  ]
+ },
+ "pattern/ref/geometrico": {
+  "w": 1326,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1326
+  ]
+ },
+ "pattern/ref/liquido-crema": {
+  "w": 1579,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1579
+  ]
+ },
+ "pattern/ref/liquido-tono": {
+  "w": 1579,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1579
+  ]
+ },
+ "pattern/ref/macchie-tono": {
+  "w": 1890,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1890
+  ]
+ },
+ "pattern/ref/macchie": {
+  "w": 1890,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1890
+  ]
+ },
+ "pattern/ref/onde-strati": {
+  "w": 1083,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1083
+  ]
+ },
+ "pattern/ref/rilievo": {
+  "w": 1584,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1584
+  ]
+ },
+ "pattern/ref/swirl-retro": {
+  "w": 1327,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1327
+  ]
+ },
+ "pattern/ref/swirl-teal": {
+  "w": 1781,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1781
+  ]
+ },
+ "pattern/rilievo-petrolio": {
+  "w": 640,
+  "h": 640,
+  "widths": [
+   480,
+   640
+  ]
+ },
+ "pattern/swirl-petrolio": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/vermicelli-crema": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/vermicelli-petrolio": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "pattern/vermicelli-tono": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
+ "piante/09_monstera_grande-back": {
+  "w": 1200,
+  "h": 1304,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/09_monstera_grande-front": {
+  "w": 1200,
+  "h": 1304,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/09_monstera_grande": {
+  "w": 2218,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2218
+  ]
+ },
+ "piante/10_monstera_piccola-back": {
+  "w": 1200,
+  "h": 1302,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/10_monstera_piccola-front": {
+  "w": 1200,
+  "h": 1302,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/10_monstera_piccola": {
+  "w": 2222,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2222
+  ]
+ },
+ "piante/11_pampas_secca-back": {
+  "w": 1200,
+  "h": 2165,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/11_pampas_secca-front": {
+  "w": 1200,
+  "h": 2165,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/11_pampas_secca": {
+  "w": 1387,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1387
+  ]
+ },
+ "piante/12_palma_areca-back": {
+  "w": 1200,
+  "h": 1639,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/12_palma_areca-front": {
+  "w": 1200,
+  "h": 1639,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/12_palma_areca": {
+  "w": 1791,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1791
+  ]
+ },
+ "piante/13_pothos_variegato-back": {
+  "w": 1200,
+  "h": 2404,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/13_pothos_variegato-front": {
+  "w": 1200,
+  "h": 2404,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/13_pothos_variegato": {
+  "w": 1263,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1263
+  ]
+ },
+ "piante/14_pianta_vaso_bianco-back": {
+  "w": 1200,
+  "h": 1330,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/14_pianta_vaso_bianco-front": {
+  "w": 1200,
+  "h": 1330,
+  "widths": [
+   480,
+   960,
+   1200
+  ]
+ },
+ "piante/14_pianta_vaso_bianco": {
+  "w": 2177,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2177
+  ]
+ },
+ "post-social/gioco-anteprima": {
+  "w": 2400,
+  "h": 1351,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "post-social/post-3D-forbici-piedistallo": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "post-social/post-3D-maglia-faccia-monstera": {
+  "w": 1921,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1921
+  ]
+ },
+ "prodotti/barattoli-4-insieme": {
+  "w": 2400,
+  "h": 1600,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "prodotti/barattolo-balsamo-barba": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "prodotti/barattolo-cera": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "prodotti/barattolo-crema-styling": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "prodotti/barattolo-pomata": {
+  "w": 2400,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "qr/QR-GLAMOOD-VERO-CREMA-NON-MODIFICARE": {
+  "w": 1600,
+  "h": 1600,
+  "widths": [
+   480,
+   960,
+   1600
+  ]
+ },
+ "qr/QR-GLAMOOD-VERO-NON-MODIFICARE": {
+  "w": 1600,
+  "h": 1600,
+  "widths": [
+   480,
+   960,
+   1600
+  ]
+ },
+ "salone/fabio-collage-servizio": {
+  "w": 1800,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1600,
+   1800
+  ]
+ },
+ "salone/salone-01": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-02": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-03": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-04": {
+  "w": 2400,
+  "h": 1351,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "salone/salone-05": {
+  "w": 2400,
+  "h": 1350,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "salone/salone-06": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-07": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-08": {
+  "w": 2400,
+  "h": 1350,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "salone/salone-09": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-10": {
+  "w": 1350,
+  "h": 2400,
+  "widths": [
+   480,
+   960,
+   1350
+  ]
+ },
+ "salone/salone-11-titolare": {
+  "w": 2400,
+  "h": 1350,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
+ "salone/salone-12-facciata": {
+  "w": 1726,
+  "h": 2300,
+  "widths": [
+   480,
+   960,
+   1600,
+   1726
+  ]
+ },
+ "salone/salone-13-insegna-oro-lavaggio": {
+  "w": 1536,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1536
+  ]
+ },
+ "salone/salone-14-insegna-oro-frontale": {
+  "w": 1536,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1536
+  ]
+ },
+ "sticker/forbici": {
+  "w": 1500,
+  "h": 1196,
+  "widths": [
+   480,
+   960,
+   1500
+  ]
+ },
+ "sticker/freccia": {
+  "w": 1280,
+  "h": 936,
+  "widths": [
+   480,
+   960,
+   1280
+  ]
+ },
+ "sticker/mano-indica": {
+  "w": 1464,
+  "h": 1008,
+  "widths": [
+   480,
+   960,
+   1464
+  ]
+ },
+ "sticker/mascotte-occhiolino": {
+  "w": 1276,
+  "h": 1448,
+  "widths": [
+   480,
+   960,
+   1276
+  ]
+ },
+ "sticker/nastro": {
+  "w": 1348,
+  "h": 528,
+  "widths": [
+   480,
+   960,
+   1348
+  ]
+ },
+ "sticker/pettine": {
+  "w": 1488,
+  "h": 1064,
+  "widths": [
+   480,
+   960,
+   1488
+  ]
+ },
+ "sticker/piu-richiesto": {
+  "w": 1536,
+  "h": 1552,
+  "widths": [
+   480,
+   960,
+   1536
+  ]
+ },
+ "sticker/scintilla": {
+  "w": 1040,
+  "h": 1060,
+  "widths": [
+   480,
+   960,
+   1040
+  ]
+ },
+ "sticker/top": {
+  "w": 1484,
+  "h": 1496,
+  "widths": [
+   480,
+   960,
+   1484
+  ]
+ },
+ "storia/caffe": {
+  "w": 428,
+  "h": 820,
+  "widths": [
+   428
+  ]
+ },
+ "storia/forbici": {
+  "w": 386,
+  "h": 820,
+  "widths": [
+   386
+  ]
+ },
+ "storia/ritratto": {
+  "w": 832,
+  "h": 2052,
+  "widths": [
+   480,
+   832
+  ]
+ },
+ "storia/scopa": {
+  "w": 424,
+  "h": 820,
+  "widths": [
+   424
+  ]
+ },
+ "storia/selfie": {
+  "w": 436,
+  "h": 820,
+  "widths": [
+   436
+  ]
+ },
+ "storia/sonno": {
+  "w": 428,
+  "h": 560,
+  "widths": [
+   428
+  ]
+ },
+ "storia/sorriso": {
+  "w": 430,
+  "h": 550,
+  "widths": [
+   430
+  ]
+ },
+ "storia/stupito": {
+  "w": 428,
+  "h": 560,
+  "widths": [
+   428
+  ]
+ },
+ "storia/taglio": {
+  "w": 430,
+  "h": 820,
+  "widths": [
+   430
+  ]
+ },
+ "tagli/barba-scolpita-foto": {
+  "w": 535,
+  "h": 916,
+  "widths": [
+   480,
+   535
+  ]
+ },
+ "tagli/barba-scolpita-front": {
+  "w": 617,
+  "h": 1498,
+  "widths": [
+   480,
+   617
+  ]
+ },
+ "tagli/barba-scolpita-lato": {
+  "w": 420,
+  "h": 1019,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/barba-scolpita-spine": {
+  "w": 186,
+  "h": 1498,
+  "widths": [
+   186
+  ]
+ },
+ "tagli/buzz-cut-foto": {
+  "w": 524,
+  "h": 833,
+  "widths": [
+   480,
+   524
+  ]
+ },
+ "tagli/buzz-cut-front": {
+  "w": 616,
+  "h": 1401,
+  "widths": [
+   480,
+   616
+  ]
+ },
+ "tagli/buzz-cut-lato": {
+  "w": 420,
+  "h": 955,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/buzz-cut-spine": {
+  "w": 166,
+  "h": 1400,
+  "widths": [
+   166
+  ]
+ },
+ "tagli/crop-texturizzato-foto": {
+  "w": 450,
+  "h": 896,
+  "widths": [
+   450
+  ]
+ },
+ "tagli/crop-texturizzato-front": {
+  "w": 624,
+  "h": 1467,
+  "widths": [
+   480,
+   624
+  ]
+ },
+ "tagli/crop-texturizzato-lato": {
+  "w": 420,
+  "h": 987,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/crop-texturizzato-spine": {
+  "w": 180,
+  "h": 1468,
+  "widths": [
+   180
+  ]
+ },
+ "tagli/pompadour-foto": {
+  "w": 447,
+  "h": 713,
+  "widths": [
+   447
+  ]
+ },
+ "tagli/pompadour-front": {
+  "w": 662,
+  "h": 1201,
+  "widths": [
+   480,
+   662
+  ]
+ },
+ "tagli/pompadour-lato": {
+  "w": 420,
+  "h": 761,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/pompadour-spine": {
+  "w": 167,
+  "h": 1202,
+  "widths": [
+   167
+  ]
+ },
+ "tagli/sfumato-alto-foto": {
+  "w": 508,
+  "h": 847,
+  "widths": [
+   480,
+   508
+  ]
+ },
+ "tagli/sfumato-alto-front": {
+  "w": 591,
+  "h": 1463,
+  "widths": [
+   480,
+   591
+  ]
+ },
+ "tagli/sfumato-alto-lato": {
+  "w": 420,
+  "h": 1039,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/sfumato-alto-spine": {
+  "w": 190,
+  "h": 1463,
+  "widths": [
+   190
+  ]
+ },
+ "tagli/sfumato-basso-foto": {
+  "w": 551,
+  "h": 794,
+  "widths": [
+   480,
+   551
+  ]
+ },
+ "tagli/sfumato-basso-front": {
+  "w": 631,
+  "h": 1324,
+  "widths": [
+   480,
+   631
+  ]
+ },
+ "tagli/sfumato-basso-lato": {
+  "w": 420,
+  "h": 881,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/sfumato-basso-spine": {
+  "w": 173,
+  "h": 1323,
+  "widths": [
+   173
+  ]
+ },
+ "tagli/side-part-foto": {
+  "w": 553,
+  "h": 767,
+  "widths": [
+   480,
+   553
+  ]
+ },
+ "tagli/side-part-front": {
+  "w": 672,
+  "h": 1207,
+  "widths": [
+   480,
+   672
+  ]
+ },
+ "tagli/side-part-lato": {
+  "w": 420,
+  "h": 754,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/side-part-spine": {
+  "w": 168,
+  "h": 1205,
+  "widths": [
+   168
+  ]
+ },
+ "tagli/taglio-a-forbice-foto": {
+  "w": 549,
+  "h": 980,
+  "widths": [
+   480,
+   549
+  ]
+ },
+ "tagli/taglio-a-forbice-front": {
+  "w": 636,
+  "h": 1607,
+  "widths": [
+   480,
+   636
+  ]
+ },
+ "tagli/taglio-a-forbice-lato": {
+  "w": 420,
+  "h": 1061,
+  "widths": [
+   420
+  ]
+ },
+ "tagli/taglio-a-forbice-spine": {
+  "w": 177,
+  "h": 1605,
+  "widths": [
+   177
+  ]
+ },
+ "texture/carta-grana": {
+  "w": 881,
+  "h": 887,
+  "widths": [
+   480,
+   881
+  ]
+ },
+ "texture/tela-copertina": {
+  "w": 512,
+  "h": 512,
+  "widths": [
+   480,
+   512
+  ]
+ }
+}

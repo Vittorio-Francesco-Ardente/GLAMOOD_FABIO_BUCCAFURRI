@@ -1,0 +1,45 @@
+---
+// Kit 03, "scissors cut": the scissors travel along the centre line, then the screen splits open
+// and the price list is revealed underneath (transition Tagli -> Listino, docs/03-motion.md).
+import { img } from '../data/img';
+---
+<div class="sx-cut">
+<div class="cut-wrap" id="cw" aria-hidden="true"><div class="cut">
+  <div class="b"><div><p class="kicker">Listino</p><p class="h2">Prezzi chiari</p></div></div>
+  <div class="a half top" id="ht"><div><p class="kicker">Hai scelto?</p><p class="h2">Ora i prezzi</p></div></div>
+  <div class="a half bot" id="hb"><div><p class="kicker">Hai scelto?</p><p class="h2">Ora i prezzi</p></div></div>
+  <div class="line" id="cl"></div>
+  <img class="scis" id="cs" {...img('attrezzi/01_forbici_aperte', 960)} alt="" loading="lazy" />
+</div></div>
+</div>
+<style is:global>
+.sx-cut{display:contents;
+.cut-wrap{height:200vh;position:relative;background:var(--petrol)}
+.cut{position:sticky;top:0;height:100svh;overflow:hidden}
+.cut .a,.cut .b{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+.cut .a{background:var(--cream)}
+.cut .a .h2{color:var(--petrol)}
+.cut .b{background:var(--petrol) url("/img/pattern/ref/liquido-tono.webp") center/cover;color:#fff}
+.cut .b .h2{color:var(--cream)}.cut .b .kicker{color:#cfe3e1}
+.cut .line{position:absolute;left:0;height:2px;background:var(--brass);top:50%;width:0}
+.cut .half.top{clip-path:inset(0 0 50% 0)}.cut .half.bot{clip-path:inset(50% 0 0 0)}
+.cut .scis{position:absolute;top:50%;width:clamp(90px,12vw,170px);height:auto;left:0;transform:translate(-120%,-50%);filter:drop-shadow(0 8px 10px rgb(0 0 0 / .2))}
+@media (prefers-reduced-motion:reduce){.cut-wrap{display:none}}
+}
+</style>
+<script>
+import { reduced } from '../scripts/core.js';
+import { ScrollTrigger } from '../scripts/motion.js';
+if (!reduced) {
+  const $ = (id: string) => document.getElementById(id)!;
+  const cl = $('cl'), cs = $('cs') as HTMLImageElement, ht = $('ht'), hb = $('hb');
+  const set = (p: number) => {
+    const k = Math.min(1, Math.max(0, (p - 0.12) / 0.7)); const a = Math.min(1, k / 0.55), b = Math.max(0, (k - 0.55) / 0.45); const w = innerWidth;
+    cl.style.width = a * 100 + '%'; cl.style.opacity = String(1 - b);
+    cs.style.transform = `translate(${a * (w + 40) - cs.offsetWidth}px,-50%) rotate(${Math.sin(a * 40) * 6}deg)`;
+    ht.style.transform = `translateY(${-b * 52}%)`; hb.style.transform = `translateY(${b * 52}%)`;
+  };
+  set(0);
+  ScrollTrigger.create({ trigger: '#cw', start: 'top bottom', end: 'bottom top', onUpdate: (s) => set(s.progress) });
+}
+</script>

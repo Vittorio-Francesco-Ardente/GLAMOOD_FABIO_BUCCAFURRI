@@ -1,0 +1,202 @@
+---
+// Kit 06: petrol world with living waves and grain, giant cream GLAMOOD (outlined OO) behind Fabio,
+// plants and tools framing the scene, rotating stamp, wave band at the bottom.
+// Cursor (or finger) cloud reveals the cartoon twin exactly over the photo; accessible toggle.
+import images from '../data/images.json';
+import { wa, hoursLabel, business } from '../data/business';
+import { img } from '../data/img';
+const im = images as Record<string, { w: number; h: number; widths: number[] }>;
+const hero = im['hero/fabio-foto'];
+const set = (n: string, f: string) => im[n].widths.map((w) => `/img/${n}-${w}.${f} ${w}w`).join(', ');
+const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
+---
+<div class="sx-hero">
+<section class="hero" id="home" aria-label="Glamood, barber shop a Reggio Calabria">
+  <div class="bg" id="hero-bg"></div><div class="vig"></div><div class="paper"></div>
+  <div class="stage">
+    <div class="giant" id="giant" aria-hidden="true">Glam<span class="o">oo</span>d</div>
+    <img class="decor" id="h-dp" {...img("piante/12_palma_areca")} alt="" style="z-index:3;width:clamp(160px,20vw,360px);left:-6%;top:calc(var(--hdr) - 4%);transform:rotate(-24deg)" />
+    <img class="decor" id="h-dm" {...img("piante/09_monstera_grande")} alt="" style="z-index:5;width:clamp(170px,26vw,460px);right:-8%;bottom:4%;transform:rotate(-18deg)" />
+    <img class="decor" id="h-dm2" {...img("piante/10_monstera_piccola-front")} alt="" style="z-index:6;width:clamp(120px,16vw,300px);left:-5%;bottom:-3%;transform:rotate(30deg)" />
+    <img class="decor" id="h-dk" {...img("piante/11_pampas_secca")} alt="" style="z-index:3;width:clamp(70px,8vw,150px);right:4%;top:calc(var(--hdr) + 2%);transform:rotate(14deg)" />
+    <img class="decor" id="h-ds" {...img("attrezzi/01_forbici_aperte")} alt="" style="z-index:5;width:clamp(120px,15vw,260px);left:calc(50% - var(--fh)*.66);top:calc(var(--hdr) + var(--fh)*.36);transform:rotate(-30deg)" />
+    <div class="fig" id="fig">
+      <picture>
+        <source type="image/avif" srcset={set('hero/fabio-foto', 'avif')} sizes={sizes} />
+        <source type="image/webp" srcset={set('hero/fabio-foto', 'webp')} sizes={sizes} />
+        <img id="photo" src="/img/hero/fabio-foto.webp" alt="Fabio Buccafurri con il grembiule Glamood inquadra chi guarda con le dita, forbici e spazzola in mano" width={hero.w} height={hero.h} fetchpriority="high" decoding="async" />
+      </picture>
+      <canvas id="cv" aria-hidden="true"></canvas>
+    </div>
+    <div class="stamp" aria-hidden="true"><svg viewBox="0 0 200 200"><defs><path id="hero-stamp-c" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs><text><textPath href="#hero-stamp-c" textLength="458" lengthAdjust="spacing">Glamood · Barber shop · Reggio Calabria ·</textPath></text></svg><img {...img("brand/G-rasoio-petrolio-trasparente",480)} alt="" /></div>
+    <button class="toggle" id="tg" aria-pressed="false"><i></i><span>Versione cartoon</span></button>
+    <div class="card"><b>Ci trovi qui</b><span>{business.address}</span><span>Orari: {business.hours ? hoursLabel() : 'chiedi su WhatsApp'}</span></div>
+  </div>
+  <div class="band" aria-hidden="true"></div>
+  <div class="copy">
+    <span class="kick">Barber shop a Reggio Calabria</span>
+    <h1>Ti prendo <em>le misure.</em></h1>
+    <p>Taglio, barba e cura in un salone pensato nei dettagli, in via Sbarre Centrali.</p>
+    <div class="ctas"><a class="btn btn-cream mag" href={wa()} target="_blank" rel="noopener"><span>Prenota</span></a><a class="btn btn-ghost" href="#listino">Vedi il listino</a></div>
+  </div>
+</section>
+</div>
+
+<style is:global>
+.sx-hero{display:contents;
+.hero{--hdr:88px;position:relative;min-height:100svh;overflow:hidden;isolation:isolate;color:#fff;background:var(--petrol)}
+.hero .bg{position:absolute;inset:0;z-index:0}
+.hero .vig{position:absolute;inset:0;z-index:1;background:radial-gradient(120% 80% at 50% 40%,transparent 40%,rgb(6 40 44 / .55));pointer-events:none}
+.hero .paper{position:absolute;inset:0;z-index:1;background:url("/img/texture/carta-grana.webp") center/520px;mix-blend-mode:soft-light;opacity:.55;pointer-events:none}
+.giant{position:absolute;left:50%;translate:-50% 0;top:var(--gy);z-index:2;font-family:var(--f-display);font-weight:900;font-size:var(--gfs,16vw);text-transform:uppercase;letter-spacing:-.045em;line-height:.8;white-space:nowrap;user-select:none;will-change:transform;
+ color:#F4EFE8;text-shadow:0 .03em 0 #0A4A50,0 .06em 0 #08393E,0 .18em .25em rgb(0 0 0 / .25)}
+.giant .o{color:transparent;-webkit-text-stroke:.018em #F4EFE8;text-shadow:none}
+.fig{position:absolute;left:50%;bottom:0;translate:-50% 0;z-index:4;height:var(--fh);aspect-ratio:1087/1447;touch-action:pan-y;filter:drop-shadow(0 30px 40px rgb(0 0 0 / .35))}
+.fig img,.fig canvas{position:absolute;inset:0;width:100%;height:100%}
+.fig canvas{pointer-events:none;inset:-14% -14%;width:128%;height:128%;max-width:none}
+.decor{position:absolute;pointer-events:none;will-change:transform;height:auto}
+.band{position:absolute;left:0;right:0;bottom:-1px;z-index:6;height:clamp(54px,7vw,96px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;filter:drop-shadow(0 -10px 20px rgb(0 0 0 / .2))}
+.copy{position:relative;z-index:7}
+.kick{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#F4EFE8}
+.kick::before{content:"";width:28px;height:2px;background:var(--brass)}
+.copy h1{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.03em;line-height:.92;font-size:clamp(36px,1.2rem + 3vw,70px);max-width:11ch;margin-top:12px}
+.copy h1 em{font-style:normal;color:var(--petrol);background:#F4EFE8;padding:0 .12em;border-radius:.12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.copy p{margin-top:14px;color:#dbe9e7;max-width:34ch}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.btn-cream{background:#F4EFE8;color:var(--petrol);box-shadow:0 10px 0 -4px #08393E}
+.btn-cream:hover{transform:translateY(-2px)}
+.btn-ghost{border:1.5px solid rgb(244 239 232 / .7);color:#F4EFE8}
+.btn-ghost:hover{background:rgb(244 239 232 / .12)}
+.mag span{display:inline-block;transition:transform .35s var(--ease-out)}
+.card{position:absolute;z-index:7;background:#F4EFE8;color:var(--ink);border-radius:var(--r-card);padding:16px 18px;width:250px;box-shadow:0 20px 40px -18px rgb(0 0 0 / .5);transform:rotate(2.5deg)}
+.card::before{content:"";position:absolute;top:-12px;left:50%;translate:-50% 0;width:70px;height:24px;background:rgb(255 255 255 / .55);transform:rotate(-4deg);box-shadow:0 2px 4px rgb(0 0 0 / .1)}
+.card b{display:block;font-family:var(--f-display);font-weight:900;text-transform:uppercase;color:var(--petrol);font-size:20px}
+.card span{display:block;font-size:14px;margin-top:4px}
+.stamp{position:absolute;z-index:7;width:var(--st);aspect-ratio:1;border-radius:50%;background:#F4EFE8;box-shadow:0 14px 30px -12px rgb(0 0 0 / .5)}
+.stamp svg{width:100%;height:100%;animation:spin 18s linear infinite}
+.stamp img{position:absolute;inset:27%;width:46%;height:46%;object-fit:contain}
+.stamp text{font:800 13px var(--f-display);letter-spacing:0;fill:var(--petrol);text-transform:uppercase}
+.toggle{position:absolute;z-index:8;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:rgb(10 74 80 / .7);border:1px solid rgb(244 239 232 / .4);color:#F4EFE8;font-size:14px;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.toggle i{width:22px;height:22px;border-radius:50%;background:url("/img/brand/faccia-petrolio-trasparente-480.webp") center/80% no-repeat #F4EFE8}
+/* MOBILE */
+.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(60svh,125vw);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.stage{position:relative;grid-row:1}
+.copy{grid-row:2;padding:18px var(--gutter) 0;margin-top:-10svh;background:linear-gradient(transparent,var(--petrol) 22%)}
+.card{display:none}
+.stamp{display:none}
+.toggle{right:12px;top:auto;bottom:calc(100% - var(--hdr) - var(--fh) + 14svh)}
+#h-ds{display:none}
+/* TABLET */
+@media (min-width:768px){
+ .hero{--gy:calc(var(--hdr) + 3vh);--fh:min(64svh,90vw);--st:120px;padding-bottom:120px}
+ .copy{display:block;margin-top:-6svh;background:linear-gradient(transparent,var(--petrol) 30%)}
+ .copy>*{max-width:640px}
+ .card{display:block;right:5%;top:calc(var(--hdr) + var(--fh)*.62)}
+ .stamp{display:block;right:6%;top:calc(var(--hdr) + 18vh)}
+ .toggle{left:auto;right:5%;top:calc(var(--hdr) + 8px);bottom:auto}
+}
+/* DESKTOP */
+@media (min-width:1200px){
+ .hero{--gy:calc(var(--hdr) + 5vh);--fh:min(88svh,90vw);--st:150px;display:block;padding:0}
+ .stage{position:absolute;inset:0}
+ .copy{position:absolute;left:var(--gutter);top:46%;width:min(30vw,440px);margin:0;padding:0;background:none}
+ .card{right:calc(var(--gutter) + 20px);top:54%}
+ .stamp{right:calc(var(--gutter) + 230px);top:auto;bottom:14%}
+ .toggle{left:auto;right:var(--gutter);top:calc(var(--hdr) + 8px)}
+ #h-ds{display:block;left:calc(50% + var(--fh)*.22)!important;top:calc(var(--hdr) + var(--fh)*.08)!important;transform:rotate(30deg) scaleX(-1)!important}
+}
+@media (min-width:1200px) and (max-height:780px){.copy{top:40%}.hero{--fh:86svh}}
+}
+</style>
+
+<script>
+import { reduced, touch } from '../scripts/core.js';
+import { mountWaves } from '../scripts/wavefield.js';
+const $ = (id: string) => document.getElementById(id)!;
+mountWaves($('hero-bg'), { crest: 0.12, speed: 0.6, dark: '#0A4A50', mid: '#0F6870', light: '#14808A' });
+
+// ---- cloud reveal of the cartoon twin (kit 06, verbatim logic) ----
+const fig = $('fig'), cv = $('cv') as HTMLCanvasElement, ctx = cv.getContext('2d')!;
+const photoEl = $('photo') as HTMLImageElement;
+const cart = new Image();
+const loadCartoon = () => { if (!cart.src) cart.src = (photoEl.currentSrc || photoEl.src).replace('fabio-foto', 'fabio-cartoon'); };
+const mask = document.createElement('canvas'), mx = mask.getContext('2d')!, rim = document.createElement('canvas'), rx = rim.getContext('2d')!;
+let W = 0, H = 0, dpr = 1, pts: any[] = [], pace = 0, last: any = null, full = 0, active = false;
+function size() { const r = cv.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, touch ? 1.5 : 2); W = cv.width = mask.width = rim.width = Math.round(r.width * dpr); H = cv.height = mask.height = rim.height = Math.round(r.height * dpr); }
+size(); new ResizeObserver(() => { size(); wake(); }).observe(fig);
+function add(x: number, y: number) {
+  loadCartoon();
+  const r = cv.getBoundingClientRect(); const p: any = { x: (x - r.left) * dpr, y: (y - r.top) * dpr, t: performance.now() };
+  if (last) { const d = Math.hypot(p.x - last.x, p.y - last.y); if (d < W * 0.03) return; p.px0 = last.x; p.py0 = last.y; pace = Math.min(1, pace * 0.8 + (d / W) * 5); } last = p;
+  const n = 8; p.puffs = []; const rot = Math.random() * 6.283;
+  for (let i = 0; i < n; i++) { const a = rot + (i / n) * 6.283; p.puffs.push({ dx: Math.cos(a) * 0.62, dy: Math.sin(a) * 0.5, r: 0.36 + (i % 2 ? 0.06 : 0.14) }); }
+  p.puffs.push({ dx: 0, dy: 0, r: 0.72 });
+  pts.push(p); if (pts.length > 40) pts.shift(); wake();
+}
+const PAD = 0.14 / 1.28; const LIFE = 1100;
+const ease = (k: number) => (k < 0.25 ? (1 - Math.pow(1 - k / 0.25, 3)) * 1.08 : k < 0.7 ? 1.08 - ((k - 0.25) / 0.45) * 0.08 : 1 - (k - 0.7) / 0.3);
+function puffs(c: CanvasRenderingContext2D, grow: number) {
+  const now = performance.now(); const base = W * 0.2;
+  for (const p of pts) { const k = (now - p.t) / LIFE; if (k >= 1) continue; const s = Math.max(0, ease(k)) * base;
+    for (const f of p.puffs) { c.beginPath(); c.arc(p.x + f.dx * s, p.y + f.dy * s, f.r * s + grow, 0, 6.283); c.fill(); } }
+}
+const tmp = document.createElement('canvas'); const tx = tmp.getContext('2d')!;
+function draw() {
+  const now = performance.now(); pts = pts.filter((p) => now - p.t < LIFE);
+  mx.clearRect(0, 0, W, H); rx.clearRect(0, 0, W, H); mx.fillStyle = '#000'; rx.fillStyle = '#F4EFE8';
+  puffs(mx, 0); puffs(rx, 6 * dpr);
+  if (full > 0) { mx.globalAlpha = full; mx.fillRect(W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)); mx.globalAlpha = 1; }
+  const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
+  ctx.clearRect(0, 0, W, H);
+  if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
+  ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.drawImage(mask, 0, 0); ctx.restore();
+  rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
+  if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
+  if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; } else tx.clearRect(0, 0, W, H);
+  tx.globalCompositeOperation = 'source-over'; tx.drawImage(mask, 0, 0); tx.globalCompositeOperation = 'source-in';
+  if (cart.complete && cart.naturalWidth) tx.drawImage(cart, ...R);
+  ctx.drawImage(tmp, 0, 0);
+  active = pts.length > 0 || (full > 0 && full < 1); if (active) requestAnimationFrame(draw);
+}
+function wake() { if (!active) { active = true; requestAnimationFrame(draw); } }
+if (!reduced) {
+  fig.addEventListener('pointermove', (e) => add(e.clientX, e.clientY));
+  fig.addEventListener('pointerdown', (e) => add(e.clientX, e.clientY));
+  // idle auto-sweep once after load (teaches the effect), after the intro if it plays
+  const sweep = () => { loadCartoon(); const go = () => { const r = fig.getBoundingClientRect(); const t0 = performance.now();
+    const sw = (t: number) => { const k = (t - t0) / 1200; if (k > 1) return; add(r.left + r.width * (0.2 + 0.6 * k), r.top + r.height * (0.32 + 0.1 * Math.sin(k * 6))); requestAnimationFrame(sw); }; requestAnimationFrame(sw); };
+    if (cart.complete && cart.naturalWidth) go(); else cart.onload = go; };
+  const delay = document.documentElement.classList.contains('loading') ? 3400 : 900;
+  const ready = () => setTimeout(sweep, delay);
+  if (photoEl.complete) ready(); else photoEl.addEventListener('load', ready, { once: true });
+}
+const tg = $('tg');
+tg.addEventListener('click', () => {
+  loadCartoon();
+  const on = tg.getAttribute('aria-pressed') !== 'true'; tg.setAttribute('aria-pressed', String(on)); tg.querySelector('span')!.textContent = on ? 'Versione foto' : 'Versione cartoon';
+  const run = () => { const t0 = performance.now(), from = full, to = on ? 1 : 0; const f = (t: number) => { const k = Math.min(1, (t - t0) / (reduced ? 1 : 420)); full = from + (to - from) * k; wake(); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); };
+  if (cart.complete && cart.naturalWidth) run(); else cart.addEventListener('load', run, { once: true });
+});
+
+// ---- giant word fitted to 96% of the viewport width ----
+const giant = $('giant');
+const fit = () => { giant.style.setProperty('--gfs', '100px'); giant.style.setProperty('--gfs', (100 * innerWidth * 0.96) / giant.scrollWidth + 'px'); };
+document.fonts.ready.then(fit); fit(); addEventListener('resize', fit);
+
+// ---- parallax on pointer and scroll (exit: word slides left, Fabio scales down a little) ----
+const ds: [HTMLElement, number][] = [[$('h-dp'), 0.7], [$('h-dm'), 1.3], [$('h-dm2'), 1.6], [$('h-dk'), 0.5], [$('h-ds'), 1]];
+let px = 0, py = 0, raf = 0;
+function par() { raf = 0; if (reduced) return; const y = Math.min(1, scrollY / innerHeight); if (y >= 1 && scrollY > innerHeight * 1.2) return;
+  giant.style.transform = `translateX(${-y * 10}%)`; fig.style.transform = `scale(${1 - y * 0.06})`; fig.style.transformOrigin = '50% 100%';
+  ds.forEach(([d, k]) => { d.style.translate = `${px * 26 * k}px ${py * 18 * k - y * 120 * k}px`; }); }
+const req = () => { if (!raf) raf = requestAnimationFrame(par); };
+if (!touch) addEventListener('pointermove', (e) => { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; req(); }, { passive: true });
+addEventListener('scroll', req, { passive: true });
+
+// ---- magnetic CTA (kit 03) ----
+if (!touch && !reduced) document.querySelectorAll<HTMLElement>('.mag').forEach((m) => {
+  const s = m.firstElementChild as HTMLElement;
+  m.addEventListener('pointermove', (e) => { const r = m.getBoundingClientRect(); const x = (e.clientX - r.left - r.width / 2) / r.width, y = (e.clientY - r.top - r.height / 2) / r.height; m.style.transform = `translate(${x * 12}px,${y * 10}px)`; s.style.transform = `translate(${x * 6}px,${y * 5}px)`; });
+  m.addEventListener('pointerleave', () => { m.style.transform = ''; s.style.transform = ''; });
+});
+</script>

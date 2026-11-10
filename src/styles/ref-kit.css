@@ -1,0 +1,135 @@
+/* Glamood "reference kit": the visual moves taken 1:1 from Vittorio's Pinterest references,
+   re-skinned in Glamood colours. Each class names its source so production can trace it.  */
+
+/* PLATES MEAL / BRAMBLEROOT: the page lives inside a rounded framed panel on a deep backdrop */
+.page-frame{position:relative;background:var(--petrol-darker) url("/img/pattern/ref/liquido-tono.webp") 0 0/900px;padding:clamp(10px,2.4vw,40px);animation:pan 60s linear infinite;--pan-x:900px;--pan-y:-1370px}
+.page-frame.deep{background:var(--petrol-darker) url("/img/pattern/organico-tono-su-tono.webp") center/620px}
+.panel{position:relative;border-radius:clamp(18px,2.4vw,34px);overflow:hidden;isolation:isolate}
+.panel+.panel{margin-top:clamp(10px,2.4vw,40px)}
+.panel-cream{background:var(--cream);color:var(--ink)}
+.panel-petrol{background:var(--petrol);color:var(--cream)}
+.panel-outline{border:clamp(3px,.35vw,5px) solid var(--petrol)}
+
+/* BRAMBLEROOT: outlined display type with a hard offset shadow (cream fill, petrol stroke) */
+.type-pop{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.88;color:var(--petrol);text-wrap:balance}
+.type-pop.on-petrol{color:var(--cream);text-shadow:0 .045em 0 #08393E}
+
+/* PLATES MEAL: second headline line in a contrasting colour with a dark offset (like "TO YOUR DOOR") */
+.type-sub{font-family:var(--f-display);font-weight:900;text-transform:uppercase;color:var(--brass);text-shadow:.05em .05em 0 #08393E}
+
+/* SOLAR POP: a handwritten word laid across the bold headline ("Shines") */
+.script-over{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.04em;line-height:1;color:var(--brass);display:inline-block;transform:none!important}
+
+/* PLATES MEAL / BRAMBLEROOT: checker band, here petrol + cream squares */
+.checker{height:clamp(28px,3.2vw,48px);background:
+  conic-gradient(var(--petrol) 25%,var(--cream) 0 50%,var(--petrol) 0 75%,var(--cream) 0) 0 0/clamp(56px,6.4vw,96px) 100%}
+.checker.deep{background:conic-gradient(var(--petrol-darker) 25%,var(--cream) 0 50%,var(--petrol-darker) 0 75%,var(--cream) 0) 0 0/clamp(56px,6.4vw,96px) 100%}
+
+/* BRAMBLEROOT: outlined pill button with offset shadow that presses in */
+.btn-pop{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:52px;padding:0 1.6em;border-radius:999px;
+  background:var(--cream);color:var(--petrol);border:3px solid var(--petrol);box-shadow:4px 5px 0 var(--petrol);
+  font:900 clamp(15px,1.1vw,18px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;text-decoration:none;transition:transform .18s var(--ease-out),box-shadow .18s var(--ease-out)}
+.btn-pop:hover{transform:translate(-1px,-1px);box-shadow:6px 7px 0 var(--petrol)}
+.btn-pop:active{transform:translate(4px,5px);box-shadow:0 0 0 var(--petrol)}
+.btn-pop.fill{background:var(--petrol);color:var(--cream);border-color:#08393E;box-shadow:4px 5px 0 #08393E}
+
+/* PLATES MEAL: round "Quick order" badge with rotating ring text */
+.badge-round{position:relative;display:grid;place-items:center;width:clamp(92px,9vw,140px);aspect-ratio:1;border-radius:50%;
+  background:var(--petrol);color:var(--cream);border:3px solid var(--cream);box-shadow:0 14px 30px -12px rgb(0 0 0 / .5);
+  font:800 clamp(12px,.95vw,15px)/1.1 var(--f-display);text-transform:uppercase;text-align:center;text-decoration:none}
+.badge-round svg{position:absolute;inset:6%;animation:spin 16s linear infinite}
+.badge-round text{font:700 8.6px var(--f-body);letter-spacing:.24em;fill:var(--cream);text-transform:uppercase}
+@keyframes spin{to{transform:rotate(1turn)}}
+
+/* PLATES MEAL: tiny tag chips */
+.chip{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;border:1.5px solid currentColor;font:600 12px/1 var(--f-body);letter-spacing:.04em;opacity:.9}
+
+/* PLAY STRONG: lettered section marker on a hairline */
+.marker{display:flex;align-items:center;gap:14px;font:600 13px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase}
+.marker b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1.5px solid currentColor;font:700 13px/1 var(--f-display)}
+.marker::after{content:"";flex:1;height:1px;background:currentColor;opacity:.3}
+
+/* PLAY STRONG: giant stat number */
+.stat{font:900 clamp(80px,10vw,170px)/.8 var(--f-display);letter-spacing:-.05em;color:var(--brass)}
+
+/* BRAMBLEROOT: peel-corner TOP sticker that sits on product cards */
+.peel{position:absolute;width:clamp(64px,6vw,96px);aspect-ratio:1;object-fit:contain;transform:rotate(10deg);filter:drop-shadow(0 6px 6px rgb(0 0 0 / .18))}
+
+/* BRAMBLEROOT: handwritten note with drawn arrow */
+.hand-note{font:800 clamp(15px,1.2vw,19px)/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.04em;color:var(--petrol);display:inline-block}
+
+/* SOLAR POP: soft organic blob decorations */
+.blob-deco{position:absolute;pointer-events:none;z-index:0}
+
+/* MARGARITA: tropical leaves framing the panel edges */
+.leaf-frame{position:absolute;pointer-events:none;z-index:4;filter:drop-shadow(0 18px 24px rgb(0 0 0 / .28))}
+
+/* MOVING MOTIFS: tileable Glamood patterns that drift slowly (one tile per loop, seamless). Paused for reduced motion.
+   Usage: class="motif m-vermicelli" (set --tile to the rendered tile size). */
+.motif{background-repeat:repeat;background-size:var(--tile,520px);animation:motif-drift var(--dur,90s) linear infinite}
+@keyframes motif-drift{from{background-position:0 0}to{background-position:var(--tile,520px) calc(var(--tile,520px)*-1)}}
+.motif.slow{--dur:160s}
+@media (prefers-reduced-motion:reduce){.motif{animation:none}}
+.m-diagonali{background-image:url("/img/pattern/onde-diagonali.webp");--tile:620px}
+.m-diagonali-crema{background-image:url("/img/pattern/onde-diagonali-crema.webp");--tile:620px}
+.m-vermicelli{background-image:url("/img/pattern/vermicelli-petrolio.webp");--tile:560px}
+.m-vermicelli-tono{background-image:url("/img/pattern/vermicelli-tono.webp");--tile:560px}
+.m-vermicelli-crema{background-image:url("/img/pattern/vermicelli-crema.webp");--tile:560px}
+.m-labirinto{background-image:url("/img/pattern/labirinto-petrolio.webp");--tile:460px}
+.m-swirl{background-image:url("/img/pattern/swirl-petrolio.webp");--tile:900px}
+.m-organico{background-image:url("/img/pattern/organico-tono-su-tono.webp");--tile:560px}
+.m-liquido{background-image:url("/img/pattern/liquido-petrolio.webp");--tile:800px}
+.m-rilievo{background-image:url("/img/pattern/rilievo-petrolio.webp");--tile:700px}
+/* a motif layer behind content */
+.motif-layer{position:absolute;inset:0;z-index:0;pointer-events:none}
+
+/* REFERENCE TEXTURES (recoloured 1:1 from Vittorio's references). Full-bleed layer that floats slowly. */
+.bgref{position:absolute;inset:-8%;z-index:0;pointer-events:none;background-size:cover;background-position:center;will-change:transform;animation:refdrift 22s ease-in-out infinite alternate}
+.bgref.alt{animation-duration:28s;animation-direction:alternate-reverse}
+@keyframes refdrift{0%{transform:translate3d(-5%,-3%,0) scale(1.04) rotate(-1.2deg)}50%{transform:translate3d(3%,3%,0) scale(1.1) rotate(.8deg)}100%{transform:translate3d(5%,-2%,0) scale(1.06) rotate(1.5deg)}}
+@media (prefers-reduced-motion:reduce){.bgref{animation:none}}
+.r-blob{background-image:url("/img/pattern/ref/blob-grana.webp")}
+.r-corallo{background-image:url("/img/pattern/ref/corallo.webp")}
+.r-corallo-tono{background-image:url("/img/pattern/ref/corallo-tono.webp")}
+.r-geometrico{background-image:url("/img/pattern/ref/geometrico.webp")}
+.r-liquido-crema{background-image:url("/img/pattern/ref/liquido-crema.webp")}
+.r-liquido-tono{background-image:url("/img/pattern/ref/liquido-tono.webp")}
+.r-macchie{background-image:url("/img/pattern/ref/macchie.webp")}
+.r-macchie-tono{background-image:url("/img/pattern/ref/macchie-tono.webp")}
+.r-strati{background-image:url("/img/pattern/ref/onde-strati.webp")}
+.r-rilievo{background-image:url("/img/pattern/ref/rilievo.webp")}
+.r-swirl{background-image:url("/img/pattern/ref/swirl-retro.webp")}
+.has-bgref{position:relative;overflow:hidden;isolation:isolate}
+.has-bgref>*:not(.bgref){position:relative;z-index:1}
+
+/* TITLE RHYTHM: consistent breathing room around every headline (kicker -> title -> subtitle -> body) */
+.marker{margin-bottom:clamp(18px,2.2vw,32px)}
+h2.type-pop,.giant-title,.h2,.big,.title{margin-bottom:clamp(14px,1.8vw,26px)}
+h2+.script-over,.title .script-over{margin-top:.25em}
+.script-over+p,h2+p,.giant-title+p{margin-top:clamp(10px,1.2vw,18px)}
+p+.btn-pop,p+.cta,p+.btns{margin-top:clamp(18px,2vw,28px)}
+.r-swirl-teal{background-image:url("/img/pattern/ref/swirl-teal.webp")}
+.r-agrumi{background-image:url("/img/pattern/ref/agrumi.webp")}
+.r-agrumi-tono{background-image:url("/img/pattern/ref/agrumi-tono.webp")}
+
+/* BUBBLE LETTERING (refs: "expansion", "Kamashek"). Fonts self-hosted in shared/fonts. */
+@font-face{font-family:"Glamood Bubble";src:url("/fonts/bagel-fat-one-latin-400-normal.woff2") format("woff2");font-display:swap}
+@font-face{font-family:"Glamood Bounce";src:url("/fonts/gluten-latin-800-normal.woff2") format("woff2");font-weight:800;font-display:swap}
+.bubble{display:inline-grid;justify-items:center;line-height:.82;pointer-events:auto;user-select:none}
+.bubble .bw{display:flex;align-items:center;justify-content:center;margin-top:-.08em}
+.bubble .bl{display:inline-block;transform:translateY(var(--y)) rotate(var(--r)) scale(var(--s));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.bubble:hover .bl{transform:translateY(calc(var(--y) - .06em)) rotate(calc(var(--r) * -1)) scale(calc(var(--s) * 1.06))}
+@media (prefers-reduced-motion:no-preference){.bubble .bl{animation:bubble-bob 3.2s ease-in-out infinite;animation-delay:calc(var(--d) * -1)}}
+@keyframes bubble-bob{50%{translate:0 -.05em}}
+/* glossy: fat letters with a white highlight inside each one, like inflated vinyl */
+.bubble-gloss{font-family:"Glamood Bubble",var(--f-display);font-weight:400;letter-spacing:-.04em;color:var(--bc,var(--petrol));text-transform:lowercase}
+.bubble-gloss .bl{background:radial-gradient(ellipse 13% 9% at 30% 26%,#fff 0 60%,transparent 64%),radial-gradient(ellipse 5% 4% at 44% 18%,#fff 0 60%,transparent 64%),var(--bc,var(--petrol));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 .04em 0 rgb(0 0 0 / .18))}
+/* bouncy: rounded hand-cut letters packed in a cluster */
+.bubble-bounce{font-family:"Glamood Bounce",var(--f-display);font-weight:800;letter-spacing:-.06em;color:var(--bc,var(--petrol));text-transform:lowercase}
+.bubble-bounce .bw{margin-top:-.16em}
+.bubble-deco{position:absolute;z-index:3}
+
+/* moving pattern surfaces (frames, page frame): the pattern slides slowly and seamlessly */
+.pan{animation:pan 40s linear infinite}
+@keyframes pan{to{background-position:var(--pan-x,240px) var(--pan-y,-240px)}}
+@media (prefers-reduced-motion:reduce){.pan{animation:none}}

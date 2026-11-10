@@ -1,0 +1,72 @@
+---
+// Kit 07: bands slide in from alternating sides while scrolling and lock into a striped banner
+// with the only marquee of the page (speed follows scroll velocity, reverses on scroll up).
+// Then the manifesto: words light up one by one on cream.
+import { img } from '../data/img';
+const planks: [string, number, number?][] = [['p', -1, 1], ['c', 1], ['o', -1], ['c', 1, -1], ['p', -1], ['c', 1], ['p', -1, 1], ['o', 1], ['c', -1]];
+const txt = ['Taglio', 'Barba', 'Rasatura', 'Stile', 'Reggio Calabria'];
+const run = Array(4).fill(txt.map((t) => `<span>${t} <i class="sep" aria-hidden="true"></i></span>`).join('')).join('');
+---
+<div class="sx-fasce">
+<section class="build" id="build" aria-label="Taglio, barba, rasatura, stile, Reggio Calabria">
+  <div class="pin">
+    {planks.map(([c, d, mq]) => (
+      <div class={`plank ${c}`} data-d={d}>{mq && <div class="mq" data-mq={mq} aria-hidden="true" set:html={run} />}</div>
+    ))}
+  </div>
+</section>
+<section class="manifesto grainy" id="man">
+  <div class="top-edge"></div>
+  <img class="leaf" {...img("piante/13_pothos_variegato")} alt="" loading="lazy" style="width:clamp(100px,13vw,210px);right:3%;bottom:-20px;z-index:0" />
+  <div class="wrap"><p class="kicker" style="color:var(--ink-soft)">Il nostro modo</p>
+    <p class="big" id="mf">Qui il taglio si fa con calma. Si parla, si sceglie insieme, si esce diversi.</p></div>
+</section>
+</div>
+
+<style is:global>
+.sx-fasce{display:contents;
+.build{position:relative;height:300vh;background:var(--petrol)}
+.pin{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;align-content:center}
+.plank{position:relative;height:clamp(40px,8.6vh,92px);will-change:transform;overflow:hidden}
+.plank.p{background:var(--petrol-deep)}.plank.c{background:var(--cream)}
+.plank.o{background:repeating-linear-gradient(115deg,var(--petrol-light) 0 22px,var(--petrol) 22px 44px)}
+.plank .mq{position:absolute;inset:0;display:flex;align-items:center;white-space:nowrap;font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(26px,5.6vh,64px);will-change:transform}
+.plank.p .mq{color:var(--cream)}.plank.c .mq{color:var(--petrol)}
+.plank .mq span{display:inline-flex;align-items:center;gap:.5em;padding-right:.5em}
+.plank .mq .sep{display:inline-block;width:.32em;height:.32em;background:var(--brass);transform:rotate(45deg);margin:0 .35em}
+.manifesto{position:relative;background:var(--cream);padding:clamp(80px,14vw,180px) var(--gutter);overflow:hidden}
+.manifesto .wrap{padding-right:clamp(0px,18vw,300px)}
+.manifesto p.big{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.03em;line-height:.98;font-size:clamp(34px,1rem + 4.6vw,96px);color:var(--petrol);max-width:15ch;margin-top:14px}
+.manifesto .w{opacity:.14;transition:opacity .2s}
+.manifesto .w.on{opacity:1}
+.manifesto .leaf{position:absolute;pointer-events:none;height:auto}
+@media (max-width:1199px){.manifesto .leaf{display:none}}
+.top-edge{position:absolute;left:0;right:0;top:-1px;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
+@media (prefers-reduced-motion:reduce){.build{height:auto}.pin{position:relative;height:auto;padding:40px 0}}
+}
+</style>
+
+<script>
+import { reduced } from '../scripts/core.js';
+import { gsap, ScrollTrigger } from '../scripts/motion.js';
+import { img } from '../data/img';
+const planks = [...document.querySelectorAll<HTMLElement>('#build .plank')];
+if (!reduced) {
+  const tl = gsap.timeline({ scrollTrigger: { trigger: '#build', start: 'top 85%', end: '+=210%', scrub: 1.2 } });
+  planks.forEach((p, i) => tl.fromTo(p, { xPercent: 110 * +p.dataset.d! }, { xPercent: 0, ease: 'power3.out', duration: 1 }, i * 0.18));
+  // marquee speed reacts to scroll velocity and reverses on scroll up; runs only while the band is on screen
+  const mqs = [...document.querySelectorAll<HTMLElement>('#build [data-mq]')];
+  let x = 0, dir = 1, on = false;
+  ScrollTrigger.create({ trigger: '#build', start: 'top bottom', end: 'bottom top', onToggle: (s) => (on = s.isActive), onUpdate: (s) => (dir = s.direction) });
+  gsap.ticker.add((_t, dt) => {
+    if (!on) return;
+    const v = Math.abs((window as any).lenis ? (window as any).lenis.velocity : 0); x += (0.04 + v * 0.02) * dt * dir;
+    mqs.forEach((m) => { const w = m.scrollWidth / 4; m.style.transform = `translateX(${-((((x * +m.dataset.mq!) % w) + w) % w)}px)`; });
+  });
+  // manifesto words light up one by one
+  const mf = document.getElementById('mf')!; const words = mf.textContent!.split(' ');
+  mf.setAttribute('aria-label', mf.textContent!); mf.innerHTML = words.map((w) => `<span class="w" aria-hidden="true">${w}</span>`).join(' ');
+  const ws = [...mf.querySelectorAll('.w')];
+  ScrollTrigger.create({ trigger: '#man', start: 'top 75%', end: 'bottom 70%', scrub: true, onUpdate: (s) => { const n = Math.round(s.progress * ws.length * 1.15); ws.forEach((w, i) => w.classList.toggle('on', i < n)); } });
+}
+</script>

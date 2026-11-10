@@ -1,0 +1,240 @@
+---
+// Kit 09: VHS-shelf carousel (Vasari reference). Real textured sleeves (generated from the ASSET-GEN zips)
+// stand spine-out on a petrol ledge; the active one turns in 3D to show its cover. Drag, arrows, wheel,
+// keyboard; the caption slides through a mask; the cover opens into a full-screen sheet with WhatsApp booking.
+import { CUTS, LAB } from '../data/haircuts';
+import { wa, waText } from '../data/business';
+const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
+---
+<div class="sx-tagli">
+<section class="tagli" id="tagli" aria-roledescription="carosello" aria-labelledby="tagli-t">
+  <div class="head"><h2 class="giant-title" id="tagli-t">I tag<span>li</span></h2><p class="hint">Tocca la scatola per aprirla</p></div>
+  <div class="shelf" id="shelf" tabindex="0" aria-label="Scaffale dei tagli. Usa le frecce per scorrere, Invio per aprire"><i class="probe" id="probe"></i><div class="stage" id="tg-stage"></div><div class="ledge"></div></div>
+  <div class="cap" aria-live="polite"><button class="arr" id="tg-prev" aria-label="Taglio precedente"><svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 1L1 5l4 4M1 5h16"/></svg></button><h3 class="m" id="cn"></h3><p class="m" id="cd"></p><button class="arr r" id="tg-next" aria-label="Taglio successivo"><svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13 1l4 4-4 4M17 5H1"/></svg></button></div>
+  <noscript><ul class="nojs">{CUTS.map((c) => <li><b>{c[0]}</b> · {c[3]} · {c[2]}</li>)}</ul></noscript>
+</section>
+<div class="cur" id="tg-cur" aria-hidden="true"><i></i><b></b><em>APRI</em></div>
+<div class="sheet" id="tg-sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" hidden>
+  <button class="x" id="sx" aria-label="Chiudi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="in"><div class="big" id="sbig"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="inkf" x="-50%" y="-50%" width="200%" height="200%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="110" xChannelSelector="R" yChannelSelector="G"/></filter><mask id="inkm" maskUnits="userSpaceOnUse" x="-300" y="-300" width="1000" height="1100"><g filter="url(#inkf)" fill="#fff"><circle cx="130" cy="190" r="0"/><circle cx="290" cy="330" r="0"/><circle cx="220" cy="70" r="0"/><circle cx="80" cy="430" r="0"/><circle cx="340" cy="150" r="0"/><circle cx="230" cy="470" r="0"/><circle cx="200" cy="260" r="0"/></g></mask></defs><rect width="400" height="500" fill="#0F6870"/><image id="simg" width="400" height="500" preserveAspectRatio="xMidYMid slice" mask="url(#inkm)"/></svg></div>
+  <div><p class="kicker">Taglio</p><h2 id="sh-t"></h2><p class="lead" id="sdesc" style="margin-top:16px"></p>
+    <div class="facts"><div><b id="spr"></b>prezzo</div><div><b>1:1</b>consulenza</div><div><b>WA</b>prenoti</div></div>
+    <p><b>A chi sta bene:</b> <span id="ssuit"></span></p><p style="margin-top:8px"><b>Come mantenerlo:</b> <span id="scare"></span></p>
+    <div class="sticky"><a class="btn btn-primary" id="sbook" href={wa(waText.generic)} target="_blank" rel="noopener">Prenota questo taglio</a></div></div></div>
+</div>
+</div>
+<script type="application/json" id="tagli-data" set:html={data}></script>
+
+<style is:global>
+.sx-tagli{display:contents;
+.tagli{position:relative;min-height:0;background:var(--cream);overflow:hidden;padding:clamp(60px,8vw,110px) 0 0;isolation:isolate;--ease:cubic-bezier(.2,.8,.2,1)}
+.tagli::before{content:"";position:absolute;inset:0;z-index:-1;background:url("/img/pattern/ref/liquido-crema.webp") center/cover;animation:refdrift 40s ease-in-out infinite alternate}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;padding:0 var(--gutter)}
+.head .giant-title{font-size:clamp(58px,12vw,200px);color:var(--petrol);margin-bottom:0}
+.head .giant-title span{color:transparent;-webkit-text-stroke:.02em var(--petrol)}
+.head .hint{font:800 clamp(14px,1.3vw,18px)/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;color:var(--petrol);transform:rotate(-3deg);margin-bottom:1.4em}
+.tagli{--H:min(46vh,31vw);--ws:calc(var(--H)*.1355);--d:calc(var(--H)*.52);--ledge:clamp(20px,2.4vw,30px)}
+@media (max-width:767px){.tagli{--H:min(92vw,50svh)}}
+.shelf{position:relative;height:calc(70px + var(--H) + var(--ledge));margin-top:clamp(20px,4vh,50px);perspective:2200px;perspective-origin:50% 50%;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline:none}
+.shelf:focus-visible{outline:3px solid var(--brass);outline-offset:-6px}
+@media (pointer:fine){.shelf{cursor:none}}
+.stage{position:absolute;left:50%;top:calc(70px + var(--H)/2);width:0;height:0;transform-style:preserve-3d}
+.tape{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.face{position:absolute;top:calc(var(--H)/-2);height:var(--H);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--tex) center/100% 100% no-repeat}
+.face::before,.face::after{content:"";position:absolute;inset:0;pointer-events:none;-webkit-mask:var(--tex) center/100% 100% no-repeat;mask:var(--tex) center/100% 100% no-repeat}
+.face::before{background:#000;opacity:var(--shade,0);z-index:5;will-change:opacity}
+.face::after{background:linear-gradient(115deg,rgb(255 255 255 / .12),transparent 30%,transparent 70%,rgb(0 0 0 / .12))}
+.sp{width:calc(var(--H)*var(--sar));left:calc(var(--H)*var(--sar)/-2);transform:translateZ(calc(var(--H)*var(--ar)/2))}
+.cv{width:calc(var(--H)*var(--ar));left:calc(var(--H)*var(--ar)/-2);transform:rotateY(90deg) translateZ(calc(var(--H)*var(--sar)/2))}
+.lt{width:calc(var(--H)*var(--ar));left:calc(var(--H)*var(--ar)/-2);transform:rotateY(-90deg) translateZ(calc(var(--H)*var(--sar)/2))}
+.lb{position:absolute;display:grid;place-items:center;overflow:hidden;font-family:var(--f-display);font-weight:900;text-transform:uppercase;color:#0F6870;line-height:.95;white-space:pre;text-align:center;letter-spacing:.01em;z-index:1}
+.lb>span{display:block;font-size:calc(var(--H)*var(--k,.03))}
+.lb.s>span{writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.03em}
+.lb.q img{position:absolute;left:8%;top:12%;width:84%;height:76%;object-fit:contain}
+.ledge{position:absolute;left:0;right:0;bottom:0;height:var(--ledge);background:linear-gradient(var(--petrol-light),var(--petrol) 30%,var(--petrol-darker));box-shadow:0 -2px 0 rgb(255 255 255 / .25) inset,0 30px 40px -20px rgb(10 74 80 / .6)}
+.ledge::after{content:"";position:absolute;left:0;right:0;top:100%;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
+.probe{position:absolute;visibility:hidden;pointer-events:none;width:1px;height:var(--H)}
+.cap{position:relative;display:grid;justify-items:center;text-align:center;padding:calc(clamp(46px,6vw,90px) + 26px) var(--gutter) clamp(40px,6vw,80px);color:var(--petrol)}
+.cap .m{overflow:hidden;display:grid;justify-items:center}.cap .m>span{grid-area:1/1;display:block}
+.cap h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(26px,3.4vw,48px);letter-spacing:-.02em;line-height:1;padding-bottom:.06em;width:min(92vw,760px)}
+.cap p{margin-top:8px;font:600 11px/1.2 var(--f-body);letter-spacing:.09em;text-transform:uppercase;width:min(92vw,760px)}
+.arr{position:absolute;top:calc(clamp(46px,6vw,90px) + 26px - 6px);left:20px;width:44px;height:44px;display:grid;place-items:center;color:var(--petrol);border-radius:50%;transition:transform .5s var(--ease)}
+.arr.r{left:auto;right:20px}.arr svg{width:18px;height:10px}
+.arr:hover{transform:translateX(-4px)}.arr.r:hover{transform:translateX(4px)}.arr:active{transform:scale(.9)}
+@media (max-width:767px){.arr{left:6px}.arr.r{right:6px}.cap h3{font-size:24px}}
+.nojs{list-style:none;padding:0 var(--gutter) 40px;color:var(--petrol)}
+/* custom cursor (fine pointers only, inside the shelf) */
+.cur{position:fixed;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;pointer-events:none;z-index:100;visibility:hidden;will-change:transform}
+.cur i{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--petrol);transition:transform .5s cubic-bezier(.2,.8,.2,1),background-color .4s,border-color .4s}
+.cur b{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--petrol);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.cur em{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font:800 10px/1.25 var(--f-display);font-style:normal;letter-spacing:.1em;color:#fff;transform:scale(0);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.cur.spine i{transform:scale(.72)}.cur.btn i{transform:scale(.55)}.cur.btn b{transform:scale(0)}
+.cur.open i{transform:scale(1.75);background:var(--petrol);border-color:var(--petrol)}.cur.open b{transform:scale(0)}.cur.open em{transform:scale(1)}
+/* detail sheet */
+.sheet{position:fixed;inset:0;z-index:var(--z-modal);background:var(--cream);overflow:auto;overscroll-behavior:contain;will-change:clip-path,transform}
+.sheet[hidden]{display:none}
+.sheet .x{position:fixed;right:max(16px,env(safe-area-inset-right));top:16px;z-index:2;width:52px;height:52px;border-radius:16px;background:var(--petrol);color:#fff;display:grid;place-items:center}
+.sheet .in{position:relative;display:grid;gap:clamp(24px,4.5vw,72px);padding:clamp(76px,8vw,110px) var(--gutter) 64px;max-width:1240px;margin:auto;min-height:100%;grid-template-columns:1fr;justify-items:center;align-content:center;align-items:center}
+.sheet .in>div:last-child{width:100%;max-width:560px}
+.sheet::before{content:"";position:fixed;inset:-4%;z-index:0;background:url("/img/pattern/ref/liquido-crema.webp") center/cover;animation:refdrift 40s ease-in-out infinite alternate;pointer-events:none}
+.sheet .in,.sheet .x{z-index:1}
+.sheet .big{box-sizing:border-box;border-radius:var(--r-media);overflow:hidden;aspect-ratio:var(--pa,.8);justify-self:center;border:8px solid #fff;box-shadow:var(--shadow);height:min(74svh,700px);width:auto;max-width:100%}
+@media (max-width:899px){.sheet .big{width:100%;height:auto}}
+.sheet .big svg{display:block;width:100%;height:100%}
+.mk{overflow:hidden}.mk>.mi{will-change:transform;padding-bottom:.08em}
+.sheet h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(44px,7vw,110px);line-height:.88;letter-spacing:-.04em;color:var(--petrol)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+.facts div{background:#fff;border-radius:16px;padding:14px;text-align:center}
+.facts b{display:block;font-family:var(--f-display);font-weight:900;font-size:clamp(22px,2.4vw,34px);color:var(--petrol)}
+.sheet .sticky{margin-top:20px}
+@media (min-width:900px){.sheet .in{grid-template-columns:auto minmax(0,560px);justify-content:center;gap:clamp(40px,6vw,96px)}}
+}
+</style>
+
+<script>
+import { reduced, lockScroll, trapTab } from '../scripts/core.js';
+const { CUTS, LAB, wa: WA } = JSON.parse(document.getElementById('tagli-data')!.textContent!) as { CUTS: [string, string, string, string][]; LAB: Record<string, any>; wa: string };
+const T = '/img/tagli/';
+const pos_ = (r: number[]) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
+const RM = reduced, EASE = 'cubic-bezier(.2,.8,.2,1)';
+const $ = (id: string) => document.getElementById(id)!;
+const shelf = $('shelf'), stage = $('tg-stage'), probe = $('probe'), cur = $('tg-cur'), tagliEl = $('tagli');
+const NC = CUTS.length;
+const AR = CUTS.reduce((a, c) => a + LAB[c[1]].ar, 0) / NC, SAR = CUTS.reduce((a, c) => a + LAB[c[1]].sar, 0) / NC;
+let H = 0, ws = 0, d = 0, gap = 0, W = 0;
+const measure = () => { H = probe.offsetHeight; ws = H * SAR; d = H * AR; gap = H * 0.03; W = shelf.clientWidth; };
+measure();
+const COPIES = Math.max(3, Math.ceil((Math.max(innerWidth, screen.width) / (ws + gap) + 8) / NC)), N = NC * COPIES;
+type Tape = { el: HTMLElement; sp: HTMLElement; cv: HTMLElement; lt: HTMLElement; lift: number; hid: boolean };
+const tapes: Tape[] = [];
+const frag = document.createDocumentFragment();
+for (let v = 0; v < N; v++) {
+  const c = CUTS[v % NC], L = LAB[c[1]]; const el = document.createElement('div'); el.className = 'tape'; el.dataset.v = String(v);
+  el.style.setProperty('--ar', L.ar); el.style.setProperty('--sar', L.sar);
+  el.innerHTML = `<div class="face sp" style="--tex:url(${T + c[1]}-spine.webp)"><div class="lb q" style="${pos_(L.sq)}"><img src="/img/brand/G-rasoio-petrolio-trasparente-480.webp" alt="" draggable="false"></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="/img/brand/faccia-petrolio-trasparente-480.webp" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${T + c[1]}-front.webp)"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="Glamood" data-r="bot" style="${pos_(L.bot)}"><span>Glamood</span></div></div><div class="face lt" style="--tex:url(${T + c[1]}-lato.webp)"></div>`;
+  frag.append(el); tapes.push({ el, sp: el.children[0] as HTMLElement, cv: el.children[1] as HTMLElement, lt: el.children[2] as HTMLElement, lift: 0, hid: false });
+}
+stage.append(frag);
+/* fit every text to its label once (size stored as a fraction of H, so it scales with the shelf) */
+function fitLabels() {
+  const probeS = document.createElement('span'); probeS.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font:900 100px/.95 var(--f-display);text-transform:uppercase;letter-spacing:.01em'; tagliEl.append(probeS);
+  const tw = (t: string) => { probeS.textContent = t; return probeS.getBoundingClientRect().width / 100; }; const done: Record<string, any> = {};
+  tapes.forEach((t, v) => { const c = CUTS[v % NC], L = LAB[c[1]]; t.el.querySelectorAll<HTMLElement>('.lb[data-t]').forEach((el) => {
+    const r = el.dataset.r!, txt = el.dataset.t!.toUpperCase(), key = c[1] + r;
+    if (!done[key]) { const rect = r === 'spine' ? L.spine : r === 'top' ? L.top : L.bot; let k;
+      if (r === 'spine') { const lw = rect[2] * H * L.sar, lh = rect[3] * H; probeS.style.letterSpacing = '.03em'; k = Math.min((0.88 * lh) / tw(txt), 0.62 * lw) / H; }
+      else { const lw = rect[2] * H * L.ar, lh = rect[3] * H; probeS.style.letterSpacing = '.01em'; let best = Math.min((0.9 * lw) / tw(txt), 0.62 * lh), text = txt;
+        const words = txt.split(' '); if (words.length > 1) { for (let i = 1; i < words.length; i++) { const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '); const f = Math.min((0.9 * lw) / Math.max(tw(a), tw(b)), 0.4 * lh); if (f > best * 1.15) { best = f; text = a + '\n' + b; } } }
+        k = best / H; done[key + 't'] = text; }
+      done[key] = k; }
+    el.style.setProperty('--k', done[key]); if (done[key + 't']) el.firstElementChild!.textContent = done[key + 't']; }); });
+  probeS.remove();
+}
+Promise.all([document.fonts.load('900 100px Archivo'), document.fonts.ready]).then(fitLabels, fitLabels);
+const sm = (x: number) => x * x * (3 - 2 * x);
+const Bf = (r: number) => (Math.abs(r) < 1 ? (r + Math.sin(Math.PI * r) / Math.PI) / 2 : Math.sign(r) * 0.5);
+const F = (r: number) => r * (ws + gap) + (d - ws + 1.6 * gap) * Bf(r);
+const relr = (v: number, s: number) => { const r = v - s; return r - N * Math.round(r / N); };
+/* ---- state ---- */
+let s = NC * 2, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
+const fine = matchMedia('(pointer:fine)').matches;
+const idx = () => ((Math.round(s) % NC) + NC) % NC;
+/* ---- caption: each change slides through a mask ---- */
+const cn = $('cn'), cd = $('cd');
+function swap(el: HTMLElement, text: string, dir: number) {
+  const old = [...el.children] as any[]; const n = document.createElement('span'); n.textContent = text; el.append(n);
+  if (!old.length) return; const dur = RM ? 1 : 650;
+  n.animate([{ transform: `translateY(${dir * 105}%)` }, { transform: 'translateY(0)' }], { duration: dur, easing: EASE, fill: 'both' });
+  old.forEach((o) => { if (o._l) return; o._l = 1; const cs = getComputedStyle(o).transform; o.animate([{ transform: cs === 'none' ? 'translateY(0)' : cs }, { transform: `translateY(${-dir * 105}%)` }], { duration: dur, easing: EASE, fill: 'both' }).onfinish = () => o.remove(); });
+}
+function setActive(i: number, dir: number) { active = i; const c = CUTS[i]; swap(cn, c[0], dir); swap(cd, `${c[3]}  ·  ${c[2]}`, dir); }
+/* ---- render one frame of geometry ---- */
+function render(dt: number) {
+  const sr = shelf.getBoundingClientRect(), scy = sr.top + 70 + H / 2;
+  onCover = !isOpen && fine && Math.abs(mx - (sr.left + W / 2)) < 0.55 * d && Math.abs(my - scy) < 0.55 * H && Math.abs(Tg - s) < 0.3;
+  const ky = 1 - Math.exp(-7 * dt);
+  const tyT = onCover ? ((mx - (sr.left + W / 2)) / (0.55 * d)) * 9 : ((mx - (sr.left + W / 2)) / W) * 5, txT = onCover ? (-(my - scy) / (H / 2)) * 6 : 0;
+  tiltY += ((fine && inSec ? tyT : 0) - tiltY) * ky; tiltX += ((fine && inSec ? txT : 0) - tiltX) * ky;
+  const kl = 1 - Math.exp(-12 * dt), lim = W / 2 + 1.5 * d;
+  const nsig = s.toFixed(5) + '|' + tiltX.toFixed(3) + '|' + tiltY.toFixed(3) + '|' + hover + '|' + W + '|' + H;
+  const moving = nsig !== sig || tapes.some((t) => Math.abs(t.lift - (hover >= 0 && tapes[hover] === t ? 1 : 0)) > 0.001); sig = nsig;
+  if (moving) for (let v = 0; v < N; v++) {
+    const t = tapes[v], r = relr(v, s), x = F(r);
+    if (Math.abs(x) > lim) { if (!t.hid) { t.el.style.visibility = 'hidden'; t.hid = true; } continue; }
+    if (t.hid) { t.el.style.visibility = ''; t.hid = false; }
+    const tgt = hover === v && Math.abs(r) > 0.5 ? 1 : 0; t.lift += (tgt - t.lift) * (RM ? 1 : kl);
+    const o = sm(Math.max(0, 1 - Math.abs(r)));
+    t.el.style.transform = `translate3d(${x.toFixed(2)}px,${(-o * 0.025 * H - t.lift * 0.045 * H).toFixed(2)}px,${(o * 0.2 * H).toFixed(2)}px) rotateZ(${(-4.5 * o).toFixed(3)}deg) rotateX(${(tiltX * o).toFixed(3)}deg) rotateY(${(-90 * o + tiltY * o).toFixed(3)}deg)`;
+    t.el.style.zIndex = String(Math.round(100 - Math.abs(r) * 4));
+    t.sp.style.setProperty('--shade', (o * 0.55).toFixed(3)); t.lt.style.setProperty('--shade', (0.2 + o * 0.4).toFixed(3)); t.cv.style.setProperty('--shade', ((1 - o) * 0.5).toFixed(3));
+  }
+  if (fine) {
+    cx += (mx - cx) * (1 - Math.exp(-16 * dt)); cy += (my - cy) * (1 - Math.exp(-16 * dt));
+    cur.style.transform = `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0)`;
+    cur.style.visibility = inSec && !isOpen ? 'visible' : 'hidden';
+    const st = onCover ? 'open' : hover >= 0 && Math.abs(relr(hover, s)) > 0.5 ? 'spine' : '';
+    cur.className = 'cur ' + st;
+  }
+}
+let raf = 0;
+function frame(now: number) {
+  raf = 0; const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; if (!vis) return;
+  raf = requestAnimationFrame(frame);
+  if (RM) { s = Tg; sv = 0; } else { const st = drag && drag.moved ? 0.09 : 0.4, om = 2 / st, x = om * dt, e = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x), ch = s - Tg, tmp = (sv + om * ch) * dt; sv = (sv - om * tmp) * e; s = Tg + (ch + tmp) * e; if (Math.abs(Tg - s) < 1e-4 && Math.abs(sv) < 1e-3) { s = Tg; sv = 0; } }
+  if (Math.abs(s) > N * 8) { const sh = N * Math.round(s / N); s -= sh; Tg -= sh; }
+  const i = idx(); if (i !== active) { const dir = Math.sign(Tg - s) || 1; setActive(i, dir); }
+  render(dt);
+}
+const kick = () => { if (!raf && vis) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+measure(); render(0.016); setActive(idx(), 1);
+addEventListener('resize', () => { measure(); render(0.016); });
+// the loop runs only while the shelf is on screen
+new IntersectionObserver((e) => { vis = e[0].isIntersecting; kick(); }, { threshold: 0 }).observe(shelf);
+const goBy = (n: number) => { Tg = Math.round(Tg) + n; kick(); };
+$('tg-prev').addEventListener('click', () => goBy(-1)); $('tg-next').addEventListener('click', () => goBy(1));
+/* ---- input ---- */
+addEventListener('pointermove', (e) => { if (!vis) return; mx = e.clientX; my = e.clientY; if (cx < -9e3) { cx = mx; cy = my; }
+  const r = shelf.getBoundingClientRect(); inSec = e.clientY >= r.top && e.clientY <= r.bottom && e.clientX >= r.left && e.clientX <= r.right; }, { passive: true });
+tagliEl.addEventListener('pointerleave', () => { inSec = false; mx = my = -1e4; });
+tapes.forEach((t, v) => { t.el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hover = v; }); t.el.addEventListener('pointerleave', () => { if (hover === v) hover = -1; }); });
+stage.addEventListener('click', (e) => { if (drag?.moved) return; const el = (e.target as Element).closest<HTMLElement>('.tape'); if (!el) return; const v = +el.dataset.v!, r = relr(v, s); if (Math.abs(r) < 0.5) openSheet(); else { Tg = Math.round(s + r); kick(); } });
+shelf.addEventListener('keydown', (e) => { if (isOpen) return; if (e.key === 'ArrowRight') { e.preventDefault(); goBy(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); goBy(-1); } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(); } });
+shelf.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, T0: Tg, id: e.pointerId, moved: false, lx: e.clientX, lt: performance.now(), v: 0 }; });
+addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x;
+  if (!drag.moved && Math.abs(dx) > 5) { drag.moved = true; try { shelf.setPointerCapture(drag.id); } catch {} }
+  if (!drag.moved) return; const now = performance.now(); drag.v = ((drag.lx - e.clientX) / (ws + gap) / Math.max(1, now - drag.lt)) * 1000 * 0.6 + drag.v * 0.4; drag.lx = e.clientX; drag.lt = now; Tg = drag.T0 - dx / (ws + gap); kick(); });
+const endDrag = () => { if (!drag) return; const m = drag.moved, v = drag.v; if (m) Tg = Math.round(Tg + Math.max(-3, Math.min(3, v * 0.18))); kick(); setTimeout(() => { drag = null; }, 0); };
+addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+let wt = 0; shelf.addEventListener('wheel', (e) => { if (isOpen || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); Tg += (e.deltaX / (ws + gap)) * 0.5; kick(); clearTimeout(wt); wt = window.setTimeout(() => { Tg = Math.round(Tg); kick(); }, 160); }, { passive: false });
+/* ---- detail sheet: grows out of the open cover, text rises from masks, photo bleeds in like ink ---- */
+const sheet = $('tg-sheet'), simg = $('simg'), sx = $('sx');
+const col = sheet.querySelector('.in > div:last-child')!;
+const mis = [...col.children].map((ch) => { const mk = document.createElement('div'); mk.className = 'mk'; const mi = document.createElement('div'); mi.className = 'mi'; ch.replaceWith(mk); mi.append(ch); mk.append(mi); return mi; });
+const blobs = [...sheet.querySelectorAll('#inkm circle')], BD = [0, 120, 220, 300, 360, 420, 180]; let inkRaf = 0;
+function coverRect() { const v = Math.round(s); const t = tapes[((v % N) + N) % N]; return t.cv.getBoundingClientRect(); }
+const clipFor = (r: DOMRect) => `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
+function ink() { cancelAnimationFrame(inkRaf); blobs.forEach((b) => b.setAttribute('r', '0')); const t0 = performance.now() + (RM ? -5000 : 520);
+  const step = (n: number) => { let done = true; blobs.forEach((b, i) => { const p = Math.max(0, Math.min(1, (n - t0 - BD[i]) / 1250)); if (p < 1) done = false; b.setAttribute('r', (520 * (1 - Math.pow(1 - p, 3))).toFixed(1)); }); if (!done) inkRaf = requestAnimationFrame(step); }; inkRaf = requestAnimationFrame(step); }
+function openSheet() {
+  if (isOpen) return; if (Math.abs(Tg - s) > 0.02) { Tg = Math.round(Tg); s = Tg; render(0.016); } else { Tg = s = Math.round(s); }
+  const c = CUTS[idx()]; simg.setAttribute('href', T + c[1] + '-foto.webp');
+  { const pa = LAB[c[1]].pa, vh = 400 / pa; const sv_ = sheet.querySelector('#sbig svg')!; sv_.setAttribute('viewBox', `0 0 400 ${vh}`); simg.setAttribute('height', String(vh)); $('sbig').style.setProperty('--pa', pa); sv_.querySelector('rect')!.setAttribute('height', String(vh)); }
+  $('sh-t').textContent = c[0]; $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
+  $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
+  ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
+  const r = coverRect(); isOpen = true; sheet.hidden = false; lockScroll(true);
+  sheet.style.transformOrigin = `${r.left + r.width / 2}px ${r.top + r.height / 2}px`; sheet.scrollTop = 0;
+  const D = RM ? 1 : 1050;
+  sheet.animate([{ clipPath: clipFor(r), transform: 'rotate(-4.5deg)' }, { clipPath: 'inset(0px 0px 0px 0px round 0px)', transform: 'rotate(0deg)' }], { duration: D, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
+  mis.forEach((m, i) => m.animate([{ transform: 'translateY(110%)' }, { transform: 'translateY(0)' }], { duration: RM ? 1 : 900, delay: RM ? 0 : 620 + i * 75, easing: EASE, fill: 'both' }));
+  ink(); history.pushState({ sheet: 1 }, ''); sx.focus({ preventScroll: true });
+}
+function closeSheet() {
+  if (!isOpen) return; const r = coverRect(); sheet.style.transformOrigin = `${r.left + r.width / 2}px ${r.top + r.height / 2}px`;
+  const a = sheet.animate([{ clipPath: 'inset(0px 0px 0px 0px round 0px)', transform: 'rotate(0deg)' }, { clipPath: clipFor(r), transform: 'rotate(-4.5deg)' }], { duration: RM ? 1 : 850, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
+  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); cancelAnimationFrame(inkRaf); isOpen = false; lockScroll(false); shelf.focus({ preventScroll: true }); };
+}
+sx.addEventListener('click', () => history.back());
+addEventListener('popstate', () => { if (isOpen) closeSheet(); });
+addEventListener('keydown', (e) => { if (!isOpen) return; if (e.key === 'Escape') history.back(); trapTab(e, sheet); });
+</script>

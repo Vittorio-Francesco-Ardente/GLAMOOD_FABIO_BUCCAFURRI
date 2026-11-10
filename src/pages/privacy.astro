@@ -1,0 +1,35 @@
+---
+// Privacy page (Italian law, GDPR). Only technical storage, no tracking cookies, no third-party embeds.
+import Base from '../layouts/Base.astro';
+import { business } from '../data/business';
+const updated = '10 novembre 2026';
+---
+<Base title="Privacy | Glamood" description="Informativa privacy del sito Glamood, barber shop di Fabio Buccafurri a Reggio Calabria." path="/privacy" bodyClass="legal-page">
+<main class="legal-doc">
+  <a class="back" href="/">&larr; Torna al sito</a>
+  <h1>Privacy</h1>
+  <p class="upd">Ultimo aggiornamento: {updated}</p>
+  <h2>Chi gestisce il sito</h2>
+  <p>Titolare del trattamento: {business.legalName}, {business.address}, {business.city}. P.IVA {business.piva ?? 'in aggiornamento'}. Per qualsiasi richiesta sui tuoi dati puoi scrivere a Fabio su WhatsApp o passare in salone.</p>
+  <h2>Cosa raccoglie questo sito</h2>
+  <p>Niente di personale. Il sito non usa cookie di profilazione, non ha strumenti di statistica di terze parti, non mostra mappe o post incorporati da altri servizi. Non c'è nessun modulo da compilare.</p>
+  <p>Il sito salva solo un'informazione tecnica nella memoria del tuo browser (sessionStorage): un segnale che ricorda se hai già visto l'animazione di apertura, così non la rivedi a ogni pagina. Si cancella da sola quando chiudi la scheda e non serve a riconoscerti.</p>
+  <h2>Link verso altri servizi</h2>
+  <p>I pulsanti WhatsApp, Telefono, Mappe, Instagram e Facebook aprono servizi esterni. Da quel momento valgono le informative di quei servizi (Meta per WhatsApp, Instagram e Facebook; Apple o Google per le mappe). Il sito non invia loro nulla prima che tu tocchi il pulsante.</p>
+  <h2>Post dei social</h2>
+  <p>Gli ultimi post del salone vengono letti dal nostro server tramite le API ufficiali e mostrati come semplici immagini con il link al post originale. Le immagini arrivano dai server di Meta senza inviare il sito di provenienza (referrer). Il nostro server non registra dati di chi visita.</p>
+  <h2>Server e sicurezza</h2>
+  <p>Il sito è ospitato su Cloudflare Pages. Come ogni server web, Cloudflare può trattare dati tecnici (per esempio l'indirizzo IP) per far funzionare e proteggere il servizio, secondo la propria informativa.</p>
+  <h2>I tuoi diritti</h2>
+  <p>Puoi chiedere in qualsiasi momento accesso, rettifica o cancellazione dei dati che ti riguardano e puoi rivolgerti al Garante per la protezione dei dati personali (garanteprivacy.it).</p>
+</main>
+</Base>
+<style is:global>
+.legal-page{background:var(--cream)}
+.legal-doc{max-width:760px;margin:0 auto;padding:clamp(40px,8vw,100px) var(--gutter)}
+.legal-doc .back{display:inline-flex;min-height:44px;align-items:center;color:var(--petrol);font-weight:600}
+.legal-doc h1{font:900 clamp(56px,10vw,120px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.04em;color:var(--petrol);margin-top:20px}
+.legal-doc .upd{color:var(--ink-soft);font-size:14px;margin-top:10px}
+.legal-doc h2{font:900 clamp(22px,2.4vw,30px)/1.1 var(--f-display);text-transform:uppercase;color:var(--petrol);margin-top:36px}
+.legal-doc p{margin-top:12px;max-width:65ch}
+</style>

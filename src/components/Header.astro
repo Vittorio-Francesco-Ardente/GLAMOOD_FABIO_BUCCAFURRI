@@ -1,0 +1,165 @@
+---
+// Kit 05: floating pill header (compact on scroll), full-screen menu over living waves,
+// link-tree menu on phones, mobile bottom bar, section dots on large screens.
+import { business, wa, tel, instagramUrl } from '../data/business';
+const items: [string, string][] = [['salone', 'Salone'], ['tagli', 'Tagli'], ['listino', 'Listino'], ['prodotti', 'Prodotti'], ['dove', 'Dove siamo']];
+const dots: [string, string][] = [['home', 'Inizio'], ...items];
+const phone = tel();
+const ig = business.instagram ? instagramUrl() : null;
+const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M8.2 16 20 4M8.2 8 20 20"/></svg>';
+---
+<div class="sx-header">
+<header class="hdr" id="hdr">
+  <a href="#home" aria-label="Glamood, torna all'inizio"><img class="logo" src="/img/brand/wordmark-petrolio-trasparente.webp" alt="GLAMOOD" width="160" height="27" /></a>
+  <nav aria-label="Sezioni" id="hdr-nav">{items.map(([id, t]) => <a href={`#${id}`}>{t}</a>)}<i class="ul" id="hdr-ul"></i></nav>
+  <div class="right">
+    {ig && <a class="icon" href={ig} target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>}
+    <a class="icon" href={business.facebook} target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.7c0-.9.3-1.5 1.5-1.5h1.5V4.5c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.3H8v3h2.6V21z"/></svg></a>
+    <a class="icon" href={wa()} target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7Z"/><path d="M9 9.5c.3 2 2.2 4 4.5 4.6l1-1.1 1.7.8"/></svg></a>
+    <a class="btn btn-on-petrol" href={wa()} target="_blank" rel="noopener">Prenota</a>
+    <a class="cta-c" href={wa()} target="_blank" rel="noopener" aria-label="Prenota su WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></a>
+    <button class="burger" id="burger" aria-label="Apri il menu" aria-expanded="false" aria-controls="menu"><span></span></button>
+  </div>
+</header>
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" inert>
+  <div class="top"><span class="lab">Menu, Glamood</span><button class="x" id="menu-close" aria-label="Chiudi il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <ul id="mlist">{items.map(([id, t], i) => <li><a href={`#${id}`}><span style={`transition-delay:${120 + i * 70}ms`}>{t}</span><Fragment set:html={sc} /></a></li>)}</ul>
+  <div class="pills">
+    <a href={wa()} target="_blank" rel="noopener" class="wide">Prenota su WhatsApp</a>
+    {phone && <a href={phone}>Chiama</a>}
+    <a href="#dove" data-maps>Portami da Glamood</a>
+    {ig && <a href={ig} target="_blank" rel="noopener">Instagram</a>}
+    <a href={business.facebook} target="_blank" rel="noopener">Facebook</a>
+    <a href={business.linktree} target="_blank" rel="noopener">Tutti i link</a>
+  </div>
+</div>
+<nav class="dots" aria-label="Indice sezioni" id="dots">{dots.map(([id, t]) => <a href={`#${id}`}><i></i><span>{t}</span></a>)}</nav>
+<div class="mbar" id="mbar">
+  <a class="btn btn-primary" href={wa()} target="_blank" rel="noopener">Prenota su WhatsApp</a>
+  {phone && <a class="btn btn-secondary call" href={phone} aria-label="Chiama"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></a>}
+</div>
+</div>
+
+<style is:global>
+.sx-header{display:contents;
+/* ---------- header ---------- */
+.hdr{position:fixed;z-index:var(--z-header);top:max(12px,env(safe-area-inset-top));left:50%;translate:-50% 0;width:min(100% - 24px,var(--maxw));height:64px;display:flex;align-items:center;gap:16px;padding:0 10px 0 22px;border-radius:var(--r-pill);
+ background:rgb(12 90 97 / .78);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);color:#fff;box-shadow:var(--shadow);
+ transition:width .55s var(--ease-out),height .45s var(--ease-out),top .45s var(--ease-out),padding .45s var(--ease-out),background .3s,box-shadow .3s,opacity .5s}
+@supports not (backdrop-filter:blur(1px)){.hdr{background:var(--petrol-deep)}}
+.hdr .logo{height:20px;width:auto;filter:brightness(0) invert(1);flex:none;transition:height .45s var(--ease-out)}
+.hdr .cta-c{display:none;width:44px;height:44px;border-radius:999px;background:#fff;color:var(--petrol);place-items:center;flex:none}
+.hdr .cta-c svg{width:20px;height:20px}
+.hdr .cta-c:hover{background:var(--petrol-pale)}
+.hdr.compact{top:max(10px,env(safe-area-inset-top));height:56px;padding:0 6px 0 18px;background:rgb(12 90 97 / .94);box-shadow:0 14px 34px -14px rgb(0 0 0 / .55)}
+.hdr.compact .logo{height:16px}
+.hdr.compact .icon,.hdr.compact .right>.btn{display:none}
+.hdr.compact .cta-c{display:grid}
+.hdr nav{position:relative;display:none;margin-inline:auto;gap:4px}
+.hdr nav a{position:relative;padding:10px 14px;font-weight:600;font-size:15px;text-decoration:none;opacity:.85;border-radius:999px;transition:opacity .2s,background .2s}
+.hdr nav a:hover{background:rgb(255 255 255 / .12)}
+.hdr nav a:active{background:rgb(255 255 255 / .2)}
+.hdr nav a:hover,.hdr nav a[aria-current]{opacity:1}
+.hdr .ul{position:absolute;bottom:4px;height:2px;background:var(--brass);border-radius:2px;transition:left .45s var(--ease-out),width .45s var(--ease-out)}
+.hdr .right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.icon{width:40px;height:40px;display:none;place-items:center;border-radius:999px}
+.icon:hover{background:rgb(255 255 255 / .12)}
+.icon svg{width:19px;height:19px}
+.icon:active,.cta-c:active{transform:scale(.92)}
+.hdr .btn{min-height:44px;padding:0 18px}
+.burger{width:44px;height:44px;border-radius:14px;background:rgb(255 255 255 / .14);display:grid;place-items:center;transition:background .2s,transform .2s var(--ease-out)}
+.burger:hover{background:rgb(255 255 255 / .26)}.burger:active{transform:scale(.94)}
+.burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;box-shadow:0 6px 0 #fff,0 -6px 0 #fff}
+@media (min-width:768px){.icon{display:grid}}
+@media (min-width:860px){.hdr.compact{width:min(100% - 24px,760px)}.hdr.compact nav{display:flex;margin-inline:auto}}
+@media (min-width:860px) and (max-width:1099px){.hdr.compact nav a{padding:10px 11px;font-size:14px}}
+@media (min-width:1100px){.hdr nav{display:flex}.hdr{padding-left:26px}}
+@media (max-width:420px){.hdr .btn{padding:0 14px;font-size:15px}.hdr{gap:8px;padding-left:16px}.hdr .logo{height:17px}}
+/* ---------- full-screen menu ---------- */
+.menu{position:fixed;inset:0;z-index:var(--z-menu);color:#fff;background:var(--petrol);display:grid;grid-template-rows:auto 1fr auto;padding:max(22px,env(safe-area-inset-top)) var(--gutter) max(22px,env(safe-area-inset-bottom));visibility:hidden;clip-path:circle(0% at calc(100% - 46px) 44px);transition:clip-path .7s var(--ease-io),visibility 0s .7s;overflow:hidden}
+.menu.open{visibility:visible;clip-path:circle(150% at calc(100% - 46px) 44px);transition:clip-path .8s var(--ease-io)}
+.menu .top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
+.menu .lab{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
+.menu .x{width:52px;height:52px;border-radius:16px;background:#fff;color:var(--petrol);display:grid;place-items:center}
+.menu .x svg{width:22px;height:22px}
+.menu ul{position:relative;z-index:2;list-style:none;align-self:center;justify-self:center;text-align:center}
+.menu li a{display:inline-flex;align-items:center;gap:.25em;font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.03em;text-decoration:none;font-size:clamp(40px,8.4vw,104px);line-height:1.02;overflow:hidden}
+.menu li a span{display:inline-block;transform:translateY(110%);transition:transform .8s var(--ease-out)}
+.menu.open li a span{transform:none}
+.menu li a:hover span,.menu li a:focus-visible span{color:var(--petrol-pale)}
+.menu li a svg{width:.42em;height:.42em;opacity:0;transform:translateX(-40%) rotate(-90deg);transition:.4s var(--ease-out)}
+.menu li a:hover svg,.menu li a:focus-visible svg{opacity:1;transform:none}
+.menu .pills{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:10px}
+.menu .pills a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid rgb(255 255 255 / .35);border-radius:999px;font-weight:600;font-size:15px;text-decoration:none}
+.menu .pills a:hover{background:#fff;color:var(--petrol)}
+@media (max-width:767px){
+ .menu ul{align-self:start;justify-self:stretch;margin-top:5vh;text-align:left;display:grid;gap:10px}
+ .menu li a{width:100%;justify-content:space-between;font-size:clamp(26px,8vw,34px);padding:14px 20px;border-radius:20px;background:rgb(255 255 255 / .1);border:1px solid rgb(255 255 255 / .18)}
+ .menu li a svg{opacity:1;transform:none}
+ .menu .pills{display:grid;grid-template-columns:1fr 1fr}
+ .menu .pills a{justify-content:center;background:#fff;color:var(--petrol);border:0}
+ .menu .pills a.wide{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){.menu{transition:none}.menu li a span{transform:none}}
+/* ---------- mobile bottom bar ---------- */
+.mbar{position:fixed;z-index:calc(var(--z-header) - 1);left:0;right:0;bottom:0;display:flex;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--petrol-pale);box-shadow:0 -10px 30px -18px rgb(12 90 97 / .4);transition:transform .45s var(--ease-out)}
+.mbar.hide{transform:translateY(110%)}
+.mbar .btn{flex:1;justify-content:center}.mbar .call{flex:0 0 52px;padding:0;justify-content:center}
+@media (min-width:768px){.mbar{display:none}}
+/* ---------- section dots ---------- */
+.dots{position:fixed;left:10px;top:50%;translate:0 -50%;z-index:var(--z-header);display:none;gap:4px;flex-direction:column;transition:opacity .4s}
+.dots.away{opacity:0;pointer-events:none}
+.dots a{position:relative;display:grid;place-items:center;width:26px;height:26px;text-decoration:none}
+.dots i{width:9px;height:9px;border-radius:50%;background:rgb(244 239 232 / .9);border:1.5px solid var(--petrol);box-shadow:0 0 0 1.5px rgb(244 239 232 / .85),0 2px 6px rgb(0 0 0 / .25);transition:.3s}
+.dots a span{position:absolute;left:30px;top:50%;translate:0 -50%;opacity:0;transform:translateX(-6px);transition:.3s;white-space:nowrap;font-size:12px;font-weight:600;color:var(--petrol);background:var(--cream);padding:4px 10px;border-radius:999px;box-shadow:var(--shadow-sm);pointer-events:none}
+.dots a:hover span,.dots a:focus-visible span{opacity:1;transform:none}
+.dots a[aria-current] i{background:var(--petrol);transform:scale(1.3)}
+@media (min-width:1280px){.dots{display:flex}}
+}
+</style>
+
+<script>
+import { reduced, trapTab, lockScroll, wireMaps } from '../scripts/core.js';
+import { mountWaves } from '../scripts/wavefield.js';
+const hdr = document.getElementById('hdr')!, nav = document.getElementById('hdr-nav')!, ul = document.getElementById('hdr-ul')!;
+const menu = document.getElementById('menu')!, burger = document.getElementById('burger')!, mlist = document.getElementById('mlist')!;
+const dots = document.getElementById('dots')!, mbar = document.getElementById('mbar')!;
+wireMaps(menu);
+// compact bar after a short scroll: the buttons give way to the section links, the bar never hides
+const setCompact = () => hdr.classList.toggle('compact', scrollY > 80);
+setCompact(); addEventListener('scroll', setCompact, { passive: true });
+// mobile bar: hidden in the first moments of the hero
+mbar.classList.add('hide'); setTimeout(() => mbar.classList.remove('hide'), document.documentElement.classList.contains('loading') ? 2900 : 400);
+// active section -> underline + dots
+const links = [...nav.querySelectorAll('a')] as HTMLAnchorElement[];
+const dl = [...dots.querySelectorAll('a')] as HTMLAnchorElement[];
+let curA: HTMLAnchorElement | null = null;
+const setUl = (a?: HTMLAnchorElement | null) => { curA = a || null; if (!a) { ul.style.width = '0'; return; } ul.style.left = a.offsetLeft + 14 + 'px'; ul.style.width = a.offsetWidth - 28 + 'px'; };
+hdr.addEventListener('transitionend', (e) => { if (e.propertyName === 'width') setUl(curA); });
+const ids = ['home', 'salone', 'tagli', 'listino', 'prodotti', 'dove'];
+const io = new IntersectionObserver((es) => es.forEach((e) => {
+  if (!e.isIntersecting) return; const id = e.target.id;
+  links.forEach((a) => a.toggleAttribute('aria-current', a.hash === '#' + id));
+  dl.forEach((a) => a.toggleAttribute('aria-current', a.hash === '#' + id));
+  setUl(links.find((a) => a.hash === '#' + id));
+}), { rootMargin: '-45% 0px -50% 0px' });
+ids.forEach((id) => { const s = document.getElementById(id); if (s) io.observe(s); });
+// dots step aside over full-bleed petrol scenes where they would sit on photos (hero)
+const hero = document.getElementById('home');
+if (hero) new IntersectionObserver((e) => dots.classList.toggle('away', e[0].intersectionRatio > 0.5), { threshold: [0, 0.5, 1] }).observe(hero);
+// menu
+let waves: HTMLCanvasElement | null | undefined;
+const open = (v: boolean) => {
+  if (menu.classList.contains('open') === v) return;
+  menu.classList.toggle('open', v); burger.setAttribute('aria-expanded', String(v)); menu.toggleAttribute('inert', !v);
+  lockScroll(v); mbar.classList.toggle('hide', v);
+  if (v && waves === undefined) waves = mountWaves(menu, { crest: 0.14, speed: 0.8, gate: () => menu.classList.contains('open') });
+  (waves as any)?.loopCtl?.refresh();
+  if (v) { setTimeout(() => (menu.querySelector('a') as HTMLElement).focus(), reduced ? 0 : 300); }
+  else burger.focus();
+};
+burger.addEventListener('click', () => open(true));
+document.getElementById('menu-close')!.addEventListener('click', () => open(false));
+menu.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) open(false); });
+addEventListener('keydown', (e) => { if (!menu.classList.contains('open')) return; if (e.key === 'Escape') open(false); trapTab(e, menu); });
+</script>

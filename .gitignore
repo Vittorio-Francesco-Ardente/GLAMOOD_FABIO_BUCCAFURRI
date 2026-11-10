@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+public/img/
+.DS_Store
+.wrangler/
+qa/*.png
+!qa/README.md

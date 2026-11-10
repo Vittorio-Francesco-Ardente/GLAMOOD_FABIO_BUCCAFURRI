@@ -1,0 +1,57 @@
+---
+import '../styles/tokens.css';
+import '../styles/ref-kit.css';
+import '../styles/lenis.css';
+import '../styles/base.css';
+import { business } from '../data/business';
+interface Props { title?: string; description?: string; path?: string; noindex?: boolean; jsonld?: boolean; bodyClass?: string }
+const {
+  title = 'Glamood, barber shop a Reggio Calabria | Fabio Buccafurri',
+  description = 'Glamood, il barber shop di Fabio Buccafurri in Via Sbarre Centrali a Reggio Calabria. Taglio, barba e cura, prezzi chiari e prenotazione su WhatsApp.',
+  path = '/', noindex = false, jsonld = false, bodyClass = '',
+} = Astro.props;
+const canonical = new URL(path, Astro.site ?? business.site).href;
+const og = new URL('/og.jpg', Astro.site ?? business.site).href;
+const sameAs = [business.facebook, business.linktree, business.instagram && `https://www.instagram.com/${business.instagram}/`].filter(Boolean);
+const ld: Record<string, unknown> = {
+  '@context': 'https://schema.org', '@type': 'HairSalon', name: 'Glamood', alternateName: business.legalName,
+  url: canonical, image: og, priceRange: '€', founder: { '@type': 'Person', name: business.owner },
+  address: { '@type': 'PostalAddress', streetAddress: business.address, addressLocality: business.city, addressRegion: 'RC', addressCountry: 'IT', ...(business.cap ? { postalCode: business.cap } : {}) },
+  sameAs,
+};
+if (business.phone) ld.telephone = '+' + business.phone;
+if (business.geo) ld.geo = { '@type': 'GeoCoordinates', latitude: business.geo.lat, longitude: business.geo.lng };
+---
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {noindex && <meta name="robots" content="noindex" />}
+  <meta name="theme-color" content="#0F6870" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:site_name" content="Glamood" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={og} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="preload" href="/fonts/archivo-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <slot name="head" />
+  {jsonld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+</head>
+<body class={bodyClass}>
+  <slot />
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "glamood-sito",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "assets": "node tools/assets.mjs",
+    "dev": "node tools/assets.mjs && astro dev",
+    "build": "node tools/assets.mjs && astro build",
+    "preview": "astro preview",
+    "qa": "node tools/qa.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.14.0",
+    "gsap": "^3.13.0",
+    "lenis": "^1.3.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.0",
+    "@astrojs/sitemap": "^3.6.0"
+  }
+}

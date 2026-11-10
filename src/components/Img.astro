@@ -1,0 +1,14 @@
+---
+// Responsive picture (AVIF + WebP) from the asset pipeline, with intrinsic width/height (no CLS).
+import images from '../data/images.json';
+interface Props { src: string; alt: string; sizes?: string; class?: string; style?: string; id?: string; loading?: 'lazy' | 'eager'; fetchpriority?: 'high' | 'low' | 'auto'; draggable?: string; [k: string]: any }
+const { src, alt, sizes = '100vw', class: cls, style, id, loading = 'lazy', fetchpriority, ...rest } = Astro.props;
+const m = (images as Record<string, { w: number; h: number; widths: number[] }>)[src];
+if (!m) throw new Error(`Img: unknown asset ${src}`);
+const set = (fmt: string) => m.widths.map((w) => `/img/${src}-${w}.${fmt} ${w}w`).join(', ');
+---
+<picture>
+  <source type="image/avif" srcset={set('avif')} sizes={sizes} />
+  <source type="image/webp" srcset={set('webp')} sizes={sizes} />
+  <img src={`/img/${src}.webp`} alt={alt} width={m.w} height={m.h} loading={loading} decoding="async" fetchpriority={fetchpriority} class={cls} style={style} id={id} {...rest} />
+</picture>

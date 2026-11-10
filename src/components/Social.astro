@@ -1,0 +1,84 @@
+---
+// Kit 13: Plates Meal manifesto line and a row of poster cards. Production: the latest posts come from our
+// own Cloudflare Pages Function (/api/social, Instagram API with Instagram Login). No embeds, no cookies.
+// While loading: skeleton shimmer. On error or empty feed: the curated static posts below stay.
+import { img } from '../data/img';
+import { business, instagramUrl } from '../data/business';
+const follow = business.instagram ? instagramUrl() : business.facebook;
+const igIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>';
+---
+<div class="sx-social">
+<div class="page-frame">
+<section class="panel panel-petrol social grainy" id="social" aria-labelledby="social-t"><div class="bgref r-blob" style="opacity:.14"></div>
+  <div class="head">
+    <span class="sb" data-bubble="dal|salone" data-seed="3" style="--bc:#F4EFE8"></span>
+    <h2 id="social-t">Ogni giorno un taglio nuovo, una barba sistemata, una storia sul profilo. Gli ultimi post arrivano qui da soli.</h2>
+    <div class="btns"><a class="btn-pop" href={follow} target="_blank" rel="noopener">{business.instagram ? 'Seguici su Instagram' : 'Seguici su Facebook'}</a>{business.instagram && <a class="btn-pop fill" href={business.facebook} target="_blank" rel="noopener">Facebook</a>}</div>
+  </div>
+  <div class="row" id="social-row" aria-live="polite">
+    <a class="post" href={follow} target="_blank" rel="noopener"><img class="cover" {...img('post-social/post-3D-forbici-piedistallo', 960)} alt="Post: forbici Glamood su piedistallo" loading="lazy" /><div class="cap"><span class="script-over">Gli attrezzi</span><b>Forbici<br />pronte</b></div><div class="meta"><span class="chip">Post</span></div><span class="ig" set:html={igIcon} /></a>
+    <a class="post" href={follow} target="_blank" rel="noopener"><img class="cover" {...img('post-social/post-3D-maglia-faccia-monstera', 960)} alt="Post: maglia con la faccia della mascotte" loading="lazy" /><div class="cap"><span class="script-over">Novità</span><b>La maglia<br />Glamood</b></div><div class="meta"><span class="chip">Post</span></div><span class="ig" set:html={igIcon} /></a>
+    <a class="post ticket" href="#listino"><div class="t"><svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="M14 28h42v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6Z" fill="#17292C"/><path d="M22 30C22 6 48 6 48 30" fill="none" stroke="#B8935A" stroke-width="4"/></svg><h3>Taglio + barba</h3><p>Modellatura barba e taglio, con calma.</p><div class="pr"><span class="chip" style="color:var(--ink)">Totale</span><b>23 €</b></div><div class="bars"></div></div><img class="jar" {...img('prodotti/barattolo-pomata', 480)} alt="" loading="lazy" /></a>
+  </div>
+</section>
+</div>
+</div>
+<style is:global>
+.sx-social{display:contents;
+.social{padding:clamp(60px,8vw,120px) var(--gutter);position:relative}
+.head{text-align:center;max-width:900px;margin:0 auto;position:relative}
+.sb{font-size:clamp(64px,9vw,140px);margin-bottom:18px}
+.head h2{font:900 clamp(30px,3.8vw,58px)/.98 var(--f-display);text-transform:uppercase;color:var(--cream);letter-spacing:-.01em}
+.head .btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:28px}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,26px);max-width:1360px;margin:clamp(40px,5vw,72px) auto 0}
+.post{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:4/5;background:#08393E;color:var(--cream);text-decoration:none;box-shadow:0 30px 60px -30px rgb(0 0 0 / .7)}
+.post>img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease-out)}
+.post:hover>img.cover{transform:scale(1.06)}
+.post .cap{position:absolute;left:0;right:0;top:0;padding:clamp(14px,1.6vw,22px);background:linear-gradient(180deg,rgb(8 57 62 / .85),transparent)}
+.post .cap .script-over{font-size:clamp(22px,2vw,30px);display:block;color:var(--brass);margin-bottom:.2em}
+.post .cap b{font:900 clamp(26px,2.6vw,42px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.01em;display:block}
+.post .cap p{font-size:14px;line-height:1.4;margin-top:6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.post .meta{position:absolute;left:12px;bottom:12px;display:flex;gap:8px}
+.post .meta .chip{background:rgb(8 57 62 / .6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--cream);border-color:rgb(244 239 232 / .5)}
+.post .ig{position:absolute;right:12px;bottom:12px;width:38px;height:38px;border-radius:50%;background:var(--cream);display:grid;place-items:center;color:var(--petrol)}
+.post .ig svg{width:20px;height:20px}
+.post.ticket{background:var(--petrol) url("/img/pattern/liquido-petrolio.webp") center/500px}
+.post.ticket .t{position:absolute;left:10%;right:10%;top:12%;background:var(--cream);color:var(--ink);padding:24px 18px 18px;border-radius:4px;transform:rotate(-3deg);box-shadow:0 20px 30px -16px rgb(0 0 0 / .5)}
+.post.ticket .t h3{font:900 clamp(22px,2.2vw,34px)/.95 var(--f-display);text-transform:uppercase;color:var(--petrol);text-align:center}
+.post.ticket .t p{font-size:13px;text-align:center;color:var(--ink-soft);margin-top:8px}
+.post.ticket .t .pr{display:flex;justify-content:space-between;align-items:center;margin-top:16px;border-top:1.5px dashed #c9d6d4;padding-top:12px}
+.post.ticket .t .pr b{font:900 clamp(26px,2.4vw,38px)/1 var(--f-display);color:var(--petrol)}
+.post.ticket .t .bars{height:34px;margin-top:12px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 7px,transparent 7px 9px)}
+.post.ticket .t svg.clip{position:absolute;left:50%;top:-30px;width:60px;transform:translateX(-50%)}
+.post.ticket .jar{position:absolute;right:6%;bottom:5%;width:34%;height:auto;transform:rotate(-10deg);filter:drop-shadow(0 20px 20px rgb(0 0 0 / .5))}
+.skel{position:absolute;inset:0;background:linear-gradient(100deg,#0A4A50 30%,#0F6870 50%,#0A4A50 70%) 0 0/300% 100%;animation:sk 1.4s linear infinite}
+@media (max-width:900px){.row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;scrollbar-width:none}.post{scroll-snap-align:center}}
+}
+@keyframes sk{to{background-position:-150% 0}}
+</style>
+<script>
+import { reduced } from '../scripts/core.js';
+import { gsap } from '../scripts/motion.js';
+import { bubbles } from '../scripts/bubble.js';
+const root = document.getElementById('social')!, row = document.getElementById('social-row')!;
+bubbles(root);
+if (!reduced) {
+  gsap.from('#social .head>*', { scrollTrigger: { trigger: '#social', start: 'top 75%' }, y: 40, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out' });
+  gsap.from('#social-row .post', { scrollTrigger: { trigger: '#social-row', start: 'top 85%' }, y: 90, rotate: (i: number) => [-3, 0, 3][i % 3], opacity: 0, stagger: 0.12, duration: 1.1, ease: 'expo.out', clearProps: 'transform' });
+}
+// live feed from our own Pages Function, loaded when the section gets close
+type Post = { id: string; image: string; permalink: string; date: string; caption?: string; type?: string; source?: string };
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+const fmt = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long' });
+new IntersectionObserver(async (e, o) => {
+  if (!e[0].isIntersecting) return; o.disconnect();
+  let timer = setTimeout(() => { row.querySelectorAll('.post').forEach((p) => { const s = document.createElement('span'); s.className = 'skel'; p.append(s); }); }, 250);
+  try {
+    const r = await fetch('/api/social', { headers: { accept: 'application/json' } });
+    const posts: Post[] = r.ok ? await r.json() : [];
+    clearTimeout(timer);
+    if (!Array.isArray(posts) || !posts.length) throw new Error('empty');
+    row.innerHTML = posts.slice(0, 6).map((p) => `<a class="post" href="${esc(p.permalink)}" target="_blank" rel="noopener"><img class="cover" src="${esc(p.image)}" alt="${esc((p.caption || 'Post di Glamood').slice(0, 120))}" loading="lazy" referrerpolicy="no-referrer"><div class="cap"><span class="script-over">${esc(fmt.format(new Date(p.date)))}</span>${p.caption ? `<p>${esc(p.caption)}</p>` : ''}</div><div class="meta"><span class="chip">${p.source === 'facebook' ? 'Facebook' : p.type === 'VIDEO' ? 'Reel' : 'Post'}</span></div></a>`).join('');
+  } catch { clearTimeout(timer); row.querySelectorAll('.skel').forEach((k) => k.remove()); }
+}, { rootMargin: '400px' }).observe(row);
+</script>

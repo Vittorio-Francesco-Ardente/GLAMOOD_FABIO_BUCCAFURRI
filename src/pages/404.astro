@@ -1,0 +1,26 @@
+---
+// Kit 17: 404 with the confused mascot. Hidden hint that secrets exist (docs/02-architecture.md).
+import Base from '../layouts/Base.astro';
+import { img } from '../data/img';
+import { wa } from '../data/business';
+---
+<Base title="Pagina non trovata | Glamood" description="Questa pagina ha cambiato taglio." path="/404" noindex bodyClass="e404-page">
+<div class="has-bgref e404-room"><div class="bgref r-corallo-tono"></div>
+<main class="e">
+  <div><h1>404</h1><h2>Questa pagina<br />ha cambiato taglio</h2><p>Non la troviamo più. Torna alla home o scrivici: il taglio te lo facciamo lo stesso. E se cerchi bene in fondo al sito, qualcosa di nascosto c'è.</p>
+  <div class="btns"><a class="btn-pop" href="/">Torna alla home</a><a class="btn-pop fill" href={wa()} target="_blank" rel="noopener" style="border-color:var(--cream)">Prenota su WhatsApp</a></div></div>
+  <img {...img('mascotte/pose/confuso', 960)} alt="La mascotte Glamood si gratta la testa, confusa" />
+</main>
+</div>
+</Base>
+<style is:global>
+.e404-page{background:var(--petrol);color:var(--cream)}
+.e404-room{min-height:100svh}
+.e{min-height:100svh;display:grid;grid-template-columns:1fr auto;align-items:center;gap:clamp(20px,4vw,60px);padding:clamp(40px,6vw,90px) var(--gutter);max-width:1300px;margin:0 auto}
+.e h1{font:900 clamp(120px,22vw,340px)/.8 var(--f-display);letter-spacing:-.05em;color:var(--cream);text-shadow:0 .05em 0 #08393E}
+.e h2{font:900 clamp(26px,3vw,44px)/1 var(--f-display);text-transform:uppercase;margin-top:18px}
+.e p{color:#d9ebe8;max-width:40ch;margin:14px 0 26px}
+.e .btns{display:flex;gap:12px;flex-wrap:wrap}
+.e img{width:clamp(180px,24vw,340px);height:auto;filter:drop-shadow(0 20px 20px rgb(0 0 0 / .35))}
+@media (max-width:700px){.e{grid-template-columns:1fr;text-align:left}.e img{width:170px;justify-self:end;margin-top:-20px}}
+</style>

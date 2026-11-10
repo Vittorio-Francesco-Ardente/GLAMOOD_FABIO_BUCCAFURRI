@@ -1,0 +1,90 @@
+---
+// Kit 16: Margarita closing: repeats the hero world. Giant CI VEDIAMO DA GLAMOOD on the petrol blob texture,
+// mascot peeking over the edge (hands in front of the card), plants framing the sides, checker band,
+// cream link columns and legal bar. Easter egg: tap the small G three times (or Konami code) -> /storia.
+import { img } from '../data/img';
+import { business, wa, hoursLabel, instagramUrl } from '../data/business';
+const maps = 'https://www.google.com/maps/search/?api=1&query=Glamood%2C%20Via%20Sbarre%20Centrali%20282%2FG%2C%20Reggio%20Calabria';
+const year = new Date().getFullYear();
+---
+<div class="sx-footer">
+<footer class="foot" id="foot">
+  <div class="bgref r-macchie-tono"></div><div class="wave-top"></div>
+  <div class="stage">
+    <p class="kick">{business.address} · {business.city}</p>
+    <h2 class="big" aria-label="Ci vediamo da Glamood">Ci vediamo<span class="fb" data-bubble="da" data-style="bounce" data-seed="9" style="--bc:#B8935A"></span>Glamood</h2>
+    <div class="peekwrap"><img class="pk-body" {...img('mascotte/pose/spunta', 960)} alt="La mascotte Glamood saluta da dietro il bordo" loading="lazy" /><img class="pk-hand" {...img('mascotte/pose/spunta-mani', 960)} alt="" loading="lazy" /></div>
+  </div>
+  <img class="leaf-frame l" {...img('piante/09_monstera_grande', 960)} alt="" loading="lazy" />
+  <img class="leaf-frame r" {...img('piante/12_palma_areca', 960)} alt="" loading="lazy" style="transform:scaleX(-1)" />
+  <div class="cta"><a class="btn-pop" href={wa()} target="_blank" rel="noopener">Prenota su WhatsApp</a><a class="btn-pop fill" href={maps} data-maps>Apri in Mappe</a></div>
+  <div class="checker" style="position:relative;z-index:5"></div>
+  <div class="cols">
+    <div><img class="logo" src="/img/brand/wordmark-petrolio-trasparente-480.webp" alt="Glamood" width="480" height="81" loading="lazy" /><p style="margin-top:12px">Barber shop di {business.owner}.</p><p>{business.address}, {business.city}</p></div>
+    <div><h4>Salone</h4><a href="#salone">Il salone</a><a href="#tagli">I tagli</a><a href="#listino">Listino</a><a href="#prodotti">Prodotti</a></div>
+    <div><h4>Contatti</h4><a href={wa()} target="_blank" rel="noopener">WhatsApp</a>{business.instagram && <a href={instagramUrl()} target="_blank" rel="noopener">Instagram</a>}<a href={business.facebook} target="_blank" rel="noopener">Facebook</a><a href={business.linktree} target="_blank" rel="noopener">Tutti i link</a></div>
+    <div><h4>Orari</h4><p>{hoursLabel()}</p></div>
+  </div>
+  <div class="legal">
+    <span>© {year} {business.legalName} · {business.address}, {business.city} · P.IVA {business.piva ?? 'in aggiornamento'}</span>
+    <span class="lr"><a href="/privacy">Privacy</a> · Nessun cookie di profilazione <button class="egg-g" id="egg-g" aria-label="Glamood"><img src="/img/brand/G-rasoio-petrolio-trasparente-480.webp" alt="" width="480" height="488" loading="lazy" /></button></span>
+  </div>
+</footer>
+</div>
+<style is:global>
+.sx-footer{display:contents;
+.foot{position:relative;background:var(--petrol);color:var(--cream);overflow:hidden;isolation:isolate}
+.wave-top{height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
+.stage{position:relative;padding:clamp(60px,8vw,120px) var(--gutter) 0;text-align:center}
+.kick{font:600 13px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:#cfe3e1}
+.big{position:relative;z-index:1;margin-top:18px;font:900 clamp(54px,12.5vw,230px)/.82 var(--f-display);text-transform:uppercase;letter-spacing:-.045em;color:var(--cream);text-shadow:0 .05em 0 #08393E}
+.big .fb{display:block;font-size:.5em;line-height:1.1;margin:.22em 0 .2em;text-shadow:none}
+.peekwrap{--pw:clamp(200px,24vw,380px);position:relative;width:var(--pw);margin:clamp(24px,3vw,44px) auto 0}
+.peekwrap img{display:block;width:100%;height:auto}
+.peekwrap .pk-body{position:relative;z-index:2}
+.peekwrap .pk-hand{position:absolute;inset:0;z-index:4;pointer-events:none;filter:drop-shadow(0 6px 4px rgb(8 57 62 / .3))}
+.cta{position:relative;z-index:3;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;width:min(100% - 2*var(--gutter),640px);margin:calc(clamp(200px,24vw,380px)*-.105) auto clamp(40px,5vw,70px);padding:calc(clamp(200px,24vw,380px)*.09 + 16px) clamp(18px,2vw,26px) clamp(18px,2vw,26px);background:var(--cream);border-radius:28px;box-shadow:0 26px 50px -26px rgb(0 0 0 / .55)}
+.cta .btn-pop{flex:1 1 220px}
+.leaf-frame{height:auto}
+.leaf-frame.l{left:-4%;top:34%;width:clamp(140px,20vw,360px)}
+.leaf-frame.r{right:-4%;top:26%;width:clamp(130px,18vw,320px)}
+.cols{position:relative;z-index:5;background:var(--cream);color:var(--ink);padding-inline:max(var(--gutter),calc((100% - 1320px)/2));display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px;margin:0;padding-top:clamp(30px,4vw,56px);padding-bottom:clamp(30px,4vw,56px);text-align:left}
+.cols h4{font:800 13px/1 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--petrol);margin-bottom:14px}
+.cols a,.cols p{display:block;color:var(--ink-soft);text-decoration:none;font-size:15px;line-height:1.9}
+.cols a{min-height:28px}
+.cols a:hover{color:var(--petrol)}
+.cols img.logo{width:min(220px,70%);height:auto}
+.legal{position:relative;z-index:5;background:var(--cream);border-top:1px solid #dfe7e7;color:var(--ink-soft);font-size:13px;padding:16px var(--gutter) calc(16px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.legal a{color:inherit}
+.legal .lr{display:inline-flex;align-items:center;gap:6px}
+.egg-g{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;transition:transform .3s var(--ease-out)}
+.egg-g img{width:26px;height:auto}
+.egg-g:active{transform:scale(.88) rotate(-10deg)}
+.egg-g.tick{transform:rotate(18deg) scale(1.1)}
+@media (max-width:900px){.cols{grid-template-columns:1fr 1fr}}
+@media (max-width:767px){.legal{padding-bottom:calc(84px + env(safe-area-inset-bottom))}}
+@media (max-width:560px){.big .fb{font-size:.8em}.cols{grid-template-columns:1fr}.leaf-frame.l{width:110px;top:auto;bottom:22%}.leaf-frame.r{width:100px;top:auto;bottom:26%}}
+}
+</style>
+<script>
+import { reduced, wireMaps } from '../scripts/core.js';
+import { gsap } from '../scripts/motion.js';
+import { bubbles } from '../scripts/bubble.js';
+const foot = document.getElementById('foot')!;
+bubbles(foot); wireMaps(foot);
+if (!reduced) {
+  gsap.from('#foot .big', { scrollTrigger: { trigger: '#foot', start: 'top 70%' }, yPercent: 30, opacity: 0, duration: 1.3, ease: 'expo.out' });
+  gsap.from('#foot .peekwrap img', { scrollTrigger: { trigger: '#foot .peekwrap', start: 'top 95%' }, yPercent: 60, duration: 1.1, ease: 'back.out(1.4)' });
+  gsap.from('#foot .leaf-frame.l', { scrollTrigger: { trigger: '#foot', start: 'top 80%', end: 'bottom bottom', scrub: 1 }, xPercent: -40, rotate: -10 });
+  gsap.from('#foot .leaf-frame.r', { scrollTrigger: { trigger: '#foot', start: 'top 80%', end: 'bottom bottom', scrub: 1 }, xPercent: 40, rotate: 10 });
+}
+// easter egg: 3 taps on the G (within 1.5 s), the Konami code, or typing "fabio"
+const g = document.getElementById('egg-g')!; let taps = 0, tt = 0;
+g.addEventListener('click', () => { taps++; g.classList.add('tick'); setTimeout(() => g.classList.remove('tick'), 180); clearTimeout(tt); tt = window.setTimeout(() => (taps = 0), 1500); if (taps >= 3) location.href = '/storia'; });
+const seqs = [['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'], ['f', 'a', 'b', 'i', 'o']];
+const pos = seqs.map(() => 0);
+addEventListener('keydown', (e) => {
+  if ((e.target as Element).closest?.('input,textarea,[contenteditable]')) return;
+  seqs.forEach((s, i) => { pos[i] = e.key.toLowerCase() === s[pos[i]].toLowerCase() ? pos[i] + 1 : e.key.toLowerCase() === s[0].toLowerCase() ? 1 : 0; if (pos[i] === s.length) location.href = '/storia'; });
+});
+</script>

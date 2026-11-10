@@ -1,0 +1,66 @@
+---
+// Kit 12: Solar Pop "Selected works": one big petrol rounded block with four cream cards, pill in the
+// title bar, blob texture (ref) floating behind. 4 columns desktop, 2 tablet, 1 phone.
+import Img from './Img.astro';
+import { wa, waText } from '../data/business';
+const items: [k: string, t: string, s: string, src: string, alt: string][] = [
+  ['T-shirt', 'G peperoncino', 'Fronte, bianca', 'merch/merch-maglia-G-peperoncino-gruccia', 'Maglia bianca con la G a peperoncino appesa a una gruccia'],
+  ['T-shirt', 'Glamood', 'Scritta in petrolio', 'merch/merch-maglia-GLAMOOD-bolle-cubo', 'Maglia bianca con scritta Glamood piegata su un cubo'],
+  ['T-shirt', 'La faccia', 'Retro, mascotte', 'merch/merch-maglia-retro-faccia-arco', 'Retro della maglia con la faccia della mascotte'],
+  ['T-shirt', 'Piegata', 'G peperoncino', 'merch/merch-maglia-G-peperoncino-piegata', 'Maglia piegata con la G a peperoncino e forbici'],
+];
+const go = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>';
+---
+<div class="sx-merch">
+<section class="merch has-bgref" id="merch" aria-labelledby="merch-t"><div class="bgref r-macchie-tono"></div>
+  <div class="block">
+    <span class="bubble-deco mb" data-bubble="indossa|glamood" data-style="bounce" data-seed="11" style="--bc:#F4EFE8"></span>
+    <div class="bar"><h2 id="merch-t">Glamood <em>da indossare</em></h2><a class="pill" href={wa(waText.info('il merch Glamood'))} target="_blank" rel="noopener">Chiedila in salone <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="cards" id="merch-cards">
+      {items.map(([k, t, s, src, alt]) => (
+        <a class="card" href={wa(waText.info(`la maglia ${t}`))} target="_blank" rel="noopener"><span class="k">{k}</span><h3>{t}</h3><span class="s">{s}</span><div class="img"><Img src={src} alt={alt} sizes="(min-width:1024px) 22vw, (min-width:600px) 45vw, 90vw" /></div><span class="go" set:html={go} /></a>
+      ))}
+    </div>
+    <div class="foot"><p>Taglie, prezzi e disponibilità: chiedi a Fabio in salone o su WhatsApp.</p><a class="btn-pop" href={wa()} target="_blank" rel="noopener">Prenota e provala</a></div>
+  </div>
+</section>
+</div>
+<style is:global>
+.sx-merch{display:contents;
+.merch{position:relative;background:var(--petrol-deep);padding:clamp(20px,3vw,48px) var(--gutter);overflow:hidden}
+.block{position:relative;z-index:1;max-width:1360px;margin:40px auto 0;background:var(--petrol-darker) url("/img/pattern/organico-tono-su-tono.webp") center/520px;border:3px solid rgb(244 239 232 / .25);border-radius:clamp(22px,3vw,40px);padding:clamp(22px,3vw,44px);color:var(--cream);box-shadow:0 40px 80px -40px rgb(10 74 80 / .7)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bar h2{font:900 clamp(28px,3vw,46px)/1 var(--f-display);text-transform:uppercase;letter-spacing:-.01em}
+.bar h2 em{font-style:normal;color:var(--brass);margin-left:.2em}
+.pill{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 18px;border-radius:999px;border:1.5px solid rgb(244 239 232 / .7);font:600 13px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--cream);transition:background .2s,color .2s}
+.pill:hover{background:var(--cream);color:var(--petrol)}
+.pill svg{width:18px;height:18px}
+.mb{right:clamp(-10px,-1vw,0px);top:clamp(-70px,-5vw,-40px);font-size:clamp(40px,4.4vw,74px);transform:rotate(6deg)}
+@media (max-width:700px){.mb{display:none}}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,22px);margin-top:clamp(20px,2.4vw,34px)}
+.card{position:relative;background:var(--cream);color:var(--ink);border-radius:clamp(16px,1.6vw,22px);padding:clamp(14px,1.4vw,20px);display:flex;flex-direction:column;gap:6px;overflow:hidden;transition:transform .5s var(--ease-out);text-decoration:none}
+.card:hover{transform:translateY(-6px)}
+.card .k{font:600 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.card h3{font:900 clamp(22px,1.9vw,30px)/.95 var(--f-display);text-transform:uppercase;color:var(--petrol)}
+.card .s{font-size:13px;color:var(--ink-soft)}
+.card .img{position:relative;margin-top:10px;border-radius:14px;overflow:hidden;aspect-ratio:4/5}
+.card .img img{width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform .8s var(--ease-out)}
+.card:hover .img img{transform:scale(1.1)}
+.card .go{position:absolute;right:12px;bottom:12px;width:40px;height:40px;border-radius:50%;background:var(--cream);display:grid;place-items:center;color:var(--petrol);box-shadow:0 6px 16px -6px rgb(0 0 0 / .4)}
+.card .go svg{width:18px;height:18px}
+.foot{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-top:clamp(20px,2.4vw,34px)}
+.foot p{max-width:46ch;color:#d9ebe8}
+@media (max-width:1023px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.cards{grid-template-columns:1fr}.card .img{aspect-ratio:1}}
+}
+</style>
+<script>
+import { reduced } from '../scripts/core.js';
+import { gsap } from '../scripts/motion.js';
+import { bubbles } from '../scripts/bubble.js';
+bubbles(document.getElementById('merch')!);
+if (!reduced) {
+  gsap.from('#merch .block', { scrollTrigger: { trigger: '#merch', start: 'top 80%' }, y: 80, scale: 0.96, opacity: 0, duration: 1.2, ease: 'expo.out' });
+  gsap.from('#merch-cards .card', { scrollTrigger: { trigger: '#merch-cards', start: 'top 85%' }, y: 80, rotate: (i: number) => [-4, 3, -2, 4][i], opacity: 0, stagger: 0.09, duration: 1.1, ease: 'expo.out', clearProps: 'transform' });
+}
+</script>

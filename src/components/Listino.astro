@@ -1,0 +1,204 @@
+---
+// Kit 10: Plates Meal ticket cards with a brass binder clip, punched edges and barcode; giant LISTINO;
+// layered diagonal waves (ref) floating behind; the mascot full body in its own right column, never over
+// the prices (mobile: below the last ticket). Click a ticket: it flies left and a card explains each row.
+import { listino } from '../data/prices';
+import { wa } from '../data/business';
+import { img } from '../data/img';
+const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="M14 28h42v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6Z" fill="#17292C"/><path d="M22 30C22 6 48 6 48 30" fill="none" stroke="#B8935A" stroke-width="4"/></svg>';
+---
+<div class="sx-listino">
+<div class="page-frame">
+<section class="panel listino" id="listino" aria-labelledby="listino-t"><div class="bgref r-strati" style="z-index:-1"></div>
+  <div class="top">
+    <p class="marker"><b>C</b>Listino prezzi</p>
+    <h2 class="title type-pop on-petrol" id="listino-t" aria-label="Listino, senza sorprese">Listino<span class="script-over" aria-hidden="true">senza sorprese</span></h2>
+    <img class="scissors" {...img('attrezzi/01_forbici_aperte', 960)} alt="" loading="lazy" />
+    <span class="bubble-deco lb" data-bubble="taglio|fresco" data-seed="5" style="--bc:#F4EFE8"></span>
+    <p class="intro">Prezzi chiari, scritti qui. Il pagamento si fa in salone. Per la stiratura il prezzo dipende dalla lunghezza.</p>
+    <div class="cta"><a class="btn-pop fill" href={wa()} target="_blank" rel="noopener">Prenota su WhatsApp</a></div>
+  </div>
+  <div class="board">
+    <div class="tickets" id="tk">
+      {listino.map((g) => (
+        <article class="ticket" data-k={g.k} tabindex="0" role="button" aria-haspopup="dialog" aria-label={`Apri i dettagli del listino ${g.title}`}>
+          <Fragment set:html={clip} /><span class="curl" aria-hidden="true"></span><span class="shine" aria-hidden="true"></span>
+          <h3>{g.title}</h3><p class="k">{g.kicker}</p>
+          <ul>{g.rows.map(([n, p]) => <li><span>{n}</span><b>{p}</b></li>)}</ul>
+          {g.wave && <div class="wave" aria-hidden="true"></div>}
+          <div class="foot"><span class="total">Glamood</span><span class="bar" aria-hidden="true"></span></div>
+          <span class="more" aria-hidden="true">Dettagli <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </article>
+      ))}
+    </div>
+    <figure class="masc" id="masc">
+      <figcaption>Chiedi pure a me! <svg viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6c18-4 34 4 42 26"/><path d="M38 28l8 6 4-10"/></svg></figcaption>
+      <span class="mw">
+        <img class="m0" {...img('mascotte/mascotte-indica-listino', 960)} alt="La mascotte Glamood indica il listino" loading="lazy" />
+        <img class="m1" {...img('mascotte/mascotte-indica-listino-occhiolino', 960)} alt="" loading="lazy" />
+      </span>
+    </figure>
+  </div>
+  <div class="checker" style="margin:0 calc(-1*var(--gutter))"></div>
+</section>
+</div>
+<div class="lz" id="lz" role="dialog" aria-modal="true" aria-labelledby="lzT" hidden>
+  <div class="lz-bg" id="lzBg"></div>
+  <div class="lz-stage" id="lzStage"></div>
+  <aside class="lz-card" id="lzCard"></aside>
+  <button class="lz-x" id="lzX" aria-label="Chiudi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="lz-nav"><button id="lzP">Precedente</button><button id="lzN">Successivo</button></div>
+</div>
+</div>
+<script type="application/json" id="listino-data" set:html={JSON.stringify({ listino, wa: wa() })}></script>
+
+<style is:global>
+.sx-listino{display:contents;
+.listino{background:var(--petrol) url("/img/pattern/ref/liquido-tono.webp") center/1100px;padding:clamp(56px,7vw,110px) var(--gutter) 0}
+.listino::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgb(8 57 62 / .55),rgb(8 57 62 / .15) 40%,rgb(8 57 62 / .35))}
+.listino>*:not(.bgref){position:relative;z-index:1}
+.top{position:relative;display:grid;gap:18px;justify-items:start;max-width:1300px;margin:0 auto}
+.title{position:relative;font-size:clamp(78px,17vw,300px);margin-left:-.04em}
+.title .script-over{display:block;font-size:.2em;color:var(--brass);-webkit-text-stroke:0;text-shadow:none;margin-top:.35em;letter-spacing:.12em}
+.scissors{position:absolute;right:4%;top:6%;width:clamp(110px,13vw,220px);height:auto;transform:rotate(-24deg);filter:drop-shadow(0 16px 16px rgb(0 0 0 / .35));pointer-events:none}
+.lb{right:4%;bottom:-6px;font-size:clamp(56px,6vw,104px);transform:rotate(-6deg)}
+@media (max-width:1023px){.lb{display:none}}
+.intro{max-width:44ch;color:#d9ebe8;font-size:clamp(16px,1.2vw,19px)}
+.marker{color:#cfe3e1;width:100%;max-width:1300px;margin:0 auto}
+.cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.board{position:relative;display:grid;grid-template-columns:minmax(0,1fr) clamp(200px,20vw,300px);gap:clamp(10px,2vw,30px);max-width:1360px;margin:0 auto;align-items:end}
+.tickets{width:100%;position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,3vw,48px);max-width:1180px;margin:clamp(48px,6vw,84px) 0 0;justify-content:center;padding-bottom:clamp(60px,7vw,110px);align-items:start}
+.ticket{position:relative;isolation:isolate;container-type:inline-size;color:var(--ink);padding:50px clamp(20px,2vw,30px) 30px;cursor:zoom-in;outline:none;
+ --rx:0deg;--ry:0deg;--lift:0px;--r:0deg;transform:perspective(1100px) rotate(var(--r)) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--lift));transform-style:preserve-3d;
+ transition:transform .5s cubic-bezier(.2,.8,.2,1),filter .4s;filter:drop-shadow(0 2px 1px rgb(0 0 0 / .18)) drop-shadow(0 26px 22px rgb(0 0 0 / .38))}
+.ticket.tilt{transition:transform .12s linear,filter .4s}
+.ticket:is(:hover,:focus-visible){--lift:28px;filter:drop-shadow(0 2px 1px rgb(0 0 0 / .18)) drop-shadow(0 46px 34px rgb(0 0 0 / .45))}
+.ticket:focus-visible::before{box-shadow:inset 0 0 0 3px var(--brass)}
+.ticket .clip{position:absolute;left:50%;top:-24px;width:52px;transform:translateX(-50%);z-index:4;filter:drop-shadow(0 3px 2px rgb(0 0 0 / .3))}
+.ticket .shine{position:absolute;inset:14px 0;pointer-events:none;z-index:3;border-radius:4px;opacity:0;transition:opacity .4s;mix-blend-mode:soft-light;background:radial-gradient(420px circle at var(--mx,50%) var(--my,30%),rgb(255 255 255 / .9),transparent 55%)}
+.ticket:hover .shine{opacity:1}
+.ticket .curl{position:absolute;inset:14px 0;pointer-events:none;z-index:-1;background:linear-gradient(100deg,rgb(0 0 0 / .05),transparent 18%,transparent 80%,rgb(0 0 0 / .07)),linear-gradient(180deg,transparent 70%,rgb(0 0 0 / .05))}
+.ticket .more{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font:800 11px/1 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--petrol);opacity:.75;transition:opacity .3s,gap .3s}
+.ticket:hover .more{opacity:1;gap:10px}
+.ticket .more svg{width:14px}
+.ticket::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--cream) linear-gradient(180deg,rgb(255 255 255 / .55),transparent 30%);border-radius:4px;
+ -webkit-mask:radial-gradient(circle 6.5px at 10px 0,#0000 97%,#000) top/20px 51% repeat-x,radial-gradient(circle 6.5px at 10px 100%,#0000 97%,#000) bottom/20px 51% repeat-x;
+ mask:radial-gradient(circle 6.5px at 10px 0,#0000 97%,#000) top/20px 51% repeat-x,radial-gradient(circle 6.5px at 10px 100%,#0000 97%,#000) bottom/20px 51% repeat-x}
+.tickets .ticket:nth-child(1){--r:-2.2deg}.tickets .ticket:nth-child(2){--r:1.4deg;margin-top:40px}.tickets .ticket:nth-child(3){--r:-1deg;margin-top:10px}
+.ticket h3{font:900 min(36px,11.4cqi)/.95 var(--f-display);text-transform:uppercase;color:var(--petrol);letter-spacing:-.01em;white-space:nowrap}
+.ticket .k{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:8px}
+.ticket ul{list-style:none;margin-top:18px}
+.ticket li{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1.5px dashed #c9d6d4;font-size:clamp(15px,1.05vw,17px)}
+.ticket li span{flex:1}
+.ticket li b{font:900 clamp(18px,1.4vw,22px)/1 var(--f-display);color:var(--petrol);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ticket .foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}
+.ticket .total{font:700 11px/1 var(--f-body);letter-spacing:.14em;border:1.5px solid var(--ink);padding:5px 7px;text-transform:uppercase}
+.ticket .bar{height:38px;flex:1;max-width:150px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 7px,transparent 7px 9px,var(--ink) 9px 10px,transparent 10px 13px)}
+.ticket .wave{height:26px;margin:16px -1px 0;background:url("/img/svg/onde-bande-striscia.svg") center/cover;border-radius:3px}
+/* mascot column (character register, never over the prices) */
+.masc{margin:0;display:grid;justify-items:center;padding-bottom:clamp(10px,2vw,30px);align-self:end}
+.masc figcaption{font:900 clamp(14px,1.2vw,18px)/1.1 var(--f-display)!important;letter-spacing:.04em;color:var(--cream);text-transform:uppercase;display:grid;justify-items:center;gap:6px;margin-bottom:8px}
+.masc figcaption svg{width:54px;transform:scaleX(-1) rotate(20deg)}
+.masc .mw{position:relative;display:block;width:100%;aspect-ratio:1}
+.masc img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 24px 20px rgb(0 0 0 / .35));transition:opacity .25s}
+.masc .m1{opacity:0}
+.masc.wink .m0{opacity:0}.masc.wink .m1{opacity:1}
+@media (max-width:1023px){
+ .board{grid-template-columns:1fr}
+ .tickets{grid-template-columns:minmax(0,1fr);width:100%;max-width:520px;margin-inline:auto;padding-bottom:20px}
+ .tickets .ticket:nth-child(n){margin-top:40px}
+ .masc{width:min(70vw,300px);margin:0 auto;padding-bottom:30px}
+}
+@media (max-width:767px){.scissors{top:-10px;right:-10px;width:110px}}
+}
+/* zoom: the ticket flies to the left, a card on the right explains it (outside the panel: fixed) */
+.sx-listino{
+.lz{position:fixed;inset:0;z-index:var(--z-modal);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(24px,4vw,64px);padding:clamp(70px,8vh,100px) max(var(--gutter),calc((100% - 1180px)/2)) clamp(30px,5vh,60px);overflow:auto;overscroll-behavior:contain}
+.lz[hidden]{display:none}
+.lz-bg{position:fixed;inset:0;background:rgb(6 40 44 / .78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transition:opacity .45s}
+.lz.on .lz-bg{opacity:1}
+.lz-stage{position:relative;justify-self:end;width:min(460px,100%)}
+.lz-stage .ticket{cursor:default;--r:0deg;--lift:0px;margin:0!important}
+.lz-card{position:relative;background:var(--cream);color:var(--ink);border-radius:28px;padding:clamp(24px,3vw,40px);max-width:500px;box-shadow:0 40px 70px -30px rgb(0 0 0 / .6);opacity:0;transform:translateX(40px);transition:opacity .5s .15s,transform .7s .15s cubic-bezier(.2,.8,.2,1)}
+.lz.on .lz-card{opacity:1;transform:none}
+.lz-card .k{font:700 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--petrol-deep)}
+.lz-card h3{font:900 clamp(30px,3.3vw,50px)/.92 var(--f-display);overflow-wrap:anywhere;text-transform:uppercase;letter-spacing:-.03em;color:var(--petrol);margin-top:10px}
+.lz-card .lead{margin-top:14px;color:var(--ink-soft);font-size:16px;line-height:1.5}
+.lz-card dl{margin-top:20px;display:grid;gap:12px}
+.lz-card dt{font:800 15px/1.2 var(--f-display);text-transform:uppercase;color:var(--ink);display:flex;justify-content:space-between;gap:12px}
+.lz-card dt b{color:var(--petrol);white-space:nowrap}
+.lz-card dd{margin:4px 0 0;color:var(--ink-soft);font-size:14.5px;line-height:1.45}
+.lz-card .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.lz-card .facts span{padding:7px 12px;border-radius:999px;background:var(--petrol-pale);color:var(--petrol);font:700 12px/1 var(--f-body);letter-spacing:.04em}
+.lz-card .btn-pop{margin-top:22px}
+.lz-x{position:fixed;top:clamp(14px,2.5vh,26px);right:clamp(14px,2.5vw,30px);z-index:3;width:52px;height:52px;border-radius:16px;background:var(--cream);color:var(--petrol);display:grid;place-items:center;box-shadow:0 10px 20px -10px rgb(0 0 0 / .6);transition:transform .2s}
+.lz-x:hover{transform:rotate(90deg)}.lz-x svg{width:22px}
+.lz-nav{position:fixed;bottom:clamp(14px,3vh,28px);left:50%;translate:-50% 0;z-index:3;display:flex;gap:10px}
+.lz-nav button{min-height:44px;padding:0 18px;border-radius:999px;background:rgb(6 40 44 / .88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#F4EFE8;font:800 12px var(--f-display);letter-spacing:.1em;text-transform:uppercase;border:1px solid rgb(255 255 255 / .25)}
+.lz-nav button:hover{background:rgb(255 255 255 / .26)}
+@media (max-width:860px){.lz{grid-template-columns:1fr;align-items:start;padding-top:96px;padding-bottom:110px}.lz-stage{justify-self:center;width:min(340px,100%)}.lz-card{justify-self:center;transform:translateY(30px)}}
+@media (prefers-reduced-motion:reduce){.ticket,.lz-card,.lz-bg{transition:none}}
+}
+</style>
+
+<script>
+import { reduced, lockScroll, trapTab } from '../scripts/core.js';
+import { gsap } from '../scripts/motion.js';
+import { bubbles } from '../scripts/bubble.js';
+const root = document.getElementById('listino')!;
+bubbles(root);
+const { listino, wa: WA } = JSON.parse(document.getElementById('listino-data')!.textContent!);
+const D: Record<string, any> = {}; listino.forEach((g: any, i: number) => (D[g.k] = { ...g, label: `Listino ${i + 1} di ${listino.length}` }));
+const order = listino.map((g: any) => g.k);
+if (!reduced) {
+  gsap.from(root.querySelector('.title'), { scrollTrigger: { trigger: root, start: 'top 75%' }, yPercent: 30, opacity: 0, duration: 1.2, ease: 'expo.out' });
+  gsap.utils.toArray<HTMLElement>('#tk .ticket').forEach((t, i) => gsap.from(t, { scrollTrigger: { trigger: '#tk', start: 'top 80%' }, y: 120, rotate: i % 2 ? 8 : -8, opacity: 0, duration: 1.1, delay: i * 0.12, ease: 'expo.out', clearProps: 'transform' }));
+  gsap.from('#masc .mw', { scrollTrigger: { trigger: '#masc', start: 'top 85%' }, y: 120, opacity: 0, duration: 1.2, ease: 'back.out(1.4)' });
+}
+// mascot: switches to the wink once (scroll-in), again on hover/tap
+const masc = document.getElementById('masc')!;
+const wink = () => { masc.classList.add('wink'); setTimeout(() => masc.classList.remove('wink'), 900); };
+new IntersectionObserver((e, o) => { if (e[0].isIntersecting) { setTimeout(wink, 900); o.disconnect(); } }, { threshold: 0.6 }).observe(masc);
+masc.addEventListener('pointerenter', wink); masc.addEventListener('click', wink);
+// 3D tilt (mouse only)
+const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+const lz = document.getElementById('lz')!, lzCard = document.getElementById('lzCard')!, lzStage = document.getElementById('lzStage')!, lzX = document.getElementById('lzX')!;
+document.querySelectorAll<HTMLElement>('#tk .ticket').forEach((t) => {
+  if (fine && !reduced) {
+    t.addEventListener('pointermove', (e) => { const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      t.classList.add('tilt'); t.style.setProperty('--ry', ((x - 0.5) * 14).toFixed(2) + 'deg'); t.style.setProperty('--rx', ((0.5 - y) * 10).toFixed(2) + 'deg');
+      t.style.setProperty('--mx', x * 100 + '%'); t.style.setProperty('--my', y * 100 + '%'); });
+    t.addEventListener('pointerleave', () => { t.classList.remove('tilt'); t.style.setProperty('--rx', '0deg'); t.style.setProperty('--ry', '0deg'); });
+  }
+  t.addEventListener('click', () => openZ(t.dataset.k!));
+  t.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openZ(t.dataset.k!); } });
+});
+let cur: string | null = null, src: HTMLElement | null = null;
+const card = (k: string) => { const d = D[k]; return `<p class="k">${d.label}</p><h3 id="lzT">${d.title}</h3><p class="lead">${d.lead}</p><dl>${d.rows.map((r: string[]) => `<div><dt>${r[0]}<b>${r[1]}</b></dt><dd>${r[2]}</dd></div>`).join('')}</dl><div class="facts"><span>Pagamento in salone</span><span>Prenoti su WhatsApp</span></div><a class="btn-pop fill" href="${WA}" target="_blank" rel="noopener">Prenota su WhatsApp</a>`; };
+function fly(el: HTMLElement, from: DOMRect, to: DOMRect, back: boolean) {
+  const dx = from.left - to.left, dy = from.top - to.top, s = from.width / to.width;
+  const frames = [{ transform: `translate(${dx}px,${dy}px) scale(${s}) rotate(${back ? 0 : src!.style.getPropertyValue('--r') || getComputedStyle(src!).getPropertyValue('--r') || 0})` }, { transform: 'none' }];
+  return el.animate(back ? frames.reverse() : frames, { duration: reduced ? 0 : 700, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' }).finished;
+}
+async function openZ(k: string, swap = false) {
+  const t = document.querySelector<HTMLElement>(`#tk .ticket[data-k="${k}"]`)!;
+  if (!swap) { src = t; lz.hidden = false; lockScroll(true); requestAnimationFrame(() => lz.classList.add('on')); }
+  else { src!.style.visibility = ''; src = t; }
+  cur = k; lzCard.innerHTML = card(k); lzCard.style.transition = 'none'; lzCard.style.opacity = '0'; requestAnimationFrame(() => { lzCard.style.transition = ''; lzCard.style.opacity = ''; });
+  const c = t.cloneNode(true) as HTMLElement; c.removeAttribute('tabindex'); c.removeAttribute('role'); c.removeAttribute('aria-label'); c.removeAttribute('aria-haspopup'); c.style.cssText = ''; c.classList.remove('tilt'); c.querySelector('.more')?.remove();
+  lzStage.innerHTML = ''; lzStage.appendChild(c);
+  const a = t.getBoundingClientRect(), b = c.getBoundingClientRect(); t.style.visibility = 'hidden';
+  if (!swap) await fly(c, a, b, false);
+  lzX.focus();
+}
+async function closeZ() {
+  if (!src) return; const c = lzStage.firstElementChild as HTMLElement; lz.classList.remove('on');
+  const a = src.getBoundingClientRect(), b = c.getBoundingClientRect(); await fly(c, a, b, true);
+  src.style.visibility = ''; lz.hidden = true; lzStage.innerHTML = ''; lockScroll(false); src.focus({ preventScroll: true }); src = null;
+}
+lzX.addEventListener('click', closeZ); document.getElementById('lzBg')!.addEventListener('click', closeZ);
+const lzP = document.getElementById('lzP')!, lzN = document.getElementById('lzN')!;
+lzP.addEventListener('click', () => openZ(order[(order.indexOf(cur) + order.length - 1) % order.length], true));
+lzN.addEventListener('click', () => openZ(order[(order.indexOf(cur) + 1) % order.length], true));
+addEventListener('keydown', (e) => { if (lz.hidden) return; if (e.key === 'Escape') closeZ(); if (e.key === 'ArrowRight') lzN.click(); if (e.key === 'ArrowLeft') lzP.click(); trapTab(e, lz); });
+</script>

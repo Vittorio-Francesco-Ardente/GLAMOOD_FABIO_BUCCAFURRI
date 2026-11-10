@@ -1,0 +1,92 @@
+/* Glamood shared design system for demos. Production must reproduce these tokens 1:1. */
+@font-face{font-family:"Archivo";src:url("/fonts/archivo-latin-700-normal.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Archivo";src:url("/fonts/archivo-latin-800-normal.woff2") format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Archivo";src:url("/fonts/archivo-latin-900-normal.woff2") format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:"Instrument Sans";src:url("/fonts/instrument-sans-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Instrument Sans";src:url("/fonts/instrument-sans-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Instrument Sans";src:url("/fonts/instrument-sans-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Lilita One";src:url("/fonts/lilita-one-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+
+:root{
+  --petrol:#0F6870; --petrol-deep:#0C5A61; --petrol-darker:#0A4A50; --petrol-light:#12757E; --petrol-pale:#DDEAE7;
+  --white:#FFFFFF; --paper:#FBFBF9; --ink:#17292C; --ink-soft:#4C6366;
+  --oak:#C8975E; --brass:#B8935A; --chili:#C8202A;
+  --f-display:"Archivo",system-ui,sans-serif; --f-body:"Instrument Sans",system-ui,sans-serif; --f-toon:"Lilita One","Archivo",sans-serif;
+  --r-card:20px; --r-media:24px; --r-pill:999px;
+  --shadow:0 24px 60px -24px rgb(12 90 97 / .35); --shadow-sm:0 10px 24px -14px rgb(12 90 97 / .35);
+  --gutter:clamp(16px,4vw,48px); --maxw:1400px;
+  --fs-body:clamp(16px,0.95rem + .2vw,18px); --fs-small:14px;
+  --fs-h3:clamp(22px,1.2rem + 1vw,32px); --fs-h2:clamp(38px,1.6rem + 3.6vw,76px);
+  --fs-display:clamp(56px,2rem + 7vw,140px); --fs-giant:clamp(96px,24vw,420px);
+  --ease-out:cubic-bezier(.16,1,.3,1); --ease-io:cubic-bezier(.65,0,.35,1);
+  /* z-index scale */ --z-decor:10; --z-content:20; --z-header:50; --z-menu:60; --z-modal:70; --z-loader:80; --z-grain:90;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--f-body);font-size:var(--fs-body);line-height:1.55;color:var(--ink);background:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img,svg,canvas,video{display:block;max-width:100%}
+img{height:auto}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--petrol);outline-offset:3px;border-radius:6px}
+::selection{background:var(--petrol-pale)}
+.wrap{width:min(100% - 2*var(--gutter),var(--maxw));margin-inline:auto}
+.display{font-family:var(--f-display);font-weight:900;letter-spacing:-.035em;line-height:.92;text-transform:uppercase}
+.h2{font-family:var(--f-display);font-weight:900;font-size:var(--fs-h2);letter-spacing:-.03em;line-height:.95;text-transform:uppercase;color:var(--petrol)}
+.h3{font-family:var(--f-display);font-weight:800;font-size:var(--fs-h3);letter-spacing:-.015em;line-height:1.1}
+.kicker{font-weight:600;font-size:var(--fs-small);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.lead{font-size:clamp(17px,1rem + .4vw,21px);color:var(--ink-soft);max-width:46ch}
+.toon{font-family:var(--f-toon);letter-spacing:.01em}
+.btn{display:inline-flex;align-items:center;gap:.6em;min-height:48px;padding:0 1.4em;border-radius:var(--r-pill);font-weight:600;white-space:nowrap;transition:transform .25s var(--ease-out),background .2s,color .2s,box-shadow .25s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--petrol);color:#fff;box-shadow:var(--shadow-sm)}
+.btn-primary:hover{background:var(--petrol-deep)}
+.btn-secondary{border:1.5px solid var(--petrol);color:var(--petrol);background:#fff}
+.btn-secondary:hover{background:var(--petrol-pale)}
+.btn-on-petrol{background:#fff;color:var(--petrol)}
+.btn-dashed{position:relative}
+.btn-dashed::after{content:"";position:absolute;inset:-8px;border:1.5px dashed var(--petrol);border-radius:inherit}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.grain{position:fixed;inset:0;z-index:var(--z-grain);pointer-events:none;opacity:.05;background:url("/img/texture/carta-grana.webp") center/600px repeat;mix-blend-mode:multiply}
+/* reveal helper (production: GSAP SplitText) */
+.mask{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
+.mask>span{display:inline-block;transform:translateY(105%);transition:transform 1s var(--ease-out)}
+.is-in .mask>span{transform:none}
+.rise{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
+.is-in .rise,.rise.is-in{opacity:1;transform:none}
+/* demo-only chrome */
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.mask>span,.rise{transform:none!important;opacity:1!important}}
+@font-face{font-family:"Archivo X";src:url("/fonts/archivo-var-ext.woff2") format("woff2");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+:root{--cream:#F4EFE8;--f-hand:"Glamood Hand","Lilita One",cursive}
+.hand{font-family:var(--f-hand);font-weight:600}
+/* rich section skins */
+.skin-petrol{background:var(--petrol);color:#F4EFE8}
+.skin-deep{background:var(--petrol-darker);color:#F4EFE8}
+.skin-cream{background:var(--cream);color:var(--ink)}
+.grainy{position:relative;isolation:isolate}
+.grainy::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url("/img/texture/carta-grana.webp") center/520px;mix-blend-mode:multiply;opacity:.3}
+.grainy>*{position:relative;z-index:1}
+.wave-edge{height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover}
+.giant-title{font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:-.045em;line-height:.8;white-space:nowrap}
+.tape{position:absolute;width:76px;height:24px;background:rgb(255 255 255 / .6);box-shadow:0 2px 4px rgb(0 0 0 / .12)}
+/* NO SCRIPT FONT: the handwritten face is retired everywhere. Former "hand" roles use the bold display face. */
+:root{--f-hand:"Archivo",system-ui,sans-serif}
+.hand,.script-over,.hand-note,figcaption{font-family:var(--f-display)!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.02em;font-style:normal}
+
+/* ---------- interaction layer (all buttons, links, tappable cards) ---------- */
+html{-webkit-tap-highlight-color:transparent}
+a,button,[role=button],.btn,.btn-pop,summary,label[for]{touch-action:manipulation;cursor:pointer}
+:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+::selection{background:var(--petrol);color:#F4EFE8}
+.btn,.btn-pop{transition:transform .22s var(--ease-out),box-shadow .22s var(--ease-out),background .2s,color .2s}
+.btn-pop svg,.btn svg{transition:transform .3s var(--ease-out)}
+@media (hover:hover){.btn-pop:hover svg,.btn:hover svg{transform:translate(2px,-2px)}}
+.btn:active,.btn-pop:active{transition-duration:.08s}
+/* touch: no sticky hover, a clear pressed state instead */
+@media (hover:none){
+ .btn-pop:hover{transform:none;box-shadow:4px 5px 0 var(--petrol)}
+ .btn-pop.fill:hover{box-shadow:4px 5px 0 #08393E}
+ .btn-pop:active,.btn-pop.fill:active{transform:translate(3px,4px);box-shadow:1px 1px 0 #08393E}
+}
+@media (prefers-reduced-motion:reduce){.btn,.btn-pop,.btn-pop svg,.btn svg{transition:none}}
+.btn,.btn-pop{text-decoration:none}
