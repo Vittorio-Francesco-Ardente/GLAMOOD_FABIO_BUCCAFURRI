@@ -22,3 +22,13 @@ html{scrollbar-color:#F4EFE8 #0A4A50;scrollbar-width:thin}
 ::-webkit-scrollbar-thumb{background:#F4EFE8;border:3px solid #0A4A50;border-radius:999px}
 ::-webkit-scrollbar-thumb:hover{background:#B8935A}
 ::-webkit-scrollbar-corner{background:#0A4A50}
+
+/* Temporary foliage switch: ONLY loose decorative leaves/plants are hidden.
+   Their image assets, markup, animations and other decorative elements remain
+   in the repository, so the change is fully reversible by deleting this rule. */
+#h-dm, #h-dm2, #h-dk,
+.sx-salone img.hang,
+.manifesto img.leaf,
+#foot img.leaf-frame {
+  display:none!important;
+}
