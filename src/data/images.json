@@ -425,6 +425,14 @@
    640
   ]
  },
+ "pattern/listino-fiori": {
+  "w": 880,
+  "h": 1200,
+  "widths": [
+   480,
+   880
+  ]
+ },
  "pattern/listino-onde": {
   "w": 1024,
   "h": 1024,
