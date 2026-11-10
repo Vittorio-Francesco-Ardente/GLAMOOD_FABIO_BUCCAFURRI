@@ -8,9 +8,9 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 ---
 <div class="sx-tagli">
 <section class="tagli" id="tagli" aria-roledescription="carosello" aria-labelledby="tagli-t">
-  <div class="head"><h2 class="giant-title" id="tagli-t">Scegli il tu<span>o</span></h2><p class="hint">Tocca la scatola per aprirla</p></div>
-  <div class="shelf" id="shelf" tabindex="0" aria-label="Scaffale dei tagli. Usa le frecce per scorrere, Invio per aprire"><i class="probe" id="probe"></i><div class="stage" id="tg-stage"></div><div class="ledge"></div></div>
-  <div class="cap" aria-live="polite"><button class="arr" id="tg-prev" aria-label="Taglio precedente"><svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 1L1 5l4 4M1 5h16"/></svg></button><h3 class="m" id="cn"></h3><p class="m" id="cd"></p><button class="arr r" id="tg-next" aria-label="Taglio successivo"><svg viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13 1l4 4-4 4M17 5H1"/></svg></button></div>
+  <div class="head"><h2 class="giant-title" id="tagli-t">Scegli il tu<span>o</span></h2><p class="hint">Trascina per sfogliare, tocca la cassetta per aprirla</p></div>
+  <div class="shelf" id="shelf" tabindex="0" aria-label="Scaffale dei tagli. Trascina o usa le frecce della tastiera per scorrere, Invio per aprire"><i class="probe" id="probe"></i><div class="stage" id="tg-stage"></div><div class="ledge"></div></div>
+  <div class="cap" aria-live="polite"><h3 class="m" id="cn"></h3><p class="m" id="cd"></p></div>
   <noscript><ul class="nojs">{CUTS.map((c) => <li><b>{c[0]}</b> · {c[3]} · {c[2]}</li>)}</ul></noscript>
 </section>
 <div class="cur" id="tg-cur" aria-hidden="true"><i></i><b></b><em>APRI</em></div>
@@ -191,7 +191,6 @@ addEventListener('resize', () => { measure(); render(0.016); });
 // the loop runs only while the shelf is on screen
 new IntersectionObserver((e) => { vis = e[0].isIntersecting; kick(); }, { threshold: 0 }).observe(shelf);
 const goBy = (n: number) => { Tg = Math.round(Tg) + n; kick(); };
-$('tg-prev').addEventListener('click', () => goBy(-1)); $('tg-next').addEventListener('click', () => goBy(1));
 /* ---- input ---- */
 addEventListener('pointermove', (e) => { if (!vis) return; mx = e.clientX; my = e.clientY; if (cx < -9e3) { cx = mx; cy = my; }
   const r = shelf.getBoundingClientRect(); inSec = e.clientY >= r.top && e.clientY <= r.bottom && e.clientX >= r.left && e.clientX <= r.right; }, { passive: true });

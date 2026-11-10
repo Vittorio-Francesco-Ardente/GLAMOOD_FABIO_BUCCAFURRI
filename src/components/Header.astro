@@ -117,8 +117,8 @@ const root = document.querySelector('.sx-header')!;
 const menu = document.getElementById('menu')!, burger = document.getElementById('burger')!, burger2 = document.getElementById('burger2')!;
 const barra = document.getElementById('barra')!;
 wireMaps(menu);
-// after 70 px the top header fades up and the bottom bar slides in (same threshold as Vittorio's site)
-const onScroll = () => root.classList.toggle('scorre', scrollY > 70);
+// as soon as the page scrolls the top header fades up and the bottom bar slides in (same threshold as Vittorio's site)
+const onScroll = () => root.classList.toggle('scorre', scrollY > 4);
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
 const cur = barra.querySelector('.cursore') as HTMLElement;
