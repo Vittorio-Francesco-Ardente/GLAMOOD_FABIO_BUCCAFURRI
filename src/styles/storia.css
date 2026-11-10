@@ -150,3 +150,45 @@
 .float{transform-style:preserve-3d;animation:float 7s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-10px)}}
 @media (prefers-reduced-motion:reduce){.float{animation:none}}
+
+
+/* PHONE-ONLY READER: render an upright paper page instead of a tiny 3D spread.
+   The original 3D scroll book is deliberately preserved for tablet and desktop. */
+.mobile-reader{display:none}
+@media (max-width:767px){
+ .storia-page .scroller{display:none}
+ .storia-page .mobile-reader{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100svh;padding:calc(84px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));gap:18px}
+ .storia-page .mobile-page{--pw:min(calc(100vw - 32px),calc((100svh - 215px)*.74));--ph:calc(var(--pw)/.74);position:relative;flex:none;width:var(--pw);height:var(--ph);isolation:isolate;border-radius:8px;box-shadow:0 4px 0 #E1D7C7,0 9px 0 #0A4A50,0 22px 42px -16px rgb(0 0 0 / .5);overflow:hidden;touch-action:pan-y}
+ .storia-page .mobile-page>.face{position:absolute;inset:0;display:block;transform:none!important;backface-visibility:visible;-webkit-backface-visibility:visible;overflow:hidden}
+ .storia-page .mobile-page>.face.paper{border-radius:8px}
+ .storia-page .mobile-page>.face .shade{display:none}
+ .storia-page .mobile-page .cover{border-radius:8px}
+ .storia-page .mobile-page .pg{padding:7% 7% 10%}
+ .storia-page .mobile-page .pg h3{font-size:clamp(24px,6.7vw,33px);line-height:1.02}
+ .storia-page .mobile-page .pg p{font-size:clamp(12px,3.15vw,15px);line-height:1.43}
+ .storia-page .mobile-page .pg .ch{font-size:10px;letter-spacing:.16em;margin:0 0 3%}
+ .storia-page .mobile-page .pg .no{font-size:10px;bottom:3.5%}
+ .storia-page .mobile-page .pg.split{grid-template-rows:auto minmax(0,1fr);gap:5%}
+ .storia-page .mobile-page .pg.split .txt p{margin-top:2%}
+ .storia-page .mobile-page .pg.split .photo{height:100%;min-height:0}
+ .storia-page .mobile-page .pg .photo{padding:3% 3% 14%;transform:rotate(var(--t,0deg));min-height:0}
+ .storia-page .mobile-page .pg .photo figcaption{bottom:4%;left:2%;right:2%;font-size:clamp(9px,2.4vw,11px)!important;line-height:1.15}
+ .storia-page .mobile-page .pg .photo .tape{top:-2%;height:4.5%;width:23%;left:12%;pointer-events:none}
+ .storia-page .mobile-page .pg.duo{gap:8% 6%;padding-bottom:14%;grid-template-rows:minmax(0,1fr) auto}
+ .storia-page .mobile-page .pg.duo .quote{font-size:clamp(13px,3.5vw,17px);line-height:1.23;max-width:none;padding-top:4%}
+ .storia-page .mobile-page .pg.quad{grid-template-rows:auto minmax(0,1fr);gap:5%}
+ .storia-page .mobile-page .pg.quad .g4{gap:5% 5%}
+ .storia-page .mobile-page .pg .stack{grid-template-columns:1.1fr .9fr;gap:5%}
+ .storia-page .mobile-page .full::after{content:"";position:absolute;inset:52% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.76));pointer-events:none}
+ .storia-page .mobile-page .full .cap{z-index:2;left:7%;right:7%;bottom:7%;font-size:clamp(24px,6.7vw,32px);line-height:1.08}
+ .storia-page .mobile-page .full .cap span{font-size:11px}
+ .storia-page .mobile-page .ex .lbl{gap:8px;padding:10% 7%}
+ .storia-page .mobile-page .ex .lbl small{font-size:9px;letter-spacing:.13em}
+ .storia-page .mobile-page .ex .lbl b{font-size:clamp(24px,6vw,32px)}
+ .storia-page .mobile-page .backcover{transform:none!important}
+ .storia-page .mobile-reader .mobile-help{text-align:center;max-width:32ch;color:var(--room-ink);font:700 11px/1.45 var(--f-body);letter-spacing:.045em;text-transform:uppercase}
+ .storia-page .zoom-tip,.storia-page .hint{display:none!important}
+ .storia-page .storia-nav{bottom:max(14px,env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 24px);gap:10px}
+ .storia-page .storia-nav button{min-width:126px;min-height:48px}
+ .storia-page .after{min-height:45svh;padding:55px 20px 95px}
+}

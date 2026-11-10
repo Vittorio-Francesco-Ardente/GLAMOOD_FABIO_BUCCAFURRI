@@ -124,6 +124,18 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
  .menu .pills a{justify-content:center;background:#fff;color:var(--petrol);border:0}
  .menu .pills a.wide{grid-column:1/-1}
 }
+/* Phone-only navigation: do not cover cards/footer; keep the entire menu scrollable. */
+@media (max-width:767px){
+ .barra{bottom:max(10px,env(safe-area-inset-bottom))}
+ &.mobile-scroll-down .barra,&.at-footer .barra,&:has(.menu.open) .barra{opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 48px))}
+ .menu{height:100dvh;max-height:100dvh;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:calc(14px + env(safe-area-inset-top)) max(16px,var(--gutter)) calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+ .menu .top{position:sticky;top:0;flex:none;z-index:5;min-height:54px;margin:0;padding:2px 0 8px;background:var(--petrol-darker)}
+ .menu ul{flex:none;align-self:stretch;justify-self:stretch;margin:0;gap:9px}
+ .menu li a{min-height:60px;padding:12px 20px;font-size:clamp(25px,7.4vw,32px);line-height:1.08}
+ .menu .pills{flex:none;margin-top:4px;align-self:stretch;gap:10px;grid-auto-rows:minmax(48px,auto)}
+ .menu .pills a{min-width:0;min-height:48px;padding:10px 13px;text-align:center;font-size:clamp(13px,3.8vw,15px);line-height:1.25}
+ .menu .pills a.wide{min-height:54px}
+}
 @media (prefers-reduced-motion:reduce){.menu{transition:none}.menu li a span{transform:none}}
 }
 </style>
@@ -137,6 +149,24 @@ wireMaps(menu);
 // as soon as the page scrolls the top header fades up and the bottom bar slides in (same threshold as Vittorio's site)
 const onScroll = () => root.classList.toggle('scorre', scrollY > 4);
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
+// Phone dock appears when scrolling up and disappears during down-scroll and in the footer.
+// Desktop and tablet navigation behavior remains unchanged.
+const mobileDock = matchMedia('(max-width:767px)');
+let previousY = scrollY;
+const updateMobileDock = () => {
+ const y=scrollY;
+ if(!mobileDock.matches){root.classList.remove('mobile-scroll-down');previousY=y;return;}
+ if(y<110 || y<previousY-4) root.classList.remove('mobile-scroll-down');
+ else if(y>200 && y>previousY+4) root.classList.add('mobile-scroll-down');
+ previousY=y;
+};
+addEventListener('scroll',updateMobileDock,{passive:true});
+addEventListener('resize',updateMobileDock);
+const footerTarget=document.getElementById('foot');
+if(footerTarget) new IntersectionObserver(entries=>{
+ root.classList.toggle('at-footer',mobileDock.matches && entries[0].isIntersecting);
+},{threshold:0,rootMargin:'0px 0px 60px 0px'}).observe(footerTarget);
+updateMobileDock();
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
 const cur = barra.querySelector('.cursore') as HTMLElement;
 const voci = [...barra.querySelectorAll<HTMLElement>('.voce:not(.menu-btn)')];

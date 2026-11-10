@@ -1,0 +1,33 @@
+name: Mobile layout QA (no deployment)
+on:
+  push:
+    branches: [fix/mobile-polish-20261110]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SITE: https://vittorio-francesco-ardente.github.io
+      BASE: /GLAMOOD_FABIO_BUCCAFURRI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: public/img
+          key: img-${{ hashFiles('assets/web/**', 'tools/assets.mjs') }}
+      - name: Build Astro for GitHub Pages
+        run: npm run build
+      - name: Install browser smoke test tools
+        run: |
+          npm install -g playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify phone behavior and desktop isolation
+        run: node tools/mobile-smoke.mjs
