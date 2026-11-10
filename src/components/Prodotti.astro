@@ -209,6 +209,26 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
  .top3 .t3-desc h4{font-size:clamp(17px,4.4vw,20px);line-height:1.1}
  .top3 .t3-acc{left:22px;right:22px;bottom:clamp(145px,17svh,165px);z-index:7}
  .top3 .t3-jar{max-width:65vw}
+ /* A single flowing copy column, instead of two absolute blocks that overlap
+    whenever the "Come si usa" disclosure grows. Navigation stays separate. */
+ .top3{height:max(780px,100svh);min-height:780px}
+ .top3 .t3{
+   display:flex;flex-direction:column;justify-content:flex-end;
+   padding:0 22px clamp(158px,20svh,180px);
+ }
+ .top3 .t3-desc,.top3 .t3-acc{
+   position:relative;left:auto;right:auto;bottom:auto;
+   width:100%;max-width:none;min-width:0;flex:0 0 auto;
+   z-index:7;
+ }
+ .top3 .t3-desc{margin:0 0 16px}
+ .top3 .t3-desc h4{line-height:1.18;margin-bottom:6px;overflow-wrap:break-word}
+ .top3 .t3-desc p{font-size:14px;line-height:1.4}
+ .top3 .t3-acc{margin:0}
+ .top3 .t3-acc summary{min-height:52px;padding:12px 0;line-height:1.2}
+ .top3 .t3-acc p{line-height:1.45;margin:0}
+ .top3 .t3-jw{top:clamp(175px,23svh,205px);bottom:clamp(360px,46svh,420px)}
+ .top3 .t3-nav{bottom:clamp(92px,12svh,110px)}
 }
 @media (prefers-reduced-motion:reduce){.top3{height:auto;min-height:0}.t3{position:relative;visibility:visible;min-height:100svh}}
 }

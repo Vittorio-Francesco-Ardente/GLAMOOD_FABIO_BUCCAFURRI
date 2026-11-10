@@ -1,7 +1,7 @@
 name: Mobile layout QA (no deployment)
 on:
   push:
-    branches: [fix/mobile-polish-20261110, fix/fast-loader-no-sheen-20261110, fix/mobile-navbar-stable-leaves-hidden-20261110, fix/vhs-tap-stability-20261110, fix/mobile-navbar-compact-on-scroll-20261110, fix/mobile-menu-desktop-style-20261110]
+    branches: [fix/mobile-polish-20261110, fix/fast-loader-no-sheen-20261110, fix/mobile-navbar-stable-leaves-hidden-20261110, fix/vhs-tap-stability-20261110, fix/mobile-navbar-compact-on-scroll-20261110, fix/mobile-menu-desktop-style-20261110, fix/mobile-product-accordion-footer-mascot-20261110]
   workflow_dispatch:
 
 permissions:
