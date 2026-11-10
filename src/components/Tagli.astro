@@ -16,7 +16,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 <div class="cur" id="tg-cur" aria-hidden="true"><i></i><b></b><em>APRI</em></div>
 <div class="sheet" id="tg-sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" hidden>
   <button class="x" id="sx" aria-label="Chiudi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  <div class="in"><div class="big" id="sbig"><img id="simg" alt="" decoding="async" /></div>
+  <div class="in"><div class="big" id="sbig"><img id="simg" alt="" decoding="async" /><span class="photo-note" id="photo-state" role="status" aria-live="polite" hidden>Caricamento foto…</span></div>
   <div><p class="kicker">Taglio</p><h2 id="sh-t"></h2><p class="lead" id="sdesc" style="margin-top:16px"></p>
     <div class="facts"><div><b id="spr"></b>prezzo</div><div><b>1:1</b>consulenza</div><div><b>WA</b>prenoti</div></div>
     <p><b>A chi sta bene:</b> <span id="ssuit"></span></p><p style="margin-top:8px"><b>Come mantenerlo:</b> <span id="scare"></span></p>
@@ -80,10 +80,12 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .sheet .in{position:relative;display:grid;gap:clamp(24px,4.5vw,72px);padding:clamp(76px,8vw,110px) var(--gutter) 64px;max-width:1240px;margin:auto;min-height:100%;grid-template-columns:1fr;justify-items:center;align-content:center;align-items:center}
 .sheet .in>div:last-child{width:100%;max-width:560px}
 .sheet::before{content:"";position:fixed;inset:0;z-index:0;background:url("/img/pattern/ref/liquido-crema.webp") center/cover;pointer-events:none}
-.sheet .in,.sheet .x{z-index:1}
+.sheet .in{z-index:1}.sheet .x{z-index:1000;pointer-events:auto;touch-action:manipulation;top:max(16px,env(safe-area-inset-top))}
 .sheet .big{box-sizing:border-box;border-radius:var(--r-media);overflow:hidden;aspect-ratio:var(--pa,.8);justify-self:center;border:8px solid #fff;box-shadow:var(--shadow);height:min(74svh,700px);width:auto;max-width:100%}
 @media (max-width:899px){.sheet .big{width:100%;height:auto}}
-.sheet .big{background:#0F6870}
+.sheet .big{position:relative;background:#0F6870}
+.sheet .photo-note{position:absolute;inset:0;display:grid;place-items:center;padding:16px;text-align:center;background:#0F6870;color:#fff;font:700 14px/1.3 var(--f-body)}
+.sheet .photo-note[hidden]{display:none}
 .sheet .big img{display:block;width:100%;height:100%;object-fit:cover}
 .mk{overflow:hidden}.mk>.mi{will-change:transform;padding-bottom:.08em}
 .sheet h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;white-space:nowrap;font-size:clamp(44px,7vw,110px);line-height:.88;letter-spacing:-.04em;color:var(--petrol)}
@@ -144,11 +146,13 @@ Promise.all([document.fonts.load('900 100px Archivo'), document.fonts.ready]).th
 const sm = (x: number) => x * x * (3 - 2 * x);
 const Bf = (r: number) => (Math.abs(r) < 1 ? (r + Math.sin(Math.PI * r) / Math.PI) / 2 : Math.sign(r) * 0.5);
 const F = (r: number) => r * (ws + gap) + (d - ws + 2.4 * gap + d * 0.22) * Bf(r);
-const relr = (v: number, s: number) => { const r = v - s; return r - N * Math.round(r / N); };
+// Fixed eight-cassette shelf. Wrapping the positions made tapes teleport.
+const relr = (v: number, s: number) => v - s;
+const bound = (n: number) => Math.max(0, Math.min(N - 1, n));
 /* ---- state ---- */
 let s = 0, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
 const fine = matchMedia('(pointer:fine)').matches;
-const idx = () => ((Math.round(s) % NC) + NC) % NC;
+const idx = () => bound(Math.round(s));
 /* ---- caption: each change slides through a mask ---- */
 const cn = $('cn'), cd = $('cd');
 function swap(el: HTMLElement, text: string, dir: number) {
@@ -158,7 +162,7 @@ function swap(el: HTMLElement, text: string, dir: number) {
   old.forEach((o) => { if (o._l) return; o._l = 1; const cs = getComputedStyle(o).transform; o.animate([{ transform: cs === 'none' ? 'translateY(0)' : cs }, { transform: `translateY(${-dir * 105}%)` }], { duration: dur, easing: EASE, fill: 'both' }).onfinish = () => o.remove(); });
 }
 function setActive(i: number, dir: number) { active = i; const c = CUTS[i]; swap(cn, c[0], dir); swap(cd, `${c[3]}  ·  ${c[2]}`, dir); }
-/* ---- render one frame of geometry ---- */
+/* ---- render one frame of eight stationary-index VHS geometry ---- */
 function render(dt: number) {
   const sr = shelf.getBoundingClientRect(), scy = sr.top + 70 + H / 2;
   onCover = !isOpen && fine && Math.abs(mx - (sr.left + W / 2)) < 0.55 * d && Math.abs(my - scy) < 0.55 * H && Math.abs(Tg - s) < 0.3;
@@ -191,7 +195,6 @@ function frame(now: number) {
   raf = 0; const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; if (!vis || isOpen) return;
   raf = requestAnimationFrame(frame);
   if (RM) { s = Tg; sv = 0; } else { const st = drag && drag.moved ? 0.09 : 0.4, om = 2 / st, x = om * dt, e = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x), ch = s - Tg, tmp = (sv + om * ch) * dt; sv = (sv - om * tmp) * e; s = Tg + (ch + tmp) * e; if (Math.abs(Tg - s) < 1e-4 && Math.abs(sv) < 1e-3) { s = Tg; sv = 0; } }
-  if (Math.abs(s) > N * 8) { const sh = N * Math.round(s / N); s -= sh; Tg -= sh; }
   const i = idx(); if (i !== active) { const dir = Math.sign(Tg - s) || 1; setActive(i, dir); }
   render(dt);
 }
@@ -200,58 +203,65 @@ measure(); render(0.016); setActive(idx(), 1);
 addEventListener('resize', () => { measure(); render(0.016); });
 // the loop runs only while the shelf is on screen
 new IntersectionObserver((e) => { vis = e[0].isIntersecting; kick(); }, { threshold: 0 }).observe(shelf);
-const goBy = (n: number) => { Tg = Math.round(Tg) + n; kick(); };
+const goBy = (n: number) => { Tg = bound(Math.round(Tg) + n); kick(); };
 /* ---- input ---- */
 addEventListener('pointermove', (e) => { if (!vis) return; mx = e.clientX; my = e.clientY; if (cx < -9e3) { cx = mx; cy = my; }
   const r = shelf.getBoundingClientRect(); inSec = e.clientY >= r.top && e.clientY <= r.bottom && e.clientX >= r.left && e.clientX <= r.right; }, { passive: true });
 tagliEl.addEventListener('pointerleave', () => { inSec = false; mx = my = -1e4; });
 tapes.forEach((t, v) => { t.el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hover = v; }); t.el.addEventListener('pointerleave', () => { if (hover === v) hover = -1; }); });
-stage.addEventListener('click', (e) => { if (drag?.moved) return; const el = (e.target as Element).closest<HTMLElement>('.tape'); if (!el) return; const v = +el.dataset.v!, r = relr(v, s); if (Math.abs(r) < 0.5) openSheet(); else { Tg = Math.round(s + r); kick(); } });
+// Tap the chosen VHS directly. Never snap/rotate the whole shelf on tap.
+stage.addEventListener('click', (e) => { if (drag?.moved || isOpen) return; const el = (e.target as Element).closest<HTMLElement>('.tape'); if (!el || el.style.visibility === 'hidden') return; openSheet(Number(el.dataset.v)); });
 shelf.addEventListener('keydown', (e) => { if (isOpen) return; if (e.key === 'ArrowRight') { e.preventDefault(); goBy(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); goBy(-1); } else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(); } });
 shelf.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, T0: Tg, id: e.pointerId, moved: false, lx: e.clientX, lt: performance.now(), v: 0 }; });
 addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x;
   if (!drag.moved && Math.abs(dx) > 5) { drag.moved = true; try { shelf.setPointerCapture(drag.id); } catch {} }
-  if (!drag.moved) return; const now = performance.now(); drag.v = ((drag.lx - e.clientX) / (ws + gap) / Math.max(1, now - drag.lt)) * 1000 * 0.6 + drag.v * 0.4; drag.lx = e.clientX; drag.lt = now; Tg = drag.T0 - dx / (ws + gap); kick(); });
-const endDrag = () => { if (!drag) return; const m = drag.moved, v = drag.v; if (m) Tg = Math.round(Tg + Math.max(-3, Math.min(3, v * 0.18))); kick(); setTimeout(() => { drag = null; }, 0); };
+  if (!drag.moved) return; const now = performance.now(); drag.v = ((drag.lx - e.clientX) / (ws + gap) / Math.max(1, now - drag.lt)) * 1000 * 0.6 + drag.v * 0.4; drag.lx = e.clientX; drag.lt = now; Tg = bound(drag.T0 - dx / (ws + gap)); kick(); });
+const endDrag = () => { if (!drag) return; const m = drag.moved, v = drag.v; if (m) Tg = bound(Math.round(Tg + Math.max(-3, Math.min(3, v * 0.18)))); kick(); setTimeout(() => { drag = null; }, 0); };
 addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
-let wt = 0; shelf.addEventListener('wheel', (e) => { if (isOpen || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); Tg += (e.deltaX / (ws + gap)) * 0.5; kick(); clearTimeout(wt); wt = window.setTimeout(() => { Tg = Math.round(Tg); kick(); }, 160); }, { passive: false });
-/* ---- detail sheet: grows out of the open cover, text rises from masks, photo bleeds in like ink ---- */
-const sheet = $('tg-sheet'), simg = $('simg'), sx = $('sx');
-const col = sheet.querySelector('.in > div:last-child')!;
-const mis = [...col.children].map((ch) => { const mk = document.createElement('div'); mk.className = 'mk'; const mi = document.createElement('div'); mi.className = 'mi'; ch.replaceWith(mk); mi.append(ch); mk.append(mi); return mi; });
-let inkRaf = 0;
-// preload the haircut photos once the shelf is on screen, so the sheet opens instantly
-new IntersectionObserver((e, o) => { if (!e[0].isIntersecting) return; o.disconnect(); CUTS.forEach((c) => { const i = new Image(); i.src = urlFor(c[1], 'foto'); }); }, { rootMargin: '400px' }).observe(shelf);
-function coverRect() { const v = Math.round(s); const t = tapes[((v % N) + N) % N]; return t.cv.getBoundingClientRect(); }
-const clipFor = (r: DOMRect) => `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
-function ink() { simg.getAnimations().forEach((x) => x.cancel()); simg.animate([{ opacity: 0, transform: 'scale(1.06)' }, { opacity: 1, transform: 'none' }], { duration: RM ? 1 : 700, delay: RM ? 0 : 350, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' }); }
-function fitTitle() { const h = $('sh-t'); h.style.fontSize = ''; requestAnimationFrame(() => { const max = Math.min(col.clientWidth, innerWidth - 32); const w = h.scrollWidth; if (w > max) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px'; }); }
-function openSheet() {
-  if (isOpen) return; if (Math.abs(Tg - s) > 0.02) { Tg = Math.round(Tg); s = Tg; render(0.016); } else { Tg = s = Math.round(s); }
-  const c = CUTS[idx()]; (simg as HTMLImageElement).src = urlFor(c[1], 'foto'); (simg as HTMLImageElement).alt = c[0]; $('sbig').style.setProperty('--pa', String(LAB[c[1]].pa));
-  $('sh-t').textContent = c[0]; fitTitle(); $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
-  $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
+let wt = 0; shelf.addEventListener('wheel', (e) => { if (isOpen || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; e.preventDefault(); Tg = bound(Tg + (e.deltaX / (ws + gap)) * 0.5); kick(); clearTimeout(wt); wt = window.setTimeout(() => { Tg = bound(Math.round(Tg)); kick(); }, 160); }, { passive: false });
+/* ---- stable detail sheet: open the selected haircut with a reliable close button ---- */
+const sheet = $('tg-sheet'), simg = $('simg') as HTMLImageElement, sx = $('sx');
+const photoState = $('photo-state');
+const col = sheet.querySelector<HTMLElement>('.in > div:last-child')!;
+function fitTitle() {
+  const h = $('sh-t'); h.style.fontSize = '';
+  requestAnimationFrame(() => {
+    const max = Math.min(col.clientWidth, innerWidth - 32), w = h.scrollWidth;
+    if (w > max && max > 0) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px';
+  });
+}
+function openSheet(selected = idx()) {
+  if (isOpen) return;
+  // No recenter or jump when a VHS is tapped, even mid-scroll.
+  Tg = s; sv = 0; hover = -1;
+  const c = CUTS[bound(selected)];
+  photoState.textContent = 'Caricamento foto…';
+  photoState.hidden = false;
+  simg.onload = () => { photoState.hidden = true; };
+  simg.onerror = () => { photoState.textContent = 'Foto non disponibile'; photoState.hidden = false; };
+  simg.src = urlFor(c[1], 'foto'); simg.alt = c[0];
+  if (simg.complete && simg.naturalWidth > 0) photoState.hidden = true;
+  $('sbig').style.setProperty('--pa', String(LAB[c[1]].pa));
+  $('sh-t').textContent = c[0];
+  $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.';
+  $('spr').textContent = c[2];
+  $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.';
+  $('scare').textContent = 'consigli su misura alla fine del taglio.';
   ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
-  const r = coverRect(); isOpen = true;
-  // The RAF stops while the sheet is open: hide the custom cursor explicitly
-  // instead of leaving the previous APRI badge fixed over the dialog.
-  cur.style.visibility = 'hidden'; cur.className = 'cur';
-  inSec = false; onCover = false; hover = -1;
-  sheet.hidden = false; lockScroll(true);
-  sheet.style.transformOrigin = '50% 50%'; sheet.scrollTop = 0;
-  const D = RM ? 1 : 1050;
-  const sc = Math.max(0.08, r.width / innerWidth);
-  sheet.animate([{ transform: `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${sc}) rotate(-4.5deg)`, opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: RM ? 1 : 750, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
-  mis.forEach((m, i) => m.animate([{ transform: 'translateY(110%)' }, { transform: 'translateY(0)' }], { duration: RM ? 1 : 900, delay: RM ? 0 : 620 + i * 75, easing: EASE, fill: 'both' }));
-  ink(); history.pushState({ sheet: 1 }, ''); sx.focus({ preventScroll: true });
+  // Static fixed sheet: no 3D or long Web Animations blocking the X.
+  isOpen = true; cur.style.visibility = 'hidden'; cur.className = 'cur';
+  inSec = false; onCover = false;
+  sheet.hidden = false; sheet.scrollTop = 0; lockScroll(true);
+  fitTitle(); sx.focus({ preventScroll: true });
 }
 function closeSheet() {
-  if (!isOpen) return; const r = coverRect(); sheet.style.transformOrigin = '50% 50%';
-  const sc = Math.max(0.08, r.width / innerWidth);
-  const a = sheet.animate([{ transform: 'none', opacity: 1 }, { transform: `translate(${r.left + r.width / 2 - innerWidth / 2}px,${r.top + r.height / 2 - innerHeight / 2}px) scale(${sc}) rotate(-4.5deg)`, opacity: 0 }], { duration: RM ? 1 : 600, easing: 'cubic-bezier(.76,0,.18,1)', fill: 'both' });
-  a.onfinish = () => { sheet.hidden = true; sheet.getAnimations().forEach((x) => x.cancel()); mis.forEach((m) => m.getAnimations().forEach((x) => x.cancel())); isOpen = false; cur.style.visibility = 'hidden'; lockScroll(false); kick(); shelf.focus({ preventScroll: true }); };
+  if (!isOpen) return;
+  sheet.hidden = true; isOpen = false;
+  cur.style.visibility = 'hidden';
+  lockScroll(false); kick(); shelf.focus({ preventScroll: true });
 }
-sx.addEventListener('click', () => history.back());
+// The close button acts directly; history.back() can leave the modal locked.
+sx.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); closeSheet(); });
 addEventListener('popstate', () => { if (isOpen) closeSheet(); });
-addEventListener('keydown', (e) => { if (!isOpen) return; if (e.key === 'Escape') history.back(); trapTab(e, sheet); });
+addEventListener('keydown', (e) => { if (!isOpen) return; if (e.key === 'Escape') { e.preventDefault(); closeSheet(); } else trapTab(e, sheet); });
 </script>
