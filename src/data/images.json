@@ -626,6 +626,16 @@
    640
   ]
  },
+ "pattern/rilievo-swirl": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
  "pattern/swirl-petrolio": {
   "w": 2048,
   "h": 2048,

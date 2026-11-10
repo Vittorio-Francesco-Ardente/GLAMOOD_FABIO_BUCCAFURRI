@@ -98,6 +98,7 @@
 .r-macchie-tono{background-image:url("/img/svg/pattern-macchie-tono.svg")}
 .r-strati{background-image:url("/img/svg/pattern-onde-strati.svg")}
 .r-rilievo{background-image:url("/img/pattern/ref/rilievo.webp")}
+.r-rilievo-swirl{background-image:url("/img/pattern/rilievo-swirl.webp")}
 .r-swirl{background-image:url("/img/svg/pattern-swirl-retro.svg")}
 .has-bgref{position:relative;overflow:hidden;isolation:isolate}
 .has-bgref>*:not(.bgref){position:relative;z-index:1}

@@ -12,7 +12,7 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 <div class="sx-prodotti">
 <div class="page-frame">
 <section class="panel panel-cream panel-outline" id="prodotti" aria-labelledby="prodotti-t">
-  <div class="band"><div class="bgref r-rilievo"></div>
+  <div class="band"><div class="bgref r-rilievo-swirl"></div>
     <p class="band-k">La linea Glamood · lo stile si porta a casa</p>
     <h2 class="band-t" id="prodotti-t" aria-label="La linea Glamood">Fatti tuoi</h2>
     <div class="jars"><img class="j1" {...img('prodotti/barattolo-cera', 960)} alt="Barattolo Glamood cera" loading="lazy" /><img class="j2" {...img('prodotti/barattolo-pomata', 960)} alt="Barattolo Glamood pomata" loading="lazy" /></div>
@@ -79,8 +79,8 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 <style is:global>
 .sx-prodotti{display:contents;
 .wrap2{max-width:1320px;margin:0 auto}
-.band{position:relative;margin:clamp(12px,1.6vw,22px);border-radius:clamp(14px,1.8vw,24px);overflow:hidden;min-height:clamp(420px,48vw,640px);background:var(--petrol) url("/img/pattern/rilievo-petrolio.webp") center/700px}
-.band::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(60% 70% at 50% 55%,transparent,rgb(8 57 62 / .55));pointer-events:none}
+.band{position:relative;margin:clamp(12px,1.6vw,22px);border-radius:clamp(14px,1.8vw,24px);overflow:hidden;min-height:clamp(420px,48vw,640px);background:var(--petrol)}
+.band::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(70% 80% at 50% 55%,transparent,rgb(8 57 62 / .32));pointer-events:none}
 .band-k{position:absolute;z-index:3;left:50%;top:7%;transform:translateX(-50%);font:800 13px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:#F4EFE8;background:rgb(8 57 62 / .55);padding:10px 16px;border-radius:999px;white-space:nowrap}
 .band-t{position:absolute;z-index:1;left:50%;top:14%;transform:translateX(-50%);font-family:"Archivo X","Archivo",sans-serif;font-stretch:125%;font-weight:900;font-size:clamp(70px,13vw,230px);line-height:.85;letter-spacing:-.03em;text-transform:uppercase;color:#83C8C2;white-space:nowrap}
 .jars{position:absolute;inset:18% 0 12%;z-index:2;display:flex;justify-content:center;align-items:center;gap:0}
