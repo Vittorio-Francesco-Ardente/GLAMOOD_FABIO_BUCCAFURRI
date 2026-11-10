@@ -62,7 +62,25 @@ const year = new Date().getFullYear();
 .egg-g:active{transform:scale(.88) rotate(-10deg)}
 .egg-g.tick{transform:rotate(18deg) scale(1.1)}
 @media (max-width:900px){.cols{grid-template-columns:1fr 1fr}}
-@media (max-width:767px){.legal{padding-bottom:calc(84px + env(safe-area-inset-bottom))}}
+@media (max-width:767px){
+ .foot .stage{padding:clamp(42px,7svh,68px) 18px 0}
+ .foot .big{font-size:clamp(40px,11vw,66px);line-height:.96;letter-spacing:-.04em;overflow-wrap:normal}
+ .foot .big .fb{font-size:.52em;line-height:1;margin:.2em 0}
+ .foot .peekwrap{--pw:min(70vw,290px);margin:22px auto 0}
+ .foot .cta{width:calc(100% - 32px);margin:-4px auto 30px;gap:10px;padding:24px 16px 16px;border-radius:22px}
+ .foot .cta .btn-pop{flex:1 1 100%;min-height:48px;white-space:normal;text-align:center}
+ .foot .cols{gap:22px 18px;padding:30px 20px 28px;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .foot .cols>div:first-child{grid-column:1/-1}
+ .foot .cols>div:last-child{grid-column:1/-1}
+ .foot .cols h4{margin-bottom:10px}
+ .foot .cols a,.foot .cols p{font-size:14px;line-height:1.7}
+ .foot .legal{display:grid;gap:16px;padding:20px 20px calc(26px + env(safe-area-inset-bottom));font-size:12px;line-height:1.6}
+ .foot .legal .lr{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px}
+ .foot .legal .egg-g{width:48px;height:48px;margin-left:auto;flex:none}
+ .foot .leaf-frame{pointer-events:none;opacity:.7}
+ .foot .leaf-frame.l{top:26%;bottom:auto;width:90px}
+ .foot .leaf-frame.r{top:22%;bottom:auto;width:85px}
+}
 @media (max-width:560px){.big .fb{font-size:.8em}.cols{grid-template-columns:1fr}.leaf-frame.l{width:110px;top:auto;bottom:22%}.leaf-frame.r{width:100px;top:auto;bottom:26%}}
 }
 </style>
