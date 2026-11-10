@@ -117,12 +117,39 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 .menu .pills a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid rgb(255 255 255 / .35);border-radius:999px;font-weight:600;font-size:15px;text-decoration:none}
 .menu .pills a:hover{background:#fff;color:var(--petrol)}
 @media (max-width:767px){
- .menu ul{align-self:start;justify-self:stretch;margin-top:5vh;text-align:left;display:grid;gap:10px}
- .menu li a{width:100%;justify-content:space-between;font-size:clamp(26px,8vw,34px);padding:14px 20px;border-radius:20px;background:rgb(255 255 255 / .1);border:1px solid rgb(255 255 255 / .18)}
- .menu li a svg{opacity:1;transform:none}
- .menu .pills{display:grid;grid-template-columns:1fr 1fr}
- .menu .pills a{justify-content:center;background:#fff;color:var(--petrol);border:0}
- .menu .pills a.wide{grid-column:1/-1}
+ /* Same typographic menu as desktop: centered text, no boxed navigation or bottom CTA row. */
+ .menu{
+   height:100dvh;max-height:100dvh;min-height:0;
+   display:flex;flex-direction:column;gap:0;
+   padding:calc(14px + env(safe-area-inset-top)) max(16px,var(--gutter))
+     calc(22px + env(safe-area-inset-bottom));
+   overflow-x:hidden;overflow-y:auto;
+   -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+ }
+ .menu .top{
+   position:relative;top:auto;flex:none;z-index:5;
+   min-height:66px;margin:0;padding:8px 10px 8px 18px;
+   border-radius:22px;
+   background:rgb(5 51 55 / .88);border:1px solid rgb(255 255 255 / .12);
+ }
+ .menu .x{width:50px;height:50px;border-radius:17px;flex:none}
+ .menu ul{
+   flex:1 0 auto;align-self:stretch;justify-self:stretch;
+   display:flex;flex-direction:column;align-items:center;justify-content:center;
+   width:100%;min-height:min-content;margin:0;
+   padding:clamp(14px,3svh,28px) 0;gap:clamp(8px,2.5svh,22px);
+   list-style:none;text-align:center;
+ }
+ .menu li{width:100%;text-align:center}
+ .menu li a{
+   display:inline-flex;align-items:center;justify-content:center;
+   width:auto;max-width:100%;min-height:44px;
+   padding:0;border:0;border-radius:0;background:transparent;
+   font-size:clamp(34px,9.5vw,48px);line-height:1.05;
+   letter-spacing:-.03em;overflow:visible;
+ }
+ .menu li a svg{display:none}
+ .menu .pills{display:none}
 }
 /* Phone-only navigation: do not cover cards/footer; keep the entire menu scrollable. */
 @media (max-width:767px){
@@ -139,13 +166,6 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
  &.menu-is-open .barra,&.scorre.menu-is-open .barra{
    opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 28px))
  }
- .menu{height:100dvh;max-height:100dvh;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:calc(14px + env(safe-area-inset-top)) max(16px,var(--gutter)) calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
- .menu .top{position:sticky;top:0;flex:none;z-index:5;min-height:54px;margin:0;padding:2px 0 8px;background:var(--petrol-darker)}
- .menu ul{flex:none;align-self:stretch;justify-self:stretch;margin:0;gap:9px}
- .menu li a{min-height:60px;padding:12px 20px;font-size:clamp(25px,7.4vw,32px);line-height:1.08}
- .menu .pills{flex:none;margin-top:4px;align-self:stretch;gap:10px;grid-auto-rows:minmax(48px,auto)}
- .menu .pills a{min-width:0;min-height:48px;padding:10px 13px;text-align:center;font-size:clamp(13px,3.8vw,15px);line-height:1.25}
- .menu .pills a.wide{min-height:54px}
 }
 /* Compact six-column phone dock. Every label stays inside its own button,
    including PRODOTTI on 320px screens. Desktop and tablet are untouched. */

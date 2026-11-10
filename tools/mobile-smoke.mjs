@@ -89,10 +89,34 @@ try {
  await page.locator('#burger').click();
  check(await page.locator('#menu').evaluate(el=>el.classList.contains('open')),'Menu opens');
  check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Nav stays inert while fullscreen menu is open');
- await page.locator('#menu').evaluate(el=>el.scrollTop=el.scrollHeight);
- await page.waitForTimeout(200);
- const last=await page.locator('#menu .pills a').last().boundingBox();
- check(last && last.y>=0 && last.y+last.height<=844,'Last mobile menu link must be reachable');
+ // Mobile menu must look like the desktop typography, not six translucent button cards.
+ check(await page.locator('#menu .pills').isHidden(),'Phone menu hides the bottom contact/action buttons');
+ check(await page.locator('#menu .top').evaluate(el=>parseFloat(getComputedStyle(el).borderTopLeftRadius)>=18),'Menu header has rounded corners');
+ check(await page.locator('#menu li a').count()===6,'All six menu destinations remain available');
+ check(await page.locator('#menu li a').evaluateAll(els=>els.every(a=>{
+   const cs=getComputedStyle(a);
+   return cs.backgroundColor==='rgba(0, 0, 0, 0)' && parseFloat(cs.borderTopWidth)===0 && cs.textAlign!=='left';
+ })),'Phone menu uses borderless centered text rather than boxed buttons');
+ for(const size of [{width:320,height:568},{width:360,height:667},{width:390,height:844},{width:428,height:926}]){
+   await page.setViewportSize(size);
+   await page.waitForTimeout(110);
+   const layout=await page.locator('#menu').evaluate(menu=>{
+     const top=menu.querySelector('.top').getBoundingClientRect();
+     const close=menu.querySelector('#menu-close').getBoundingClientRect();
+     const links=[...menu.querySelectorAll('li a')].map(a=>a.getBoundingClientRect());
+     const body=menu.getBoundingClientRect();
+     return {topRadius:parseFloat(getComputedStyle(menu.querySelector('.top')).borderTopLeftRadius),
+       contained:links.every(x=>x.left>=body.left-1&&x.right<=body.right+1),
+       centered:links.every(x=>Math.abs((x.left+x.right)/2-(body.left+body.right)/2)<3),
+       closeInside:close.left>=top.left && close.right<=top.right && close.bottom<=top.bottom,
+       fits:links[0].top>=top.bottom && links[links.length-1].bottom<=body.bottom,
+       noOverlap:links.every((x,i)=>i===0||x.top>=links[i-1].bottom-1)
+     };
+   });
+   check(layout.topRadius>=18&&layout.contained&&layout.centered&&layout.closeInside&&layout.fits&&layout.noOverlap,
+     'Centered menu fits with rounded header at '+size.width+'x'+size.height);
+ }
+ await page.setViewportSize({width:390,height:844});
  await page.locator('#menu-close').click();
  await page.locator('#foot').scrollIntoViewIfNeeded();
  await page.waitForTimeout(400);
