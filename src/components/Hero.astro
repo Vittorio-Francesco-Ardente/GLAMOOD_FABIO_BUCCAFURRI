@@ -53,7 +53,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .giant .o{color:transparent;-webkit-text-stroke:.018em #F4EFE8;text-shadow:none}
 .fig{position:absolute;left:50%;bottom:0;translate:-50% 0;z-index:4;height:var(--fh);aspect-ratio:1087/1447;touch-action:pan-y;filter:drop-shadow(0 30px 40px rgb(0 0 0 / .35))}
 .fig img,.fig canvas{position:absolute;inset:0;width:100%;height:100%}
-.fig canvas{pointer-events:none;inset:-14% -14%;width:128%;height:128%;max-width:none}
+.fig canvas{pointer-events:none;inset:-45% -45%;width:190%;height:190%;max-width:none}
 .decor{position:absolute;pointer-events:none;will-change:transform;height:auto}
 .band{position:absolute;left:0;right:0;bottom:-1px;z-index:6;height:clamp(54px,7vw,96px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;filter:drop-shadow(0 -10px 20px rgb(0 0 0 / .2))}
 .copy{position:relative;z-index:7}
@@ -127,16 +127,16 @@ size(); new ResizeObserver(() => { size(); wake(); }).observe(fig);
 function add(x: number, y: number) {
   loadCartoon();
   const r = cv.getBoundingClientRect(); const p: any = { x: (x - r.left) * dpr, y: (y - r.top) * dpr, t: performance.now() };
-  if (last) { const d = Math.hypot(p.x - last.x, p.y - last.y); if (d < W * 0.03) return; p.px0 = last.x; p.py0 = last.y; pace = Math.min(1, pace * 0.8 + (d / W) * 5); } last = p;
+  if (last) { const d = Math.hypot(p.x - last.x, p.y - last.y); if (d < W * 0.03 * (1.28 / 1.9)) return; p.px0 = last.x; p.py0 = last.y; pace = Math.min(1, pace * 0.8 + (d / W) * 5); } last = p;
   const n = 8; p.puffs = []; const rot = Math.random() * 6.283;
   for (let i = 0; i < n; i++) { const a = rot + (i / n) * 6.283; p.puffs.push({ dx: Math.cos(a) * 0.62, dy: Math.sin(a) * 0.5, r: 0.36 + (i % 2 ? 0.06 : 0.14) }); }
   p.puffs.push({ dx: 0, dy: 0, r: 0.72 });
   pts.push(p); if (pts.length > 40) pts.shift(); wake();
 }
-const PAD = 0.14 / 1.28; const LIFE = 1100;
+const PAD = 0.45 / 1.9; const LIFE = 1100;
 const ease = (k: number) => (k < 0.25 ? (1 - Math.pow(1 - k / 0.25, 3)) * 1.08 : k < 0.7 ? 1.08 - ((k - 0.25) / 0.45) * 0.08 : 1 - (k - 0.7) / 0.3);
 function puffs(c: CanvasRenderingContext2D, grow: number) {
-  const now = performance.now(); const base = W * 0.2;
+  const now = performance.now(); const base = W * 0.2 * (1.28 / 1.9);
   for (const p of pts) { const k = (now - p.t) / LIFE; if (k >= 1) continue; const s = Math.max(0, ease(k)) * base;
     for (const f of p.puffs) { c.beginPath(); c.arc(p.x + f.dx * s, p.y + f.dy * s, f.r * s + grow, 0, 6.283); c.fill(); } }
 }

@@ -11,12 +11,13 @@ import art from './loader-art.txt?raw';
 </script>
 <div class="intro" id="intro" aria-hidden="true">
   <Fragment set:html={art} />
-  <button class="skip" id="intro-skip" tabindex="-1">Entra</button>
 </div>
 <style is:global>
-.intro{--bg:#FFFFFF;--w1:#0C5A61;--w2:#0F6870;--w3:#12757E;position:fixed;inset:0;z-index:var(--z-loader);display:grid;place-items:center;cursor:pointer;clip-path:inset(0 0 0 0);transition:clip-path 1s cubic-bezier(.76,0,.24,1)}
+.intro{--bg:#FFFFFF;--w1:#0C5A61;--w2:#0F6870;--w3:#12757E;position:fixed;inset:0;z-index:var(--z-loader);display:grid;place-items:center;cursor:pointer;transform:translate3d(0,0,0);transition:transform 1.1s cubic-bezier(.76,0,.24,1);will-change:transform;overflow:hidden}
 .no-loader .intro{display:none}
-.intro.via{clip-path:inset(0 0 100% 0);pointer-events:none}
+.intro.via{transform:translate3d(0,-100%,0);pointer-events:none}
+.intro .intro-logo{transition:transform 1.1s cubic-bezier(.76,0,.24,1),opacity .6s}
+.intro.via .intro-logo{transform:translate3d(0,40vh,0);opacity:0}
 .intro .sfondo{position:absolute;inset:0;z-index:-1}.intro .sfondo svg{width:100%;height:100%;display:block}.intro .sfondo .b{transform-box:view-box}
 @media (prefers-reduced-motion:no-preference){.intro .b1{animation:ld-a 18s ease-in-out infinite alternate}.intro .b2{animation:ld-b 22s ease-in-out infinite alternate}.intro .b3{animation:ld-a 26s ease-in-out infinite alternate-reverse}.intro .b4{animation:ld-b 20s ease-in-out infinite alternate}.intro .b5{animation:ld-a 16s ease-in-out infinite alternate-reverse}.intro .b6{animation:ld-c 19s ease-in-out infinite alternate}}
 @keyframes ld-a{from{transform:translate(-30px,6px)}to{transform:translate(30px,-10px)}}
@@ -30,7 +31,6 @@ import art from './loader-art.txt?raw';
 .gioca .intro-firma{animation:ld-firma 1.1s cubic-bezier(.45,.05,.3,1) 1s both}
 @keyframes ld-pop{0%{opacity:0;transform:translateY(60px) scale(.82) rotate(-4deg)}60%{opacity:1}100%{opacity:1;transform:none}}
 @keyframes ld-firma{0%{opacity:1;-webkit-mask-position:100% 0;mask-position:100% 0}100%{opacity:1;-webkit-mask-position:0 0;mask-position:0 0}}
-.intro .skip{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));height:40px;padding:0 16px;border-radius:999px;border:1.5px solid var(--petrol);background:rgb(255 255 255 / .6);color:var(--petrol);font:700 12px var(--f-display);letter-spacing:.14em;text-transform:uppercase}
 @media (prefers-reduced-motion:reduce){.intro{display:none}}
 </style>
 <script>
@@ -42,12 +42,14 @@ if (intro && html.classList.contains('loading')) {
     if (intro.classList.contains('via')) return; clearTimeout(t);
     intro.classList.add('via'); html.classList.remove('loading');
     try { sessionStorage.setItem('glamood-intro', '1'); } catch (e) {}
-    setTimeout(() => intro.remove(), 1100);
+    setTimeout(() => intro.remove(), 1200);
     removeEventListener('keydown', onKey);
   };
   const onKey = (e: KeyboardEvent) => { if (['Escape', 'Enter', ' '].includes(e.key)) fine(); };
   intro.addEventListener('click', fine); addEventListener('keydown', onKey);
-  requestAnimationFrame(() => intro.classList.add('gioca'));
-  t = window.setTimeout(fine, 2650);
+  let started = false;
+  const go = () => { if (started) return; started = true; requestAnimationFrame(() => requestAnimationFrame(() => { intro.classList.add('gioca'); t = window.setTimeout(fine, 2650); })); };
+  if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
+  setTimeout(go, 1200);
 } else intro?.remove();
 </script>
