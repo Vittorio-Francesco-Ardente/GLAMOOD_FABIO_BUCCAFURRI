@@ -58,6 +58,8 @@ try {
  check(bar.width>=340 && bar.height>=75,'Mobile navbar must occupy a readable full-width pill');
  check(bar.links.length===6 && bar.links.every(v=>v.height>=66 && v.svg>=26 && Number(v.label)>=.9),'All six mobile navigation icons and labels must be visible and tap-sized');
  check(bar.opacity>.9,'Mobile navigation should be visible near page top');
+ await page.evaluate(()=>{window.lenis?.scrollTo(0,{immediate:true});window.scrollTo(0,0)});
+ await page.waitForTimeout(320);
  await page.locator('#burger').click();
  check(await page.locator('#menu').evaluate(el=>el.classList.contains('open')),'Menu opens');
  await page.locator('#menu').evaluate(el=>el.scrollTop=el.scrollHeight);
