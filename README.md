@@ -28,3 +28,8 @@ node tools/qa.mjs # dopo la build: screenshot in qa/, errori console, overflow o
 - Senza token il sito mostra i post statici: funziona comunque.
 
 Dati mancanti: vedi `TODO.md`. Scelte tecniche: vedi `DECISIONS.md`.
+
+## Deploy su GitHub Pages
+Il workflow `.github/workflows/pages.yml` costruisce e pubblica a ogni push su `main` (o sul branch di sviluppo).
+Il sito è servito sotto `/GLAMOOD_FABIO_BUCCAFURRI/`: `BASE` e `SITE` nel workflow, `tools/rebase.mjs` aggiunge il prefisso ai percorsi assoluti.
+Su GitHub Pages non ci sono funzioni server: la sezione social mostra i post statici.

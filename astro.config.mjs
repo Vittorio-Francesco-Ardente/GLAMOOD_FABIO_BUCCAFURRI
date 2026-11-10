@@ -1,8 +1,10 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 // TODO: replace with the final domain when Fabio confirms it (also in src/data/business.ts and public/robots.txt).
+const BASE = process.env.BASE || '/';
 export default defineConfig({
-  site: 'https://glamood.pages.dev',
+  site: process.env.SITE || 'https://glamood.pages.dev',
+  base: BASE,
   output: 'static',
   trailingSlash: 'ignore',
   build: { format: 'file', inlineStylesheets: 'auto' },
