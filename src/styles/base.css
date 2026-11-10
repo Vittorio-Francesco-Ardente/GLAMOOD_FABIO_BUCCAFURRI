@@ -14,7 +14,7 @@ body{background:var(--petrol-darker)}
 .page-top>.sx-dove .page-frame,.page-top>.sx-listino .page-frame,.page-top>.sx-prodotti .page-frame{padding-top:calc(84px + env(safe-area-inset-top))!important}
 .page-top>.sx-tagli .tagli{padding-top:calc(96px + env(safe-area-inset-top))}
 /* phones: room for the bottom tab bar at the end of every page */
-@media (max-width:767px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}}
+@media (max-width:767px){body{padding-bottom:0}}
 /* Glamood scrollbar: petrol track, cream pill thumb with a petrol ring */
 html{scrollbar-color:#F4EFE8 #0A4A50;scrollbar-width:thin}
 ::-webkit-scrollbar{width:12px;height:12px}
