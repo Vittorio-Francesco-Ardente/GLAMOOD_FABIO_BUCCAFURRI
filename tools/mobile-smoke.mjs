@@ -121,6 +121,14 @@ try {
  await page.locator('#foot').scrollIntoViewIfNeeded();
  await page.waitForTimeout(400);
  check(await navVisible(),'Mobile navbar remains visible when footer enters viewport');
+ const mascotGap=await page.locator('#foot').evaluate(el=>{
+   const mascot=el.querySelector('.peekwrap').getBoundingClientRect();
+   const card=el.querySelector('.cta').getBoundingClientRect();
+   const buttons=[...el.querySelectorAll('.cta a')].map(a=>a.getBoundingClientRect());
+   return {gap:card.top-mascot.bottom,buttonsClear:buttons.every(b=>b.top>=card.top && b.top>=mascot.bottom+12)};
+ });
+ check(mascotGap.gap>=12 && mascotGap.buttonsClear,
+   'On phones the mascot and hands must not overlap the action card or its buttons');
  await page.evaluate(()=>{window.lenis?.scrollTo(document.documentElement.scrollHeight,{immediate:true});window.scrollTo(0,document.documentElement.scrollHeight)});
  await page.waitForTimeout(350);
  check(await navVisible(),'Mobile navbar remains visible at absolute bottom of page');
@@ -136,6 +144,31 @@ try {
   return p.bottom<=d.top || p.top>=d.bottom || p.right<=d.left || p.left>=d.right;
  });
  check(separation===true,'Product decoration must not cover its caption on phone');
+ // Regression: opening "COME SI USA" must never collide with the product name,
+ // jar or previous/next controls (the actual iPhone bug).
+ await page.locator('#top3').scrollIntoViewIfNeeded();
+ for(const viewport of [{width:390,height:844},{width:360,height:667},{width:320,height:568}]){
+   await page.setViewportSize(viewport);
+   await page.locator('#top3 .t3-dots button[data-i="1"]').click();
+   await page.waitForTimeout(1450);
+   const details=page.locator('#top3 .t3.on .t3-acc details').first();
+   if(!(await details.evaluate(el=>el.open))) await details.locator('summary').click();
+   await page.waitForTimeout(200);
+   const geometry=await page.locator('#top3').evaluate(el=>{
+     const active=el.querySelector('.t3.on');
+     const desc=active.querySelector('.t3-desc').getBoundingClientRect();
+     const acc=active.querySelector('.t3-acc').getBoundingClientRect();
+     const jar=active.querySelector('.t3-jar').getBoundingClientRect();
+     const nav=el.querySelector('.t3-nav').getBoundingClientRect();
+     return {descToAcc:acc.top-desc.bottom,accToNav:nav.top-acc.bottom,
+       jarToDesc:desc.top-jar.bottom,opened:active.querySelector('.t3-acc details').open,
+       within:desc.left>=-1&&acc.right<=innerWidth+1};
+   });
+   check(geometry.opened && geometry.descToAcc>=10 && geometry.accToNav>=10 &&
+     geometry.jarToDesc>=8 && geometry.within,
+     'Expanded Pomata instructions must not overlap its title, jar or navigation at '+viewport.width+'x'+viewport.height);
+ }
+ await page.setViewportSize({width:390,height:844});
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
  check(overflow<=2,'No page-wide horizontal overflow on products');
  // The VHS carousel must have exactly eight physical cassettes (no cloned copies)
