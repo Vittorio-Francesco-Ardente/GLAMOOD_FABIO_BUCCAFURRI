@@ -1,0 +1,51 @@
+name: Validate book and haircut fixes (no deployment)
+on:
+  push:
+    branches: [fix/book-navigation-cursor-20261110]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE: https://vittorio-francesco-ardente.github.io
+      BASE: /GLAMOOD_FABIO_BUCCAFURRI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: public/img
+          key: img-${{ hashFiles('assets/web/**', 'tools/assets.mjs') }}
+      - name: Verify fix source
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const book = readFileSync('src/pages/storia.astro', 'utf8');
+          const style = readFileSync('src/styles/storia.css', 'utf8');
+          const cuts = readFileSync('src/components/Tagli.astro', 'utf8');
+          assert(book.includes('id="st-next"') && book.includes('function goPage('));
+          assert(book.includes("(N*68+100)+'vh'"));
+          assert(style.includes('.storia-nav') && style.includes('.ribbon{display:none'));
+          assert(cuts.includes("cur.style.visibility = 'hidden'; cur.className = 'cur';"));
+          assert(cuts.includes(':has(#tg-sheet:not([hidden]))'));
+          console.log('UI source checks passed');
+          NODE
+      - name: Build Astro and optimized images
+        run: npm run build
+      - name: Verify page output
+        run: |
+          test -s dist/index.html
+          test -s dist/storia.html
+          test -s dist/tagli.html
+          grep -q 'st-next' dist/storia.html
+          grep -q 'tg-sheet' dist/tagli.html
