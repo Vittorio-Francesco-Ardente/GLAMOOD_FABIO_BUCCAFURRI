@@ -6,7 +6,7 @@
   "scripts": {
     "assets": "node tools/assets.mjs",
     "dev": "node tools/assets.mjs && astro dev",
-    "build": "node tools/assets.mjs && astro build && node tools/rebase.mjs",
+    "build": "node tools/assets.mjs && astro build && node tools/rebase.mjs && node tools/prune.mjs",
     "preview": "astro preview",
     "qa": "node tools/qa.mjs"
   },
