@@ -135,4 +135,4 @@ p+.btn-pop,p+.cta,p+.btns{margin-top:clamp(18px,2vw,28px)}
 @keyframes pan{to{background-position:var(--pan-x,240px) var(--pan-y,-240px)}}
 @media (prefers-reduced-motion:reduce){.pan{animation:none}}
 
-.r-listino{background-image:url("/img/svg/pattern-listino-onde.svg")}
+.r-listino{background-image:url("/img/pattern/listino-onde.webp")}
