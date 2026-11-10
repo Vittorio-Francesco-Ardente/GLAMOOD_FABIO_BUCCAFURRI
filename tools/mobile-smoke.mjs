@@ -27,6 +27,8 @@ let checks=0;
 const check=(condition,msg)=>{assert(condition,msg);checks++;};
 const open=async(page,path)=>{await page.goto('http://localhost:'+port+base+path,{waitUntil:'networkidle'});await page.waitForTimeout(300);};
 try {
+ const svgSource = await readFile('src/components/loader-art.txt','utf8');
+ check(!svgSource.includes('ld-sheen')&&!svgSource.includes('ld-clip'),'Loader artwork must not contain reflective shine');
  const mobile=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  await mobile.addInitScript(()=>{try{sessionStorage.setItem('glamood-intro','1')}catch{}});
  const page=await mobile.newPage();
@@ -42,6 +44,20 @@ try {
  const flat=await page.locator('#mobile-page>.face').evaluate(el=>getComputedStyle(el).transform);
  check(flat==='none','Mobile page is flat rather than flipped/mirrored');
  await open(page,'/');
+ // Bigger mobile bar must have legible icons, visible labels and six touch targets.
+ await page.evaluate(() => { window.lenis?.scrollTo(160,{immediate:true}); window.scrollTo(0,160); });
+ await page.waitForTimeout(850);
+ const bar = await page.locator('#barra').evaluate(el=>{
+  const rect=el.getBoundingClientRect(), css=getComputedStyle(el);
+  const links=[...el.querySelectorAll('a.voce')].map(a=>{
+   const box=a.getBoundingClientRect(),svg=a.querySelector('svg').getBoundingClientRect();
+   return {height:box.height,width:box.width,svg:svg.width,label:getComputedStyle(a.querySelector('span')).opacity};
+  });
+  return {width:rect.width,height:rect.height,opacity:parseFloat(css.opacity),links};
+ });
+ check(bar.width>=340 && bar.height>=75,'Mobile navbar must occupy a readable full-width pill');
+ check(bar.links.length===6 && bar.links.every(v=>v.height>=66 && v.svg>=26 && Number(v.label)>=.9),'All six mobile navigation icons and labels must be visible and tap-sized');
+ check(bar.opacity>.9,'Mobile navigation should be visible near page top');
  await page.locator('#burger').click();
  check(await page.locator('#menu').evaluate(el=>el.classList.contains('open')),'Menu opens');
  await page.locator('#menu').evaluate(el=>el.scrollTop=el.scrollHeight);
@@ -70,5 +86,16 @@ try {
  check(await desktop.locator('#scroller').isVisible(),'Original 3D book remains on desktop');
  check(!(await desktop.locator('.mobile-reader').isVisible()),'Mobile reader stays hidden on desktop');
  await desktop.close();await desk.close();
+ // Fresh session: intro must self-dismiss quickly even if the full page load is slow.
+ const fresh=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+ const first=await fresh.newPage();
+ await first.goto('http://localhost:'+port+base+'/',{waitUntil:'domcontentloaded'});
+ await first.waitForTimeout(1650);
+ check(!(await first.evaluate(()=>document.documentElement.classList.contains('loading'))),'Loader must release the page within 1.65 seconds');
+ check((await first.evaluate(()=>sessionStorage.getItem('glamood-intro')))==='1','Loader should mark its completion');
+ await first.reload({waitUntil:'domcontentloaded'});
+ await first.waitForTimeout(100);
+ check(!(await first.locator('#intro').isVisible()),'Loader must not replay on same-session navigation');
+ await first.close();await fresh.close();
  console.log('Mobile/desktop smoke tests passed:',checks);
 } finally {await browser.close();server.close();}
