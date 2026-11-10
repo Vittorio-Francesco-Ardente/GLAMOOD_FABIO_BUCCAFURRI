@@ -100,9 +100,10 @@ import { reduced, lockScroll, trapTab } from '../scripts/core.js';
 const { CUTS, LAB, wa: WA } = JSON.parse(document.getElementById('tagli-data')!.textContent!) as { CUTS: [string, string, string, string][]; LAB: Record<string, any>; wa: string };
 // Astro knows the project subpath on GitHub Pages. Avoid runtime /img URLs,
 // which point to the wrong root when the site is published under a repository name.
-const T = `${import.meta.env.BASE_URL}img/tagli/`;
+const BASE = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+const T = `${BASE}img/tagli/`;
 const urlFor = (key: string, kind: string) => `${T}${key}-${kind}.webp`;
-const brandUrl = (name: string) => `${import.meta.env.BASE_URL}img/brand/${name}`;
+const brandUrl = (name: string) => `${BASE}img/brand/${name}`;
 const pos_ = (r: number[]) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
 const RM = reduced, EASE = 'cubic-bezier(.2,.8,.2,1)';
 const $ = (id: string) => document.getElementById(id)!;
