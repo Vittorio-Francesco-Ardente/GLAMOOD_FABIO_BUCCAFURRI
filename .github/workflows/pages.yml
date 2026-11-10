@@ -7,9 +7,13 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
+# Keep the current deployment alive when another push arrives.
+# GitHub Pages can only publish one deployment at a time.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,6 +34,7 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -39,4 +44,5 @@ jobs:
     steps:
       - id: d
         uses: actions/deploy-pages@v4
-        with: { timeout: 1800000 }
+        # deploy-pages caps this value at 600000 ms; larger values are ignored.
+        with: { timeout: 600000 }
