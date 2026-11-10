@@ -1,11 +1,10 @@
 ---
-// Kit 10: Plates Meal ticket cards with a brass binder clip, punched edges and barcode; giant LISTINO;
+// Kit 10: Plates Meal ticket cards with punched edges and barcode, centred; giant LISTINO;
 // layered diagonal waves (ref) floating behind; the mascot full body in its own right column, never over
 // the prices (mobile: below the last ticket). Click a ticket: it flies left and a card explains each row.
 import { listino } from '../data/prices';
 import { wa } from '../data/business';
 import { img } from '../data/img';
-const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="M14 28h42v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6Z" fill="#17292C"/><path d="M22 30C22 6 48 6 48 30" fill="none" stroke="#B8935A" stroke-width="4"/></svg>';
 ---
 <div class="sx-listino">
 <div class="page-frame">
@@ -22,7 +21,7 @@ const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="
     <div class="tickets" id="tk">
       {listino.map((g) => (
         <article class="ticket" data-k={g.k} tabindex="0" role="button" aria-haspopup="dialog" aria-label={`Apri i dettagli del listino ${g.title}`}>
-          <Fragment set:html={clip} /><span class="curl" aria-hidden="true"></span><span class="shine" aria-hidden="true"></span>
+          <span class="curl" aria-hidden="true"></span><span class="shine" aria-hidden="true"></span>
           <h3>{g.title}</h3><p class="k">{g.kicker}</p>
           <ul>{g.rows.map(([n, p]) => <li><span>{n}</span><b>{p}</b></li>)}</ul>
           {g.wave && <div class="wave" aria-hidden="true"></div>}
@@ -31,13 +30,6 @@ const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="
         </article>
       ))}
     </div>
-    <figure class="masc" id="masc">
-      <figcaption>Chiedi pure a me! <svg viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6c18-4 34 4 42 26"/><path d="M38 28l8 6 4-10"/></svg></figcaption>
-      <span class="mw">
-        <img class="m0" {...img('mascotte/mascotte-indica-listino', 960)} alt="La mascotte Glamood indica il listino" loading="lazy" />
-        <img class="m1" {...img('mascotte/mascotte-indica-listino-occhiolino', 960)} alt="" loading="lazy" />
-      </span>
-    </figure>
   </div>
   <div class="checker" style="margin:0 calc(-1*var(--gutter))"></div>
 </section>
@@ -66,9 +58,9 @@ const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="
 .intro{max-width:44ch;color:#d9ebe8;font-size:clamp(16px,1.2vw,19px)}
 .marker{color:#cfe3e1;width:100%;max-width:1300px;margin:0 auto}
 .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
-.board{position:relative;display:grid;grid-template-columns:minmax(0,1fr) clamp(200px,20vw,300px);gap:clamp(10px,2vw,30px);max-width:1360px;margin:0 auto;align-items:end}
-.tickets{width:100%;position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,3vw,48px);max-width:1180px;margin:clamp(48px,6vw,84px) 0 0;justify-content:center;padding-bottom:clamp(60px,7vw,110px);align-items:start}
-.ticket{position:relative;isolation:isolate;container-type:inline-size;color:var(--ink);padding:50px clamp(20px,2vw,30px) 30px;cursor:zoom-in;outline:none;
+.board{position:relative;display:grid;grid-template-columns:minmax(0,1fr);max-width:1360px;margin:0 auto;justify-items:center}
+.tickets{width:100%;position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,3vw,56px);max-width:1320px;margin:clamp(48px,6vw,84px) auto 0;justify-content:center;padding-bottom:clamp(60px,7vw,110px);align-items:start}
+.ticket{position:relative;isolation:isolate;container-type:inline-size;color:var(--ink);padding:56px clamp(24px,2.4vw,38px) 36px;font-size:1.06em;cursor:zoom-in;outline:none;
  --rx:0deg;--ry:0deg;--lift:0px;--r:0deg;transform:perspective(1100px) rotate(var(--r)) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--lift));transform-style:preserve-3d;
  transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 /* shadow as a blurred box behind the paper (much cheaper than a drop-shadow filter on a masked shape) */
@@ -77,7 +69,6 @@ const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="
 .ticket.tilt{transition:transform .12s linear}
 .ticket:is(:hover,:focus-visible){--lift:28px}
 .ticket:focus-visible::before{box-shadow:inset 0 0 0 3px var(--brass)}
-.ticket .clip{position:absolute;left:50%;top:-24px;width:52px;transform:translateX(-50%);z-index:4;filter:drop-shadow(0 3px 2px rgb(0 0 0 / .3))}
 .ticket .shine{position:absolute;inset:14px 0;pointer-events:none;z-index:3;border-radius:4px;opacity:0;transition:opacity .4s;mix-blend-mode:soft-light;background:radial-gradient(420px circle at var(--mx,50%) var(--my,30%),rgb(255 255 255 / .9),transparent 55%)}
 .ticket:hover .shine{opacity:1}
 .ticket .curl{position:absolute;inset:14px 0;pointer-events:none;z-index:-1;background:linear-gradient(100deg,rgb(0 0 0 / .05),transparent 18%,transparent 80%,rgb(0 0 0 / .07)),linear-gradient(180deg,transparent 70%,rgb(0 0 0 / .05))}
@@ -91,26 +82,17 @@ const clip = '<svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="
 .ticket h3{font:900 min(36px,11.4cqi)/.95 var(--f-display);text-transform:uppercase;color:var(--petrol);letter-spacing:-.01em;white-space:nowrap}
 .ticket .k{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:8px}
 .ticket ul{list-style:none;margin-top:18px}
-.ticket li{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1.5px dashed #c9d6d4;font-size:clamp(15px,1.05vw,17px)}
+.ticket li{display:flex;align-items:baseline;gap:10px;padding:12px 0;border-bottom:1.5px dashed #c9d6d4;font-size:clamp(16px,1.2vw,19px)}
 .ticket li span{flex:1}
-.ticket li b{font:900 clamp(18px,1.4vw,22px)/1 var(--f-display);color:var(--petrol);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ticket li b{font:900 clamp(20px,1.6vw,26px)/1 var(--f-display);color:var(--petrol);white-space:nowrap;font-variant-numeric:tabular-nums}
 .ticket .foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}
 .ticket .total{font:700 11px/1 var(--f-body);letter-spacing:.14em;border:1.5px solid var(--ink);padding:5px 7px;text-transform:uppercase}
 .ticket .bar{height:38px;flex:1;max-width:150px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 7px,transparent 7px 9px,var(--ink) 9px 10px,transparent 10px 13px)}
 .ticket .wave{height:26px;margin:16px -1px 0;background:url("/img/svg/onde-bande-striscia.svg") center/cover;border-radius:3px}
-/* mascot column (character register, never over the prices) */
-.masc{margin:0;display:grid;justify-items:center;padding-bottom:clamp(10px,2vw,30px);align-self:end}
-.masc figcaption{font:900 clamp(14px,1.2vw,18px)/1.1 var(--f-display)!important;letter-spacing:.04em;color:var(--cream);text-transform:uppercase;display:grid;justify-items:center;gap:6px;margin-bottom:8px}
-.masc figcaption svg{width:54px;transform:scaleX(-1) rotate(20deg)}
-.masc .mw{position:relative;display:block;width:100%;aspect-ratio:1}
-.masc img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 24px 20px rgb(0 0 0 / .35));transition:opacity .25s}
-.masc .m1{opacity:0}
-.masc.wink .m0{opacity:0}.masc.wink .m1{opacity:1}
 @media (max-width:1023px){
  .board{grid-template-columns:1fr}
  .tickets{grid-template-columns:minmax(0,1fr);width:100%;max-width:520px;margin-inline:auto;padding-bottom:20px}
  .tickets .ticket:nth-child(n){margin-top:40px}
- .masc{width:min(70vw,300px);margin:0 auto;padding-bottom:30px}
 }
 @media (max-width:767px){.scissors{top:-10px;right:-10px;width:110px}}
 }
@@ -156,13 +138,7 @@ const order = listino.map((g: any) => g.k);
 if (!reduced) {
   gsap.from(root.querySelector('.title'), { scrollTrigger: { trigger: root, start: 'top 75%' }, yPercent: 30, opacity: 0, duration: 1.2, ease: 'expo.out' });
   gsap.utils.toArray<HTMLElement>('#tk .ticket').forEach((t, i) => gsap.from(t, { scrollTrigger: { trigger: '#tk', start: 'top 80%' }, y: 120, rotate: i % 2 ? 8 : -8, opacity: 0, duration: 1.1, delay: i * 0.12, ease: 'expo.out', clearProps: 'transform' }));
-  gsap.from('#masc .mw', { scrollTrigger: { trigger: '#masc', start: 'top 85%' }, y: 120, opacity: 0, duration: 1.2, ease: 'back.out(1.4)' });
 }
-// mascot: switches to the wink once (scroll-in), again on hover/tap
-const masc = document.getElementById('masc')!;
-const wink = () => { masc.classList.add('wink'); setTimeout(() => masc.classList.remove('wink'), 900); };
-new IntersectionObserver((e, o) => { if (e[0].isIntersecting) { setTimeout(wink, 900); o.disconnect(); } }, { threshold: 0.6 }).observe(masc);
-masc.addEventListener('pointerenter', wink); masc.addEventListener('click', wink);
 // 3D tilt (mouse only)
 const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
 const lz = document.getElementById('lz')!, lzCard = document.getElementById('lzCard')!, lzStage = document.getElementById('lzStage')!, lzX = document.getElementById('lzX')!;
