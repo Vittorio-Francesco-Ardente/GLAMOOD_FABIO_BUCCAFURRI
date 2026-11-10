@@ -425,6 +425,15 @@
    640
   ]
  },
+ "pattern/listino-onde": {
+  "w": 1024,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1024
+  ]
+ },
  "pattern/meandri-crema": {
   "w": 2048,
   "h": 2048,

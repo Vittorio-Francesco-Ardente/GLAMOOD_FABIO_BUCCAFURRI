@@ -8,7 +8,7 @@ import { img } from '../data/img';
 ---
 <div class="sx-listino">
 <div class="page-frame">
-<section class="panel listino" id="listino" aria-labelledby="listino-t"><div class="bgref r-strati" style="z-index:-1"></div>
+<section class="panel listino" id="listino" aria-labelledby="listino-t"><div class="bgref r-listino" style="z-index:-1"></div>
   <div class="top">
     <p class="marker">Listino prezzi</p>
     <h2 class="title type-pop on-petrol" id="listino-t" aria-label="Listino, quello che vedi, paghi">Listino<span class="script-over" aria-hidden="true">quello che vedi, paghi</span></h2>
@@ -46,8 +46,8 @@ import { img } from '../data/img';
 
 <style is:global>
 .sx-listino{display:contents;
-.listino{background:var(--petrol) url("/img/svg/pattern-liquido-tono.svg") center/cover no-repeat;padding:clamp(56px,7vw,110px) var(--gutter) 0}
-.listino::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgb(8 57 62 / .55),rgb(8 57 62 / .15) 40%,rgb(8 57 62 / .35))}
+.listino{background:var(--petrol) url("/img/svg/pattern-listino-onde.svg") center/cover no-repeat;padding:clamp(56px,7vw,110px) var(--gutter) 0}
+.listino::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgb(8 57 62 / .35),transparent 40%,rgb(8 57 62 / .2))}
 .listino>*:not(.bgref){position:relative;z-index:1}
 .top{position:relative;display:grid;gap:18px;justify-items:start;max-width:1300px;margin:0 auto}
 .title{position:relative;font-size:clamp(78px,17vw,300px);margin-left:-.04em}
