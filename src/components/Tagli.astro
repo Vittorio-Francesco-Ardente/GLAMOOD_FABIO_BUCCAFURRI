@@ -10,7 +10,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 <section class="tagli" id="tagli" aria-roledescription="carosello" aria-labelledby="tagli-t">
   <div class="head"><h2 class="giant-title" id="tagli-t">Scegli il tu<span>o</span></h2><p class="hint">Trascina per sfogliare, tocca la cassetta per aprirla</p></div>
   <div class="shelf" id="shelf" tabindex="0" aria-label="Scaffale dei tagli. Trascina o usa le frecce della tastiera per scorrere, Invio per aprire"><i class="probe" id="probe"></i><div class="stage" id="tg-stage"></div><div class="ledge"></div></div>
-  <div class="cap" aria-live="polite"><h3 class="m" id="cn"></h3><p class="m" id="cd"></p></div>
+  <div class="cap sr-only" aria-live="polite"><h3 class="m" id="cn"></h3><p class="m" id="cd"></p></div>
   <noscript><ul class="nojs">{CUTS.map((c) => <li><b>{c[0]}</b> · {c[3]} · {c[2]}</li>)}</ul></noscript>
 </section>
 <div class="cur" id="tg-cur" aria-hidden="true"><i></i><b></b><em>APRI</em></div>
@@ -27,10 +27,11 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 
 <style is:global>
 .sx-tagli{display:contents;
-.tagli{position:relative;min-height:0;background:var(--cream);overflow:hidden;padding:clamp(60px,8vw,110px) 0 0;isolation:isolate;--ease:cubic-bezier(.2,.8,.2,1)}
+.tagli{position:relative;min-height:0;background:var(--cream);overflow:hidden;padding:clamp(60px,8vw,110px) 0 clamp(50px,6vw,90px);isolation:isolate;--ease:cubic-bezier(.2,.8,.2,1)}
 .tagli::before{content:"";position:absolute;inset:0;z-index:-1;background:url("/img/pattern/ref/liquido-crema.webp") center/cover;animation:refdrift 40s ease-in-out infinite alternate}
 .head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;padding:0 var(--gutter)}
-.head .giant-title{font-size:clamp(58px,12vw,200px);color:var(--petrol);margin-bottom:0}
+.head .giant-title{font-size:clamp(44px,10.5vw,200px);color:var(--petrol);margin-bottom:0}
+@media (max-width:767px){.head .giant-title{white-space:normal;line-height:.86}}
 .head .giant-title span{color:transparent;-webkit-text-stroke:.02em var(--petrol)}
 .head .hint{font:800 clamp(14px,1.3vw,18px)/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;color:var(--petrol);transform:rotate(-3deg);margin-bottom:1.4em}
 .tagli{--H:min(46vh,31vw);--ws:calc(var(--H)*.1355);--d:calc(var(--H)*.52);--ledge:clamp(20px,2.4vw,30px)}
@@ -52,7 +53,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .lb.s>span{writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.03em}
 .lb.q img{position:absolute;left:8%;top:12%;width:84%;height:76%;object-fit:contain}
 .ledge{position:absolute;left:0;right:0;bottom:0;height:var(--ledge);background:linear-gradient(var(--petrol-light),var(--petrol) 30%,var(--petrol-darker));box-shadow:0 -2px 0 rgb(255 255 255 / .25) inset,0 30px 40px -20px rgb(10 74 80 / .6)}
-.ledge::after{content:"";position:absolute;left:0;right:0;top:100%;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
+.ledge::after{display:none;content:"";position:absolute;left:0;right:0;top:100%;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
 .probe{position:absolute;visibility:hidden;pointer-events:none;width:1px;height:var(--H)}
 .cap{position:relative;display:grid;justify-items:center;text-align:center;padding:calc(clamp(46px,6vw,90px) + 26px) var(--gutter) clamp(40px,6vw,80px);color:var(--petrol)}
 .cap .m{overflow:hidden;display:grid;justify-items:center}.cap .m>span{grid-area:1/1;display:block}
@@ -82,7 +83,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 @media (max-width:899px){.sheet .big{width:100%;height:auto}}
 .sheet .big svg{display:block;width:100%;height:100%}
 .mk{overflow:hidden}.mk>.mi{will-change:transform;padding-bottom:.08em}
-.sheet h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:clamp(44px,7vw,110px);line-height:.88;letter-spacing:-.04em;color:var(--petrol)}
+.sheet h2{font-family:var(--f-display);font-weight:900;text-transform:uppercase;white-space:nowrap;font-size:clamp(44px,7vw,110px);line-height:.88;letter-spacing:-.04em;color:var(--petrol)}
 .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
 .facts div{background:#fff;border-radius:16px;padding:14px;text-align:center}
 .facts b{display:block;font-family:var(--f-display);font-weight:900;font-size:clamp(22px,2.4vw,34px);color:var(--petrol)}
@@ -214,11 +215,12 @@ function coverRect() { const v = Math.round(s); const t = tapes[((v % N) + N) % 
 const clipFor = (r: DOMRect) => `inset(${r.top}px ${innerWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 3px)`;
 function ink() { cancelAnimationFrame(inkRaf); blobs.forEach((b) => b.setAttribute('r', '0')); const t0 = performance.now() + (RM ? -5000 : 520);
   const step = (n: number) => { let done = true; blobs.forEach((b, i) => { const p = Math.max(0, Math.min(1, (n - t0 - BD[i]) / 1250)); if (p < 1) done = false; b.setAttribute('r', (520 * (1 - Math.pow(1 - p, 3))).toFixed(1)); }); if (!done) inkRaf = requestAnimationFrame(step); }; inkRaf = requestAnimationFrame(step); }
+function fitTitle() { const h = $('sh-t'); h.style.fontSize = ''; requestAnimationFrame(() => { const max = h.parentElement!.parentElement!.clientWidth || h.clientWidth; const w = h.scrollWidth; if (w > max) h.style.fontSize = (parseFloat(getComputedStyle(h).fontSize) * max / w * 0.98) + 'px'; }); }
 function openSheet() {
   if (isOpen) return; if (Math.abs(Tg - s) > 0.02) { Tg = Math.round(Tg); s = Tg; render(0.016); } else { Tg = s = Math.round(s); }
   const c = CUTS[idx()]; simg.setAttribute('href', T + c[1] + '-foto.webp');
   { const pa = LAB[c[1]].pa, vh = 400 / pa; const sv_ = sheet.querySelector('#sbig svg')!; sv_.setAttribute('viewBox', `0 0 400 ${vh}`); simg.setAttribute('height', String(vh)); $('sbig').style.setProperty('--pa', pa); sv_.querySelector('rect')!.setAttribute('height', String(vh)); }
-  $('sh-t').textContent = c[0]; $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
+  $('sh-t').textContent = c[0]; fitTitle(); $('sdesc').textContent = c[3] + ' Descrizione completa in arrivo da Fabio.'; $('spr').textContent = c[2];
   $('ssuit').textContent = 'te lo dice Fabio in poltrona, guardando viso e capelli.'; $('scare').textContent = 'consigli su misura alla fine del taglio.';
   ($('sbook') as HTMLAnchorElement).href = WA.replace(encodeURIComponent('__X__'), encodeURIComponent(`Ciao Fabio, vorrei prenotare: ${c[0]}.`));
   const r = coverRect(); isOpen = true; sheet.hidden = false; lockScroll(true);

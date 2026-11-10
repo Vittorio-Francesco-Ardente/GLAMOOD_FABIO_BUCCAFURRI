@@ -12,7 +12,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'assets/web');
 const OUT = join(ROOT, 'public/img');
 const WIDTHS = [480, 960, 1600];
-const BG_MAX = 1600; // CSS backgrounds and decorative images
+const BG_MAX = 2400; // CSS backgrounds and decorative images
 sharp.concurrency(2);
 
 async function walk(dir) {
@@ -41,8 +41,9 @@ for (const file of files) {
   // capped webp (same name as the source, used by CSS url() and by <img src>)
   const capped = join(OUT, base + '.webp');
   if (!(await fresh(file, capped))) {
-    if (w <= BG_MAX && extname(file).toLowerCase() === '.webp') await copyFile(file, capped);
-    else await sharp(file).resize({ width: Math.min(w, BG_MAX), withoutEnlargement: true }).webp({ quality: 80, effort: 4 }).toFile(capped);
+    const max = rel.startsWith('pattern/') ? 3200 : BG_MAX;
+    if (w <= max && extname(file).toLowerCase() === '.webp') await copyFile(file, capped);
+    else await sharp(file).resize({ width: Math.min(w, max), withoutEnlargement: true }).webp({ quality: 88, effort: 5 }).toFile(capped);
     made++;
   }
   for (const x of manifest[base].widths) {
@@ -50,8 +51,8 @@ for (const file of files) {
       const dst = join(OUT, `${base}-${x}.${fmt}`);
       if (await fresh(file, dst)) continue;
       const img = sharp(file).resize({ width: x, withoutEnlargement: true });
-      if (fmt === 'avif') await img.avif({ quality: 52, effort: 3 }).toFile(dst);
-      else await img.webp({ quality: 78, effort: 4 }).toFile(dst);
+      if (fmt === 'avif') await img.avif({ quality: 62, effort: 3 }).toFile(dst);
+      else await img.webp({ quality: 86, effort: 4 }).toFile(dst);
       made++;
     }
   }

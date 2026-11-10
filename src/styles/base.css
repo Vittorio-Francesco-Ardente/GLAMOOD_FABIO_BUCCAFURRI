@@ -8,7 +8,8 @@ body{background:var(--petrol-darker)}
 /* inner pages: room for the floating header, in the colour of the first section */
 .page-top{background:var(--top-bg)}
 /* header sits on top of the first section: give the first block room under it */
-.page-top>.sx-salone .head,.page-top>.sx-dove .page-frame,.page-top>.sx-listino .page-frame,.page-top>.sx-prodotti .page-frame{padding-top:calc(84px + env(safe-area-inset-top))!important}
+.page-top>.sx-salone .head{padding-top:calc(110px + env(safe-area-inset-top))!important}
+.page-top>.page-top>.sx-dove .page-frame,.page-top>.sx-listino .page-frame,.page-top>.sx-prodotti .page-frame{padding-top:calc(84px + env(safe-area-inset-top))!important}
 .page-top>.sx-tagli .tagli{padding-top:calc(96px + env(safe-area-inset-top))}
 /* phones: room for the bottom tab bar at the end of every page */
 @media (max-width:767px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}}

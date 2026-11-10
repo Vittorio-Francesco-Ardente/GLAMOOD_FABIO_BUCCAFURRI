@@ -116,7 +116,7 @@ p+.btn-pop,p+.cta,p+.btns{margin-top:clamp(18px,2vw,28px)}
 @font-face{font-family:"Glamood Bubble";src:url("/fonts/bagel-fat-one-latin-400-normal.woff2") format("woff2");font-display:swap}
 @font-face{font-family:"Glamood Bounce";src:url("/fonts/gluten-latin-800-normal.woff2") format("woff2");font-weight:800;font-display:swap}
 .bubble{display:inline-grid;justify-items:center;line-height:.82;pointer-events:auto;user-select:none}
-.bubble .bw{display:flex;align-items:center;justify-content:center;margin-top:-.08em}
+.bubble .bw{display:flex;align-items:center;justify-content:center;margin-top:.04em}
 .bubble .bl{display:inline-block;transform:translateY(var(--y)) rotate(var(--r)) scale(var(--s));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
 .bubble:hover .bl{transform:translateY(calc(var(--y) - .06em)) rotate(calc(var(--r) * -1)) scale(calc(var(--s) * 1.06))}
 @media (prefers-reduced-motion:no-preference){.bubble .bl{animation:bubble-bob 3.2s ease-in-out infinite;animation-delay:calc(var(--d) * -1)}}
@@ -126,7 +126,7 @@ p+.btn-pop,p+.cta,p+.btns{margin-top:clamp(18px,2vw,28px)}
 .bubble-gloss .bl{background:radial-gradient(ellipse 13% 9% at 30% 26%,#fff 0 60%,transparent 64%),radial-gradient(ellipse 5% 4% at 44% 18%,#fff 0 60%,transparent 64%),var(--bc,var(--petrol));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 .04em 0 rgb(0 0 0 / .18))}
 /* bouncy: rounded hand-cut letters packed in a cluster */
 .bubble-bounce{font-family:"Glamood Bounce",var(--f-display);font-weight:800;letter-spacing:-.06em;color:var(--bc,var(--petrol));text-transform:lowercase}
-.bubble-bounce .bw{margin-top:-.16em}
+.bubble-bounce .bw{margin-top:0}
 .bubble-deco{position:absolute;z-index:3}
 
 /* moving pattern surfaces (frames, page frame): the pattern slides slowly and seamlessly */

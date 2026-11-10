@@ -23,7 +23,7 @@ const full = args.includes('--full');
 const only = (args.find((a) => a.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean).map(Number);
 let sizes = [[375, 812], [768, 1024], [1440, 900], [1920, 1080]];
 if (only.length) sizes = sizes.filter(([w]) => only.includes(w));
-const pages = ['/', '/storia', '/privacy', '/nope'];
+const pages = ['/', '/salone', '/tagli', '/listino', '/prodotti', '/dove', '/storia', '/privacy', '/nope'];
 await mkdir('qa', { recursive: true });
 const browser = await chromium.launch();
 const report = [];
@@ -40,7 +40,7 @@ for (const [w, h] of sizes) {
     await page.waitForTimeout(800);
     const name = (path === '/' ? 'home' : path.slice(1)) + `-${w}`;
     await page.screenshot({ path: `qa/${name}-top.png` });
-    if (path === '/') {
+    if (path !== '/nope' && path !== '/privacy') {
       // walk down the page to trigger every section, screenshot each viewport step
       const H = await page.evaluate(() => document.documentElement.scrollHeight);
       let i = 0;

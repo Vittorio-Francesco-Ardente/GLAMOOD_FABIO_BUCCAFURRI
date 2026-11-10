@@ -10,7 +10,7 @@ const cards: [href: string, k: string, t: string, src: string, alt: string][] = 
 ];
 ---
 <div class="sx-esplora">
-<section class="esplora" aria-labelledby="esplora-t">
+<section class="esplora has-bgref" aria-labelledby="esplora-t"><div class="bgref r-corallo-tono"></div>
   <div class="in">
     <p class="marker"><b>A</b>Esplora</p>
     <h2 class="type-pop on-petrol" id="esplora-t">Accomodati</h2>
@@ -24,7 +24,7 @@ const cards: [href: string, k: string, t: string, src: string, alt: string][] = 
 </div>
 <style is:global>
 .sx-esplora{display:contents;
-.esplora{position:relative;background:var(--petrol);padding:clamp(60px,8vw,120px) var(--gutter);color:var(--cream)}
+.esplora{position:relative;background:var(--petrol-darker);padding:clamp(60px,8vw,120px) var(--gutter);color:var(--cream)}
 .in{max-width:1320px;margin:0 auto}
 .marker{color:#cfe3e1}
 h2{font-size:clamp(48px,8vw,130px)}
@@ -32,7 +32,9 @@ h2{font-size:clamp(48px,8vw,130px)}
 .c{grid-column:span 2;position:relative;display:grid;gap:4px;background:var(--cream);color:var(--ink);border-radius:22px;padding:12px 12px 18px;text-decoration:none;box-shadow:0 30px 60px -30px rgb(0 0 0 / .6);transition:transform .5s var(--ease-out)}
 .c0,.c1{grid-column:span 3}
 .c:hover{transform:translateY(-6px) rotate(-.6deg)}
-.ph{border-radius:14px;overflow:hidden;aspect-ratio:16/10;margin-bottom:10px;background:var(--petrol-pale)}
+.ph{border-radius:14px;overflow:hidden;aspect-ratio:4/3;margin-bottom:10px;background:var(--petrol-pale)}
+.c0 .ph,.c1 .ph{aspect-ratio:5/4}
+.c1 .ph img{object-position:50% 22%}
 .ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
 .c3 .ph img{object-fit:contain;padding:10px}
 .c:hover .ph img{transform:scale(1.06)}

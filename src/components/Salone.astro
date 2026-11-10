@@ -34,7 +34,7 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .salone .bgref{z-index:-1}
 .salone::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgb(10 74 80 / .35),rgb(10 74 80 / .1) 40%,rgb(10 74 80 / .55))}
 .head{position:relative;z-index:2;padding:clamp(70px,10vw,130px) var(--gutter) 10px}
-.head .giant-title{font-size:clamp(64px,15vw,260px);color:var(--cream);text-shadow:0 .05em 0 #08393E}
+.head .giant-title{font-size:clamp(46px,12.5vw,260px);color:var(--cream);text-shadow:0 .05em 0 #08393E}
 .head p{max-width:34ch;color:#d6e8e6;margin-top:14px}
 .track-wrap{position:relative;z-index:2}
 .track{display:flex;gap:clamp(24px,3.4vw,64px);align-items:center;padding:30px var(--gutter) clamp(70px,9vw,120px)}
@@ -50,12 +50,13 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .tall .ph{width:clamp(220px,22vw,340px);aspect-ratio:3/4.6}.tall .fr{border-radius:30px}.tall .ph{border-radius:20px}
 .wide .ph{width:clamp(300px,40vw,640px);aspect-ratio:16/10}.wide .fr,.wide .ph{border-radius:999px}
 .credit{position:relative;z-index:2;padding:0 var(--gutter) 40px;font-size:14px;color:#cfe3e1}
-.hang{position:absolute;z-index:3;pointer-events:none;top:-10px;height:auto}
+.hang{position:absolute;z-index:3;pointer-events:none;top:72px;height:auto}
 @media (max-width:1199px){.hang{display:none}}
 .bottom-edge{position:relative;z-index:2;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover}
 @media (min-width:1200px){
  .salone{height:100svh;display:flex;flex-direction:column}
- .head{padding:clamp(40px,6vh,80px) var(--gutter) 0;display:flex;align-items:flex-end;gap:40px}
+ .head{padding:clamp(40px,6vh,80px) var(--gutter) 0;display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:40px;padding-right:calc(var(--gutter) + clamp(110px,10vw,180px))}
+ .head .kicker{flex-basis:100%}
  .head .giant-title{font-size:clamp(70px,11vh,170px)}
  .head p{margin:0 0 .6em}
  .track-wrap{flex:1;min-height:0;display:flex;align-items:center}

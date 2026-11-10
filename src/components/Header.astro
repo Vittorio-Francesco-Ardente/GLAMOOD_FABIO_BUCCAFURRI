@@ -2,26 +2,29 @@
 // Navigation modelled on Vittorio's site: top header (logo, social, Prenota, menu) that fades up after 70 px,
 // then a bottom bar slides in with a sliding highlight. Full-screen menu (link-tree style on phones).
 import { business, wa, tel, instagramUrl } from '../data/business';
+interface Props { tone?: 'light' | 'dark' }
+const { tone = 'dark' } = Astro.props;
 const items: [string, string][] = [['salone', 'Salone'], ['tagli', 'Tagli'], ['listino', 'Listino'], ['prodotti', 'Prodotti'], ['dove', 'Dove siamo']];
 const baseLen = import.meta.env.BASE_URL.replace(/\/$/, '').length;
 const here = Astro.url.pathname.slice(baseLen).replace(/\.html$/, '').replace(/^\/|\/$/g, '');
 const cur = (id: string) => (here === id ? 'page' : undefined);
 const ico: Record<string, string> = {
-  '': '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5h4v5"/>',
-  salone: '<path d="M7 21v-7"/><path d="M17 21v-7"/><rect x="4" y="9" width="16" height="5" rx="2"/><path d="M8 9V5a4 4 0 0 1 8 0v4"/>',
-  tagli: '<circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M8.2 16 20 4M8.2 8 20 20"/>',
-  listino: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
-  prodotti: '<rect x="5" y="9" width="14" height="12" rx="3"/><path d="M7 9V6h10v3"/><path d="M9 14h6"/>',
-  dove: '<path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z"/><circle cx="12" cy="10" r="2.6"/>',
+  '': '<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z"/>',
+  salone: '<rect x="8" y="3" width="8" height="18" rx="4"/><path d="M8 9l8-3M8 14l8-3M8 19l8-3"/>',
+  tagli: '<circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M8.3 15.7 16 4M15.7 15.7 8 4"/>',
+  listino: '<path d="M3 12.6V4.5A1.5 1.5 0 0 1 4.5 3h8.1c.4 0 .78.16 1.06.44l7 7a1.5 1.5 0 0 1 0 2.12l-8.1 8.1a1.5 1.5 0 0 1-2.12 0l-7-7A1.5 1.5 0 0 1 3 12.6Z"/><circle cx="8" cy="8" r="1.6"/>',
+  prodotti: '<rect x="5" y="3.5" width="14" height="4" rx="1.5"/><path d="M6 7.5h12v11a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 6 18.5Z"/><path d="M6 13.5c2-1.5 4-1.5 6 0s4 1.5 6 0"/>',
+  dove: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>',
 };
 const tabs: [string, string][] = [['', 'Home'], ['salone', 'Salone'], ['tagli', 'Tagli'], ['listino', 'Listino'], ['prodotti', 'Prodotti'], ['dove', 'Dove']];
 const phone = tel();
 const ig = business.instagram ? instagramUrl() : null;
 const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M8.2 16 20 4M8.2 8 20 20"/></svg>';
 ---
-<div class="sx-header">
+<div class="sx-header" data-tone={tone}>
 <header class="testa" id="testa">
   <a class="mark" href="/" aria-label="Glamood, home"><img src="/img/brand/wordmark-petrolio-trasparente-480.webp" alt="GLAMOOD" width="480" height="81" /></a>
+  <nav class="links" aria-label="Pagine">{items.map(([id, t]) => <a href={`/${id}`} aria-current={cur(id)}>{t}</a>)}</nav>
   <div class="soc">
     {ig && <a class="icon" href={ig} target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>}
     <a class="icon" href={business.facebook} target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.4-3h-2.9V8.7c0-.9.3-1.5 1.5-1.5h1.5V4.5c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.3H8v3h2.6V21z"/></svg></a>
@@ -33,7 +36,7 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 <nav class="barra" id="barra" aria-label="Pagine">
   <span class="cursore" aria-hidden="true"></span>
   {tabs.map(([id, t]) => <a class="voce" href={`/${id}`} data-voce={id} aria-current={cur(id)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ico[id]} /><span>{t}</span></a>)}
-  <button class="voce menu-btn" id="burger2" type="button" aria-controls="menu" aria-label="Apri il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M5 8h14M5 16h14"/></svg><span>Menu</span></button>
+  <button class="voce menu-btn" id="burger2" type="button" aria-controls="menu" aria-label="Apri il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg><span>Menu</span></button>
 </nav>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" inert>
   <div class="top"><span class="lab">Menu, Glamood</span><button class="x" id="menu-close" aria-label="Chiudi il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -52,27 +55,38 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 <style is:global>
 .sx-header{display:contents;
 /* ---------- top header (pattern from Vittorio's site): visible at the top, fades up after 70 px ---------- */
-.testa{position:fixed;z-index:var(--z-header);top:max(12px,env(safe-area-inset-top));left:clamp(14px,2vw,28px);right:clamp(14px,2vw,28px);display:flex;justify-content:space-between;align-items:center;pointer-events:none;transition:opacity .4s var(--ease-out),transform .5s var(--ease-out)}
+.testa{position:fixed;z-index:var(--z-header);top:max(14px,env(safe-area-inset-top));left:var(--gutter);right:var(--gutter);display:flex;align-items:center;gap:24px;pointer-events:none;transition:opacity .4s var(--ease-out),transform .5s var(--ease-out);--hc:#F4EFE8}
+&[data-tone="light"] .testa{--hc:var(--petrol)}
 .testa>*{pointer-events:auto}
 &.scorre .testa{opacity:0;transform:translateY(-24px)}
 &.scorre .testa>*{pointer-events:none}
-.mark{display:grid;place-items:center;height:48px;padding:0 20px;border-radius:16px;background:var(--cream) url("/img/texture/carta-grana.webp") 0 0/256px;background-blend-mode:multiply;box-shadow:inset 0 1px #ffffffb3,0 14px 26px -14px rgb(6 40 44 / .6)}
-.mark img{height:20px;width:auto}
-.soc{display:flex;align-items:center;gap:8px;color:#fff}
-.icon{width:48px;height:48px;display:none;place-items:center;border-radius:16px;color:var(--petrol);background:var(--cream) url("/img/texture/carta-grana.webp") 0 0/256px;background-blend-mode:multiply;box-shadow:inset 0 1px #ffffffb3,0 14px 26px -14px rgb(6 40 44 / .6);transition:transform .2s var(--ease-out)}
-.icon:hover{transform:translateY(-2px)}
-.icon svg{width:18px;height:18px}
-.btn-pre{display:inline-flex;align-items:center;height:48px;padding:0 20px;border-radius:16px;background:var(--petrol);border:2px solid var(--cream);color:var(--cream);font:800 14px/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;box-shadow:inset 0 1px #ffffff40,0 12px 22px -10px rgb(6 40 44 / .7)}
+.mark{display:block;flex:none;padding:6px 0}
+.mark img{height:24px;width:auto;filter:var(--hf, brightness(0) invert(1))}
+&[data-tone="light"] .mark img{--hf:none}
+.links{display:none;margin-inline:auto;gap:clamp(18px,2.4vw,40px)}
+.links a{position:relative;color:var(--hc);text-decoration:none;font:800 15px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase;padding:10px 0;text-shadow:0 2px 12px rgb(0 0 0 / .18)}
+&[data-tone="light"] .links a{text-shadow:none}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:2px;border-radius:2px;background:var(--brass);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease-out)}
+.links a:hover::after,.links a[aria-current]::after,.links a:focus-visible::after{transform:none}
+.soc{display:flex;align-items:center;gap:6px;margin-left:auto;color:var(--hc)}
+@media (min-width:1024px){.links{display:flex}.soc{margin-left:0}}
+.icon{width:44px;height:44px;display:none;place-items:center;border-radius:50%;color:var(--hc);transition:background .2s,transform .2s var(--ease-out)}
+.icon:hover{background:color-mix(in srgb,var(--hc) 16%,transparent)}
+.icon svg{width:19px;height:19px}
+.btn-pre{display:inline-flex;align-items:center;height:44px;padding:0 20px;border-radius:999px;border:2px solid var(--hc);color:var(--hc);font:800 13px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,color .2s}
+.btn-pre:hover{background:var(--hc);color:var(--petrol)}
+&[data-tone="light"] .btn-pre:hover{color:var(--cream)}
 .btn-pre:active,.burger:active{transform:scale(.95)}
-.burger{width:48px;height:48px;border-radius:16px;background:var(--cream) url("/img/texture/carta-grana.webp") 0 0/256px;background-blend-mode:multiply;display:grid;place-items:center;box-shadow:inset 0 1px #ffffffb3,0 14px 26px -14px rgb(6 40 44 / .6)}
-.burger span{display:block;width:18px;height:2px;background:var(--petrol);border-radius:2px;box-shadow:0 -6px 0 var(--petrol),0 6px 0 var(--petrol)}
+.burger{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;transition:background .2s}
+.burger:hover{background:color-mix(in srgb,var(--hc) 16%,transparent)}
+.burger span{display:block;width:20px;height:2px;background:var(--hc);border-radius:2px;box-shadow:0 -6px 0 var(--hc),0 6px 0 var(--hc)}
 @media (min-width:768px){.icon{display:grid}}
 /* ---------- bottom bar: slides up from below after 70 px, sliding highlight, labels open on the active item ---------- */
 .barra{position:fixed;z-index:calc(var(--z-header) + 1);left:50%;bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:2px;padding:7px;max-width:calc(100% - 24px);border-radius:24px;background:var(--cream) url("/img/texture/carta-grana.webp") 0 0/256px;background-blend-mode:multiply;
  box-shadow:inset 0 1px #ffffffbf,inset 0 -1px #0000000f,0 24px 40px -16px rgb(6 40 44 / .55),0 6px 14px -6px rgb(6 40 44 / .3);
  opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 40px));transition:transform .6s cubic-bezier(.2,.9,.25,1.05),opacity .4s}
 &.scorre .barra{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
-.barra .cursore{position:absolute;z-index:0;top:7px;left:0;width:0;height:calc(100% - 14px);border-radius:17px;background:var(--petrol) url("/img/texture/carta-grana.webp") 0 0/256px;background-blend-mode:overlay;box-shadow:inset 0 1px #ffffff40,0 10px 18px -8px rgb(6 40 44 / .6);transition:transform .16s linear,width .16s linear;will-change:transform,width}
+.barra .cursore{position:absolute;z-index:0;top:7px;left:0;width:0;height:calc(100% - 14px);border-radius:17px;background:var(--petrol);box-shadow:inset 0 1px #ffffff40,0 10px 18px -8px rgb(6 40 44 / .6);transition:transform .16s linear,width .16s linear;will-change:transform,width}
 .barra .voce{position:relative;z-index:1;display:inline-flex;align-items:center;height:48px;padding:0 15px;border-radius:17px;color:var(--petrol);text-decoration:none;font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;transition:color .3s}
 .barra .voce svg{width:21px;height:21px;flex:none}
 .barra .voce span{white-space:nowrap;opacity:0;max-width:0;overflow:hidden;transition:max-width .5s cubic-bezier(.22,1,.36,1),opacity .35s cubic-bezier(.22,1,.36,1),margin .5s cubic-bezier(.22,1,.36,1)}
@@ -85,6 +99,8 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 /* ---------- full-screen menu ---------- */
 .menu{position:fixed;inset:0;z-index:var(--z-menu);color:#fff;background:radial-gradient(120% 80% at 80% 0%,#12757E 0%,transparent 55%),radial-gradient(90% 70% at 0% 100%,#0C5A61 0%,transparent 60%),var(--petrol-darker);display:grid;grid-template-rows:auto 1fr auto;padding:max(22px,env(safe-area-inset-top)) var(--gutter) max(22px,env(safe-area-inset-bottom));visibility:hidden;clip-path:circle(0% at calc(100% - 46px) 44px);transition:clip-path .7s var(--ease-io),visibility 0s .7s;overflow:hidden}
 .menu.open{visibility:visible;clip-path:circle(150% at calc(100% - 46px) 44px);transition:clip-path .8s var(--ease-io)}
+.menu::before{content:"";position:absolute;inset:-8%;z-index:0;background:url("/img/pattern/ref/liquido-tono.webp") center/cover;opacity:.9;animation:refdrift 28s ease-in-out infinite alternate;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.menu::before{animation:none}}
 .menu .top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
 .menu .lab{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.75}
 .menu .x{width:52px;height:52px;border-radius:16px;background:#fff;color:var(--petrol);display:grid;place-items:center}

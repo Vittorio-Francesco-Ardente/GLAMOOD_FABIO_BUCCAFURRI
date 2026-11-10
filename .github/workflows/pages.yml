@@ -25,7 +25,6 @@ jobs:
         with:
           path: public/img
           key: img-${{ hashFiles('assets/web/**', 'tools/assets.mjs') }}
-          restore-keys: img-
       - run: npm run build
       - run: touch dist/.nojekyll
       - uses: actions/configure-pages@v5

@@ -1,7 +1,7 @@
 ---
 // Kit 06: petrol world with living waves and grain, giant cream GLAMOOD (outlined OO) behind Fabio,
 // plants and tools framing the scene, rotating stamp, wave band at the bottom.
-// Cursor (or finger) cloud reveals the cartoon twin exactly over the photo; accessible toggle.
+// Cursor (or finger) cloud reveals the cartoon twin exactly over the photo.
 import images from '../data/images.json';
 import { wa, hoursLabel, business } from '../data/business';
 import { img } from '../data/img';
@@ -15,7 +15,6 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
   <div class="bg" id="hero-bg"></div><div class="vig"></div><div class="paper"></div>
   <div class="stage">
     <div class="giant" id="giant" aria-hidden="true">Glam<span class="o">oo</span>d</div>
-    <img class="decor" id="h-dp" {...img("piante/12_palma_areca")} alt="" style="z-index:3;width:clamp(160px,20vw,360px);left:-6%;top:calc(var(--hdr) - 4%);transform:rotate(-24deg)" />
     <img class="decor" id="h-dm" {...img("piante/09_monstera_grande")} alt="" style="z-index:5;width:clamp(170px,26vw,460px);right:-8%;bottom:4%;transform:rotate(-18deg)" />
     <img class="decor" id="h-dm2" {...img("piante/10_monstera_piccola-front")} alt="" style="z-index:6;width:clamp(120px,16vw,300px);left:-5%;bottom:-3%;transform:rotate(30deg)" />
     <img class="decor" id="h-dk" {...img("piante/11_pampas_secca")} alt="" style="z-index:3;width:clamp(70px,8vw,150px);right:4%;top:calc(var(--hdr) + 2%);transform:rotate(14deg)" />
@@ -29,7 +28,6 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
       <canvas id="cv" aria-hidden="true"></canvas>
     </div>
     <div class="stamp" aria-hidden="true"><svg viewBox="0 0 200 200"><defs><path id="hero-stamp-c" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs><text><textPath href="#hero-stamp-c" textLength="458" lengthAdjust="spacing">Glamood · Barber shop · Reggio Calabria ·</textPath></text></svg><img {...img("brand/G-rasoio-petrolio-trasparente",480)} alt="" /></div>
-    <button class="toggle" id="tg" aria-pressed="false"><i></i><span>Versione cartoon</span></button>
     <div class="card"><b>Ci trovi qui</b><span>{business.address}</span><span>Orari: {business.hours ? hoursLabel() : 'chiedi su WhatsApp'}</span></div>
   </div>
   <div class="band" aria-hidden="true"></div>
@@ -170,21 +168,13 @@ if (!reduced) {
   const ready = () => setTimeout(sweep, delay);
   if (photoEl.complete) ready(); else photoEl.addEventListener('load', ready, { once: true });
 }
-const tg = $('tg');
-tg.addEventListener('click', () => {
-  loadCartoon();
-  const on = tg.getAttribute('aria-pressed') !== 'true'; tg.setAttribute('aria-pressed', String(on)); tg.querySelector('span')!.textContent = on ? 'Versione foto' : 'Versione cartoon';
-  const run = () => { const t0 = performance.now(), from = full, to = on ? 1 : 0; const f = (t: number) => { const k = Math.min(1, (t - t0) / (reduced ? 1 : 420)); full = from + (to - from) * k; wake(); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); };
-  if (cart.complete && cart.naturalWidth) run(); else cart.addEventListener('load', run, { once: true });
-});
-
 // ---- giant word fitted to 96% of the viewport width ----
 const giant = $('giant');
 const fit = () => { giant.style.setProperty('--gfs', '100px'); giant.style.setProperty('--gfs', (100 * innerWidth * 0.96) / giant.scrollWidth + 'px'); };
 document.fonts.ready.then(fit); fit(); addEventListener('resize', fit);
 
 // ---- parallax on pointer and scroll (exit: word slides left, Fabio scales down a little) ----
-const ds: [HTMLElement, number][] = [[$('h-dp'), 0.7], [$('h-dm'), 1.3], [$('h-dm2'), 1.6], [$('h-dk'), 0.5], [$('h-ds'), 1]];
+const ds: [HTMLElement, number][] = [[$('h-dm'), 1.3], [$('h-dm2'), 1.6], [$('h-dk'), 0.5], [$('h-ds'), 1]];
 let px = 0, py = 0, raf = 0;
 function par() { raf = 0; if (reduced) return; const y = Math.min(1, scrollY / innerHeight); if (y >= 1 && scrollY > innerHeight * 1.2) return;
   giant.style.transform = `translateX(${-y * 10}%)`; fig.style.transform = `scale(${1 - y * 0.06})`; fig.style.transformOrigin = '50% 100%';
