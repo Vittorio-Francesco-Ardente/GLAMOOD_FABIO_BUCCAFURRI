@@ -126,14 +126,19 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 }
 /* Phone-only navigation: do not cover cards/footer; keep the entire menu scrollable. */
 @media (max-width:767px){
- /* Always-on phone dock: no scroll-direction or footer visibility state. */
- .barra,&.scorre .barra{
+ /* The phone dock starts hidden and appears once, predictably, after the
+    first 120px of scroll. It does not vanish with scroll direction. */
+ .barra{
    bottom:max(10px,env(safe-area-inset-bottom));
-   opacity:1;pointer-events:auto;transform:translate(-50%,0);
-   transition:none;
+   opacity:0;pointer-events:none;
+   transform:translate(-50%,calc(100% + 28px));
+   transition:opacity .2s ease,transform .32s ease;
  }
- /* The full-screen menu is the only time the dock must be inert. */
- &.menu-is-open .barra,&.scorre.menu-is-open .barra{opacity:0;pointer-events:none}
+ &.scorre .barra{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+ /* Never allow a dock to intercept the full-screen menu. */
+ &.menu-is-open .barra,&.scorre.menu-is-open .barra{
+   opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 28px))
+ }
  .menu{height:100dvh;max-height:100dvh;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:calc(14px + env(safe-area-inset-top)) max(16px,var(--gutter)) calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
  .menu .top{position:sticky;top:0;flex:none;z-index:5;min-height:54px;margin:0;padding:2px 0 8px;background:var(--petrol-darker)}
  .menu ul{flex:none;align-self:stretch;justify-self:stretch;margin:0;gap:9px}
@@ -142,30 +147,30 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
  .menu .pills a{min-width:0;min-height:48px;padding:10px 13px;text-align:center;font-size:clamp(13px,3.8vw,15px);line-height:1.25}
  .menu .pills a.wide{min-height:54px}
 }
-/* iPhone-sized bottom navigation: 6 genuinely readable, accessible targets.
-   No changes at tablet/desktop widths. */
+/* Compact six-column phone dock. Every label stays inside its own button,
+   including PRODOTTI on 320px screens. Desktop and tablet are untouched. */
 @media (max-width:767px){
  .barra{
-   width:min(460px,calc(100vw - 20px));max-width:calc(100vw - 20px);
+   width:min(420px,calc(100vw - 24px));max-width:calc(100vw - 24px);
    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
-   gap:1px;padding:7px;bottom:max(10px,env(safe-area-inset-bottom));
-   border-radius:27px;border:1px solid rgb(15 104 112 / .15);
+   gap:0;padding:5px;bottom:max(10px,env(safe-area-inset-bottom));
+   border-radius:23px;border:1px solid rgb(15 104 112 / .15);
    background-color:#F4EFE8;
-   box-shadow:0 14px 40px rgb(3 38 42 / .42),inset 0 1px rgb(255 255 255 / .85);
+   box-shadow:0 12px 32px rgb(3 38 42 / .35),inset 0 1px rgb(255 255 255 / .85);
  }
- .barra .cursore{top:7px;height:calc(100% - 14px);border-radius:20px;box-shadow:0 4px 12px rgb(3 38 42 / .24)}
+ .barra .cursore{top:5px;height:calc(100% - 10px);border-radius:17px;box-shadow:0 3px 9px rgb(3 38 42 / .22)}
  .barra .voce{
-   display:flex;min-width:0;min-height:68px;height:68px;
+   display:flex;min-width:0;min-height:56px;height:56px;
    flex-direction:column;justify-content:center;align-items:center;
-   padding:6px 0 5px;gap:3px;border-radius:20px;
-   font-size:clamp(9px,2.7vw,11px);font-weight:800;line-height:1.1;
-   letter-spacing:-.01em;white-space:nowrap;
+   padding:5px 0 4px;gap:3px;border-radius:17px;
+   font-size:clamp(7.4px,1.95vw,8.4px);font-weight:800;line-height:1.1;
+   letter-spacing:-.035em;text-align:center;white-space:nowrap;overflow:hidden;
  }
- .barra .voce svg{width:27px;height:27px;stroke-width:2.2;flex:none}
+ .barra .voce svg{width:22px;height:22px;stroke-width:2.1;flex:none}
  .barra .voce span,.barra .voce.on span,.barra .voce:focus-visible span{
-   display:block;opacity:1;max-width:100%;width:auto;overflow:visible;
+   display:block;opacity:1;max-width:100%;width:100%;min-width:0;
    margin:0!important;line-height:1.12;white-space:nowrap;
-   transition:none;
+   overflow:hidden;text-overflow:clip;transition:none;
  }
  .barra .voce.on{color:#fff}
  .barra .menu-btn{display:none}
@@ -180,11 +185,12 @@ const root = document.querySelector('.sx-header')!;
 const menu = document.getElementById('menu')!, burger = document.getElementById('burger')!, burger2 = document.getElementById('burger2')!;
 const barra = document.getElementById('barra')!;
 wireMaps(menu);
-// as soon as the page scrolls the top header fades up and the bottom bar slides in (same threshold as Vittorio's site)
-const onScroll = () => root.classList.toggle('scorre', scrollY > 4);
+// Show the mobile dock only after a meaningful scroll, then keep it stable.
+// Desktop/tablet retain their original four-pixel threshold.
+const phoneViewport = matchMedia('(max-width:767px)');
+const onScroll = () => root.classList.toggle('scorre', scrollY > (phoneViewport.matches ? 120 : 4));
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
-// Phone dock remains visible at every scroll position; no IntersectionObserver
-// or direction-based hide class is needed. Desktop header behavior is unchanged.
+addEventListener('resize', onScroll, { passive: true });
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
 const cur = barra.querySelector('.cursore') as HTMLElement;
 const voci = [...barra.querySelectorAll<HTMLElement>('.voce:not(.menu-btn)')];

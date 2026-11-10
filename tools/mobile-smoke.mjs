@@ -45,7 +45,8 @@ try {
  check(flat==='none','Mobile page is flat rather than flipped/mirrored');
  await open(page,'/');
  const navVisible=()=>page.locator('#barra').evaluate(el=>{const c=getComputedStyle(el),r=el.getBoundingClientRect();return Number(c.opacity)>.95 && c.pointerEvents==='auto' && r.top>=0 && r.bottom<=innerHeight+1;});
- check(await navVisible(),'Mobile navbar is visible immediately at the top');
+ check(!(await navVisible()),'Mobile navbar must start hidden at the top');
+ check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Hidden navbar must not intercept taps');
  check(await page.locator('#h-ds').count()===1,'Non-foliage scissor decoration remains in source; its existing mobile visibility rule stays unchanged');
  check(await page.evaluate(()=>[...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].length===6 && [...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].every(el=>getComputedStyle(el).display==='none')),'Only decorative foliage is disabled on home and footer');
  // Bigger mobile bar must have legible icons, visible labels and six touch targets.
@@ -59,14 +60,32 @@ try {
   });
   return {width:rect.width,height:rect.height,opacity:parseFloat(css.opacity),links};
  });
- check(bar.width>=340 && bar.height>=75,'Mobile navbar must occupy a readable full-width pill');
- check(bar.links.length===6 && bar.links.every(v=>v.height>=66 && v.svg>=26 && Number(v.label)>=.9),'All six mobile navigation icons and labels must be visible and tap-sized');
+ check(bar.width>=340 && bar.height>=60 && bar.height<=72,'Phone navbar is compact without losing tap targets');
+ check(bar.links.length===6 && bar.links.every(v=>v.height>=54 && v.height<=60 && v.svg>=21 && v.svg<=24 && Number(v.label)>=.9),'All six mobile navigation buttons and labels remain legible');
+ // Verify the full label fits within its own link across phone widths.
+ for(const width of [320,360,390,428]){
+   await page.setViewportSize({width,height:844});
+   await page.waitForTimeout(120);
+   const fit=await page.locator('#barra').evaluate(el=>{
+     const outer=el.getBoundingClientRect();
+     const anchors=[...el.querySelectorAll('a.voce')];
+     return {overflow:outer.left < -1 || outer.right > innerWidth+1,
+       fits:anchors.every(a=>{
+         const text=a.querySelector('span'),b=a.getBoundingClientRect(),tb=text.getBoundingClientRect();
+         return text.scrollWidth<=text.clientWidth+1 && tb.left>=b.left-1 && tb.right<=b.right+1;
+       })};
+   });
+   check(!fit.overflow && fit.fits,'All six tab labels fit without clipping at '+width+'px');
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForTimeout(120);
  check(bar.opacity>.9,'Mobile navigation should remain visible after scrolling');
  await page.evaluate(()=>{window.lenis?.scrollTo(900,{immediate:true});window.scrollTo(0,900)});
  await page.waitForTimeout(400);
  check(await navVisible(),'Mobile navbar stays visible while scrolling down');
  await page.evaluate(()=>{window.lenis?.scrollTo(0,{immediate:true});window.scrollTo(0,0)});
  await page.waitForTimeout(320);
+ check(!(await navVisible()),'Phone navbar hides again only after returning to the very top');
  await page.locator('#burger').click();
  check(await page.locator('#menu').evaluate(el=>el.classList.contains('open')),'Menu opens');
  check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Nav stays inert while fullscreen menu is open');
