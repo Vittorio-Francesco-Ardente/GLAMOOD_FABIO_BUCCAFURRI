@@ -103,33 +103,33 @@ try {
  check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Hidden navbar must not intercept taps');
  check(await page.locator('#h-ds').count()===1,'Non-foliage scissor decoration remains in source; its existing mobile visibility rule stays unchanged');
  check(await page.evaluate(()=>[...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].length===6 && [...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].every(el=>getComputedStyle(el).display==='none')),'Only decorative foliage is disabled on home and footer');
- // Bigger mobile bar must have legible icons, visible labels and six touch targets.
+ // Five mobile tabs: Salone lives inside the Home, so neither phone menu repeats it.
  await page.evaluate(() => { window.lenis?.scrollTo(160,{immediate:true}); window.scrollTo(0,160); });
  await page.waitForTimeout(850);
  const bar = await page.locator('#barra').evaluate(el=>{
   const rect=el.getBoundingClientRect(), css=getComputedStyle(el);
-  const links=[...el.querySelectorAll('a.voce')].map(a=>{
+  const links=[...el.querySelectorAll('a.voce')].filter(a=>a.getClientRects().length>0).map(a=>{
    const box=a.getBoundingClientRect(),svg=a.querySelector('svg').getBoundingClientRect();
    return {height:box.height,width:box.width,svg:svg.width,label:getComputedStyle(a.querySelector('span')).opacity};
   });
   return {width:rect.width,height:rect.height,opacity:parseFloat(css.opacity),links};
  });
  check(bar.width>=340 && bar.height>=60 && bar.height<=72,'Phone navbar is compact without losing tap targets');
- check(bar.links.length===6 && bar.links.every(v=>v.height>=50 && v.height<=56 && v.svg>=19 && v.svg<=21 && Number(v.label)>=.9),'All six compact mobile navigation buttons and labels remain legible');
+ check(bar.links.length===5 && bar.links.every(v=>v.height>=50 && v.height<=56 && v.svg>=19 && v.svg<=21 && Number(v.label)>=.9),'All five compact phone tabs are visible and legible, without Salone');
  // Verify the full label fits within its own link across phone widths.
  for(const width of [320,360,390,428]){
    await page.setViewportSize({width,height:844});
    await page.waitForTimeout(120);
    const fit=await page.locator('#barra').evaluate(el=>{
      const outer=el.getBoundingClientRect();
-     const anchors=[...el.querySelectorAll('a.voce')];
+     const anchors=[...el.querySelectorAll('a.voce')].filter(a=>a.getClientRects().length>0);
      return {overflow:outer.left < -1 || outer.right > innerWidth+1,
        fits:anchors.every(a=>{
          const text=a.querySelector('span'),b=a.getBoundingClientRect(),tb=text.getBoundingClientRect();
          return text.scrollWidth<=text.clientWidth+1 && tb.left>=b.left-1 && tb.right<=b.right+1;
        })};
    });
-   check(!fit.overflow && fit.fits,'All six tab labels fit without clipping at '+width+'px');
+   check(!fit.overflow && fit.fits,'All five tab labels fit without clipping at '+width+'px');
  }
  await page.setViewportSize({width:390,height:844});
  await page.waitForTimeout(120);
@@ -143,11 +143,14 @@ try {
  await page.locator('#burger').click();
  check(await page.locator('#menu').evaluate(el=>el.classList.contains('open')),'Menu opens');
  check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Nav stays inert while fullscreen menu is open');
- // Mobile menu must look like the desktop typography, not six translucent button cards.
+ // Mobile menu must look like the desktop typography, without a duplicate Salone entry.
  check(await page.locator('#menu .pills').isHidden(),'Phone menu hides the bottom contact/action buttons');
  check(await page.locator('#menu .top').evaluate(el=>parseFloat(getComputedStyle(el).borderTopLeftRadius)>=18),'Menu header has rounded corners');
- check(await page.locator('#menu li a').count()===6,'All six menu destinations remain available');
- check(await page.locator('#menu li a').evaluateAll(els=>els.every(a=>{
+ check(await page.locator('#menu li a:visible').count()===5,'Exactly five menu destinations remain visible on phones');
+ check(await page.locator('#menu li.phone-salone-item').isHidden() &&
+   await page.locator('#barra a.voce[data-voce="salone"]').isHidden(),
+   'Salone is absent from both phone menus');
+ check(await page.locator('#menu li a:visible').evaluateAll(els=>els.every(a=>{
    const cs=getComputedStyle(a);
    return cs.backgroundColor==='rgba(0, 0, 0, 0)' && parseFloat(cs.borderTopWidth)===0 && cs.textAlign!=='left';
  })),'Phone menu uses borderless centered text rather than boxed buttons');
@@ -157,7 +160,7 @@ try {
    const layout=await page.locator('#menu').evaluate(menu=>{
      const top=menu.querySelector('.top').getBoundingClientRect();
      const close=menu.querySelector('#menu-close').getBoundingClientRect();
-     const links=[...menu.querySelectorAll('li a')].map(a=>a.getBoundingClientRect());
+     const links=[...menu.querySelectorAll('li a')].filter(a=>a.getClientRects().length>0).map(a=>a.getBoundingClientRect());
      const body=menu.getBoundingClientRect();
      return {topRadius:parseFloat(getComputedStyle(menu.querySelector('.top')).borderTopLeftRadius),
        contained:links.every(x=>x.left>=body.left-1&&x.right<=body.right+1),
@@ -222,26 +225,24 @@ try {
      const images=[...track.querySelectorAll('figure img')];
      const dock=document.querySelector('#barra a.voce[data-voce="salone"]');
      const menu=document.querySelector('#mlist a[data-mobile-target="salone"]');
-     const expected=new URL('#salone',document.querySelector('.mark').href);
+     const remaining=[...document.querySelectorAll('#barra a.voce')].filter(a=>a.getClientRects().length>0).map(a=>a.dataset.voce);
      return {visible:getComputedStyle(el).display!=='none'&&before.width>0&&before.height>0,
        afterHero:before.top>=above.bottom-2,
        photos:images.length===6,swipe:getComputedStyle(track).overflowX==='auto'&&track.scrollWidth>track.clientWidth+50,
-       links:new URL(dock.href).href===expected.href&&new URL(menu.href).href===expected.href,
+       links:getComputedStyle(dock).display==='none'&&getComputedStyle(menu.closest('li')).display==='none'&&remaining.join(',')===',tagli,listino,prodotti,dove',
        noOverflow:document.documentElement.scrollWidth-innerWidth<=2};
    });
    check(integrated.visible&&integrated.afterHero&&integrated.photos&&integrated.swipe&&integrated.links&&integrated.noOverflow,
-     'Mobile Home embeds full horizontal Salone gallery and local nav at '+width+'px');
+     'Mobile Home embeds full Salone gallery, without duplicate phone navigation at '+width+'px');
  }
  await page.setViewportSize({width:390,height:844});
  const salonPhoto=page.locator('.sx-salone[data-home-mobile="true"] #track figure img').first();
  await salonPhoto.scrollIntoViewIfNeeded();
  check(await salonPhoto.evaluate(async img=>{try{await img.decode()}catch{}return img.naturalWidth>0}),
    'The integrated Salone photograph loads and decodes');
- await page.locator('#barra a.voce[data-voce="salone"]').click();
- await page.waitForTimeout(280);
- check(new URL(page.url()).hash==='#salone'&&
-   await page.locator('#salone').isVisible(),
-   'Mobile Salone dock navigates to the section inside the Home');
+ await page.locator('.sx-salone[data-home-mobile="true"] #salone').scrollIntoViewIfNeeded();
+ check(await page.locator('#salone').isVisible()&&await page.evaluate(()=>scrollY>0),
+   'The Salone gallery is reachable by scrolling within the phone Home');
  await open(page,'/salone');
  check(new URL(page.url()).hash==='#salone' &&
     new URL(page.url()).pathname===base+'/',
