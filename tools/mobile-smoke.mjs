@@ -210,15 +210,15 @@ try {
  await page.locator('#shelf').focus();
  for(let i=0;i<3;i++) await page.keyboard.press('ArrowRight');
  await page.waitForTimeout(900);
- const before=await page.locator('#tg-stage>.tape[data-v="3"]').evaluate(el=>el.style.transform);
- await page.locator('#tg-stage>.tape[data-v="3"] .face.cv').dispatchEvent('click');
+ const before=await page.locator('#tg-stage>.tape[data-v="7"]').evaluate(el=>el.style.transform);
+ await page.locator('#tg-stage>.tape[data-v="7"] .face.cv').dispatchEvent('click');
  await page.locator('#tg-sheet').waitFor({state:'visible'});
  const chosen=await page.locator('#simg').getAttribute('src');
- const expected=await page.evaluate(()=>{const c=JSON.parse(document.getElementById('tagli-data').textContent).CUTS[3];return c[1]+'-foto.webp'});
- check(chosen.endsWith(expected),'Tapping tape 4 opens tape 4 photo rather than the previous active cut');
- check(await page.locator('#tg-stage>.tape[data-v="3"]').evaluate((el,before)=>el.style.transform===before,before),'Tapping a VHS does not move the shelf behind the dialog');
+ const expected=await page.evaluate(()=>{const c=JSON.parse(document.getElementById('tagli-data').textContent).CUTS[7];return c[1]+'-foto.webp'});
+ check(chosen.endsWith(expected),'The selected later cassette opens the correct photo rather than the previous cut');
+ check(await page.locator('#tg-stage>.tape[data-v="7"]').evaluate((el,before)=>el.style.transform===before,before),'Tapping a VHS does not move the shelf behind the dialog');
  await page.locator('#sx').click({timeout:4000});
- check(await page.locator('#tg-sheet').isHidden(),'X closes the fourth VHS too');
+ check(await page.locator('#tg-sheet').isHidden(),'X closes a later VHS too');
  await page.close();await mobile.close();
 
  const desk=await browser.newContext({viewport:{width:1440,height:900}});
