@@ -141,56 +141,44 @@ function puffs(c: CanvasRenderingContext2D, grow: number) {
   for (const p of pts) { const k = (now - p.t) / LIFE; if (k >= 1) continue; const s = Math.max(0, ease(k)) * base;
     for (const f of p.puffs) { c.beginPath(); c.arc(p.x + f.dx * s, p.y + f.dy * s, f.r * s + grow, 0, 6.283); c.fill(); } }
 }
-const tmp = document.createElement('canvas'); const tx = tmp.getContext('2d')!;
+// The photo and its cartoon twin are not pixel-identical around the raised
+// right elbow. A local cutout mixes their incompatible silhouettes, creating
+// a severed arm. The cloud now triggers a COMPLETE figure swap instead.
 function draw() {
-  const now = performance.now(); pts = pts.filter((p) => now - p.t < LIFE);
-  mx.clearRect(0, 0, W, H); rx.clearRect(0, 0, W, H); mx.fillStyle = '#000'; rx.fillStyle = '#F4EFE8';
-  puffs(mx, 0); puffs(rx, 6 * dpr);
-  if (full > 0) { mx.globalAlpha = full; mx.fillRect(W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)); mx.globalAlpha = 1; }
-  const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
-  ctx.clearRect(0, 0, W, H);
-  const photoReady = photoEl.complete && photoEl.naturalWidth > 0;
-  if (!photoReady) return;
-  ctx.drawImage(photoEl, ...R);
-  photoEl.style.opacity = '0';
-  const cartoonReady = cart.complete && cart.naturalWidth > 0;
-  if (cartoonReady && pts.length) {
-    // The cloud is a REAL replacement region, not a translucent overlay:
-    // first erase ALL photographic pixels under the cloud, even in areas
-    // where the cartoon image happens to have transparent alpha.
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.drawImage(mask, 0, 0);
-    ctx.restore();
+  const now = performance.now();
+  pts = pts.filter((p) => now - p.t < LIFE);
+  mx.clearRect(0, 0, W, H);
+  rx.clearRect(0, 0, W, H);
+  mx.fillStyle = '#000';
+  rx.fillStyle = '#F4EFE8';
+  puffs(mx, 0);
+  puffs(rx, 6 * dpr);
 
-    // Keep the cloud stroke behind the people, not across the arm/elbow.
-    // Subtract BOTH portrait silhouettes from the stroke so it cannot
-    // draw a white cut through either silhouette.
+  const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
+  const photoReady = photoEl.complete && photoEl.naturalWidth > 0;
+  if (!photoReady) { active = false; return; }
+  const cartoonReady = cart.complete && cart.naturalWidth > 0;
+  const showCartoon = cartoonReady && pts.length > 0;
+
+  ctx.clearRect(0, 0, W, H);
+  photoEl.style.opacity = '0';
+  if (showCartoon) {
+    // The animated cloud border stays behind the COMPLETE cartoon character.
+    // No realistic pixels can appear through its transparent elbow/arm areas.
     rx.globalCompositeOperation = 'destination-out';
     rx.drawImage(mask, 0, 0);
-    rx.drawImage(photoEl, ...R);
-    rx.drawImage(cart, ...R);
     rx.globalCompositeOperation = 'source-over';
-    if (full < 1) {
-      ctx.globalAlpha = 1 - full;
-      ctx.drawImage(rim, 0, 0);
-      ctx.globalAlpha = 1;
-    }
-
-    // Render ONLY cartoon pixels inside the cloud, with transparent gaps
-    // exposing the petrol background rather than the realistic photo.
-    if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; }
-    tx.globalCompositeOperation = 'source-over';
-    tx.clearRect(0, 0, W, H);
-    tx.drawImage(cart, ...R);
-    tx.globalCompositeOperation = 'destination-in';
-    tx.drawImage(mask, 0, 0);
-    tx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(tmp, 0, 0);
+    ctx.drawImage(rim, 0, 0);
+    ctx.drawImage(cart, ...R);
+  } else {
+    ctx.drawImage(photoEl, ...R);
   }
-  active = pts.length > 0 || (full > 0 && full < 1); if (active) requestAnimationFrame(draw);
+  active = pts.length > 0;
+  if (active) requestAnimationFrame(draw);
 }
 function wake() { if (!active) { active = true; requestAnimationFrame(draw); } }
+photoEl.addEventListener('load', wake);
+cart.addEventListener('load', wake);
 if (!reduced) {
   fig.addEventListener('pointermove', (e) => add(e.clientX, e.clientY));
   fig.addEventListener('pointerdown', (e) => add(e.clientX, e.clientY));
