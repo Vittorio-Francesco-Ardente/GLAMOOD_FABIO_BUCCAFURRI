@@ -29,6 +29,7 @@ const open=async(page,path)=>{await page.goto('http://localhost:'+port+base+path
 try {
  const svgSource = await readFile('src/components/loader-art.txt','utf8');
  check(!svgSource.includes('ld-sheen')&&!svgSource.includes('ld-clip'),'Loader artwork must not contain reflective shine');
+ check((svgSource.match(/class="ld-letter"/g)||[]).length===7,'The brand vector is split into seven left-to-right letter sections');
  const mobile=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  await mobile.addInitScript(()=>{try{sessionStorage.setItem('glamood-intro','1')}catch{}});
  const page=await mobile.newPage();
@@ -176,6 +177,8 @@ try {
  await open(page,'/tagli');
  const tapes=page.locator('#tg-stage>.tape');
  check(await tapes.count()===8,'VHS shelf must contain exactly eight cassettes on mobile');
+ check(await page.locator('#tg-stage>.tape[data-v="4"]').evaluate(el=>/^translate3d\(0(?:\.00)?px,/.test(el.style.transform)),
+   'Phone shelf starts with its middle VHS aligned to the center');
  const result=await page.evaluate(async ()=>{
    const keys=JSON.parse(document.getElementById('tagli-data').textContent).CUTS.map(c=>c[1]);
    const unique=new Set(keys);
@@ -233,6 +236,8 @@ try {
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
  check(await desktop.locator('#tg-stage>.tape').count()===16,'Desktop fills the shelf with sixteen VHS, repeating the eight originals');
+ check(await desktop.locator('#tg-stage>.tape[data-v="8"]').evaluate(el=>/^translate3d\(0(?:\.00)?px,/.test(el.style.transform)),
+   'Desktop shelf starts from its middle VHS rather than the left end');
  await desktop.locator('#shelf').focus();await desktop.keyboard.press('Enter');
  await desktop.locator('#tg-sheet').waitFor({state:'visible'});
  await desktop.locator('#sx').click({timeout:4000});
@@ -263,8 +268,11 @@ try {
  const first=await fresh.newPage();
  await first.goto('http://localhost:'+port+base+'/',{waitUntil:'domcontentloaded'});
  await first.waitForTimeout(150);
- check(await first.locator('#intro .intro-wm').evaluate(el=>getComputedStyle(el).animationName.includes('ld-reveal')),
-   'Loader progressively constructs the wordmark without a shine pass');
+ const letterSequence=await first.locator('#intro .ld-letter').evaluateAll(els=>els.map(el=>{
+   const css=getComputedStyle(el);return {name:css.animationName,delay:parseFloat(css.animationDelay)};
+ }));
+ check(letterSequence.length===7 && letterSequence.every((x,i)=>x.name.includes('ld-letter-pop') && (i===0 || x.delay>letterSequence[i-1].delay)),
+   'Loader builds seven letters left to right using Ardake-style stagger without reflection');
  await first.waitForTimeout(1500);
  check(!(await first.evaluate(()=>document.documentElement.classList.contains('loading'))),'Loader must release the page within 1.65 seconds');
  check((await first.evaluate(()=>sessionStorage.getItem('glamood-intro')))==='1','Loader should mark its completion');
