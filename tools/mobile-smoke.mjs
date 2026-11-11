@@ -45,6 +45,39 @@ try {
  const flat=await page.locator('#mobile-page>.face').evaluate(el=>getComputedStyle(el).transform);
  check(flat==='none','Mobile page is flat rather than flipped/mirrored');
  await open(page,'/');
+ // The real photo and cartoon have different contours at the raised right
+ // elbow. Force the animated cloud to cross that region and verify the pixels
+ // remain cartoon-only throughout the elbow, with no photo bleeding through.
+ const heroResult=await page.locator('#fig').evaluate(async fig=>{
+   const box=fig.getBoundingClientRect();
+   const pointX=box.left+box.width*.85,pointY=box.top+box.height*.39;
+   fig.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,clientX:pointX,clientY:pointY}));
+   const photo=document.getElementById('photo');
+   const toon=new Image();toon.src=(photo.currentSrc||photo.src).replace('fabio-foto','fabio-cartoon');
+   await toon.decode();
+   await new Promise(resolve=>setTimeout(resolve,120));
+   const cv=document.getElementById('cv');
+   const W=cv.width,H=cv.height,pad=.45/1.9;
+   const R=[W*pad,H*pad,W*(1-2*pad),H*(1-2*pad)];
+   const off=document.createElement('canvas');off.width=W;off.height=H;
+   const context=off.getContext('2d',{willReadFrequently:true});
+   context.drawImage(toon,...R);
+   const current=cv.getContext('2d',{willReadFrequently:true});
+   let opaque=0,mismatched=0;
+   for(let j=0;j<=9;j++)for(let i=0;i<=9;i++){
+     const xi=.74+i*.024,yi=.22+j*.032;
+     const x=Math.round(R[0]+R[2]*xi),y=Math.round(R[1]+R[3]*yi);
+     const expected=context.getImageData(x,y,1,1).data;
+     if(expected[3]<245)continue;
+     opaque++;
+     const shown=current.getImageData(x,y,1,1).data;
+     if(Math.abs(expected[0]-shown[0])>6||Math.abs(expected[1]-shown[1])>6||
+        Math.abs(expected[2]-shown[2])>6||Math.abs(expected[3]-shown[3])>6)mismatched++;
+   }
+   return {opaque,mismatched};
+ });
+ check(heroResult.opaque>25&&heroResult.mismatched===0,
+   'Cloud keeps the entire right elbow as cartoon, with no photorealistic pixels showing');
  const navVisible=()=>page.locator('#barra').evaluate(el=>{const c=getComputedStyle(el),r=el.getBoundingClientRect();return Number(c.opacity)>.95 && c.pointerEvents==='auto' && r.top>=0 && r.bottom<=innerHeight+1;});
  check(!(await navVisible()),'Mobile navbar must start hidden at the top');
  check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Hidden navbar must not intercept taps');
