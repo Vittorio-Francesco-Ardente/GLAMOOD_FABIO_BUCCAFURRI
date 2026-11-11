@@ -115,8 +115,10 @@ const AR = CUTS.reduce((a, c) => a + LAB[c[1]].ar, 0) / NC, SAR = CUTS.reduce((a
 let H = 0, ws = 0, d = 0, gap = 0, W = 0;
 const measure = () => { H = probe.offsetHeight; ws = H * SAR; d = H * AR; gap = H * 0.055; W = shelf.clientWidth; };
 measure();
-// Eight unique VHS: cyclic positioning, never duplicated DOM elements.
-const N = NC;
+// Keep eight unique designs on touch layouts; fill the desktop shelf with sixteen
+// physical sleeves (a second cycle of the same eight approved haircuts).
+const desktopShelf = matchMedia('(min-width:1024px)').matches;
+const N = desktopShelf ? NC * 2 : NC;
 type Tape = { el: HTMLElement; sp: HTMLElement; cv: HTMLElement; lt: HTMLElement; lift: number; hid: boolean };
 const tapes: Tape[] = [];
 const frag = document.createDocumentFragment();
@@ -146,11 +148,11 @@ Promise.all([document.fonts.load('900 100px Archivo'), document.fonts.ready]).th
 const sm = (x: number) => x * x * (3 - 2 * x);
 const Bf = (r: number) => (Math.abs(r) < 1 ? (r + Math.sin(Math.PI * r) / Math.PI) / 2 : Math.sign(r) * 0.5);
 const F = (r: number) => r * (ws + gap) + (d - ws + 2.4 * gap + d * 0.22) * Bf(r);
-// Fixed eight-cassette shelf. Wrapping the positions made tapes teleport.
+// Finite shelf positions prevent teleporting; repeated desktop sleeves have independent indices.
 const relr = (v: number, s: number) => v - s;
 const bound = (n: number) => Math.max(0, Math.min(N - 1, n));
 /* ---- state ---- */
-let s = 0, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
+let s = desktopShelf ? NC : 0, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
 const fine = matchMedia('(pointer:fine)').matches;
 const idx = () => bound(Math.round(s));
 /* ---- caption: each change slides through a mask ---- */
@@ -161,8 +163,8 @@ function swap(el: HTMLElement, text: string, dir: number) {
   n.animate([{ transform: `translateY(${dir * 105}%)` }, { transform: 'translateY(0)' }], { duration: dur, easing: EASE, fill: 'both' });
   old.forEach((o) => { if (o._l) return; o._l = 1; const cs = getComputedStyle(o).transform; o.animate([{ transform: cs === 'none' ? 'translateY(0)' : cs }, { transform: `translateY(${-dir * 105}%)` }], { duration: dur, easing: EASE, fill: 'both' }).onfinish = () => o.remove(); });
 }
-function setActive(i: number, dir: number) { active = i; const c = CUTS[i]; swap(cn, c[0], dir); swap(cd, `${c[3]}  ·  ${c[2]}`, dir); }
-/* ---- render one frame of eight stationary-index VHS geometry ---- */
+function setActive(i: number, dir: number) { active = i; const c = CUTS[i % NC]; swap(cn, c[0], dir); swap(cd, `${c[3]}  ·  ${c[2]}`, dir); }
+/* ---- render one frame of the responsive, stationary-index VHS geometry ---- */
 function render(dt: number) {
   const sr = shelf.getBoundingClientRect(), scy = sr.top + 70 + H / 2;
   onCover = !isOpen && fine && Math.abs(mx - (sr.left + W / 2)) < 0.55 * d && Math.abs(my - scy) < 0.55 * H && Math.abs(Tg - s) < 0.3;
@@ -234,7 +236,7 @@ function openSheet(selected = idx()) {
   if (isOpen) return;
   // No recenter or jump when a VHS is tapped, even mid-scroll.
   Tg = s; sv = 0; hover = -1;
-  const c = CUTS[bound(selected)];
+  const c = CUTS[bound(selected) % NC];
   photoState.textContent = 'Caricamento foto…';
   photoState.hidden = false;
   simg.onload = () => { photoState.hidden = true; };
