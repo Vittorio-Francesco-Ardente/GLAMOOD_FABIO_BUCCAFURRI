@@ -51,6 +51,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .giant .o{color:transparent;-webkit-text-stroke:.018em #F4EFE8;text-shadow:none}
 .fig{position:absolute;left:50%;bottom:0;translate:-50% 0;z-index:4;will-change:transform;height:var(--fh);aspect-ratio:1087/1447;touch-action:pan-y;filter:drop-shadow(0 30px 40px rgb(0 0 0 / .35))}
 .fig img,.fig canvas{position:absolute;inset:0;width:100%;height:100%}
+.fig img{object-fit:contain}
 .fig canvas{pointer-events:none;inset:-45% -45%;width:190%;height:190%;max-width:none}
 .decor{position:absolute;pointer-events:none;will-change:transform;height:auto}
 .band{position:absolute;left:0;right:0;bottom:-1px;z-index:6;height:clamp(54px,7vw,96px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;filter:drop-shadow(0 -10px 20px rgb(0 0 0 / .2))}
@@ -77,7 +78,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .toggle{position:absolute;z-index:8;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:rgb(10 74 80 / .7);border:1px solid rgb(244 239 232 / .4);color:#F4EFE8;font-size:14px;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .toggle i{width:22px;height:22px;border-radius:50%;background:url("/img/brand/faccia-petrolio-trasparente-480.webp") center/80% no-repeat #F4EFE8}
 /* MOBILE */
-.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(60svh,125vw);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(60svh,114vw);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 .stage{position:relative;grid-row:1}
 .copy{grid-row:2;padding:18px var(--gutter) 0;margin-top:-10svh;background:linear-gradient(transparent,var(--petrol) 22%)}
 .card{display:none}
@@ -149,13 +150,25 @@ function draw() {
   const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
   ctx.clearRect(0, 0, W, H);
   if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
-  ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.drawImage(mask, 0, 0); ctx.restore();
-  rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
-  if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
-  if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; } else tx.clearRect(0, 0, W, H);
-  tx.globalCompositeOperation = 'source-over'; tx.drawImage(mask, 0, 0); tx.globalCompositeOperation = 'source-in';
-  if (cart.complete && cart.naturalWidth) tx.drawImage(cart, ...R);
-  ctx.drawImage(tmp, 0, 0);
+  // Preserve the photo wherever the cartoon is transparent: cutting away the
+  // entire cloud first made unmatched areas of the arm/elbow disappear.
+  // Also retain the photo while the cartoon file is still loading.
+  if (cart.complete && cart.naturalWidth) {
+    if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; }
+    tx.globalCompositeOperation = 'source-over';
+    tx.clearRect(0, 0, W, H);
+    tx.drawImage(cart, ...R);
+    tx.globalCompositeOperation = 'destination-in';
+    tx.drawImage(mask, 0, 0);
+    tx.globalCompositeOperation = 'source-over';
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.drawImage(tmp, 0, 0);
+    ctx.restore();
+    rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
+    if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
+    ctx.drawImage(tmp, 0, 0);
+  }
   active = pts.length > 0 || (full > 0 && full < 1); if (active) requestAnimationFrame(draw);
 }
 function wake() { if (!active) { active = true; requestAnimationFrame(draw); } }
