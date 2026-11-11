@@ -130,7 +130,31 @@ import { img } from '../data/img';
  .tickets{grid-template-columns:minmax(0,1fr);width:100%;max-width:520px;margin-inline:auto;padding-bottom:20px}
  .tickets .ticket:nth-child(n){margin-top:40px}
 }
-@media (max-width:767px){.scissors{top:-10px;right:-10px;width:110px}}
+@media (max-width:767px){
+ /* Phone-first price card: give text a real column separate from its price.
+    The desktop tilt, oversized type and outer offsets used to clip long rows. */
+ .listino{padding:clamp(32px,7vw,44px) 12px 0}
+ .listino .top,.listino .board,.listino .tickets{min-width:0;width:100%}
+ .listino .top{gap:12px}
+ .listino .title{max-width:100%;margin-left:0;font-size:clamp(48px,13.6vw,76px);line-height:.95}
+ .listino .title .script-over{font-size:clamp(14px,3.8vw,20px);line-height:1.2;letter-spacing:.035em;margin-top:12px}
+ .listino .marker{font-size:11px;margin-bottom:12px}
+ .listino .intro{font-size:15px;line-height:1.55;max-width:42ch}
+ .listino .scissors{width:clamp(64px,18vw,90px);top:2px;right:0}
+ .listino .tickets{grid-template-columns:minmax(0,1fr);gap:20px;max-width:520px;margin:28px auto 0;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+ .listino .tickets .ticket:nth-child(n){--r:0deg;margin-top:0}
+ .listino .ticket{box-sizing:border-box;min-width:0;width:100%;padding:36px 18px 26px;font-size:1rem}
+ .listino .ticket h3{font-size:clamp(24px,7.6vw,34px);line-height:1.02;white-space:normal;overflow-wrap:break-word}
+ .listino .ticket .k{font-size:11px;line-height:1.4}
+ .listino .ticket ul{margin-top:16px;padding:0}
+ .listino .ticket li{display:grid;grid-template-columns:minmax(0,1fr) minmax(52px,auto);align-items:start;column-gap:12px;padding:12px 0;font-size:clamp(14px,3.9vw,16px);line-height:1.45}
+ .listino .ticket li span{min-width:0;overflow-wrap:break-word;hyphens:auto}
+ .listino .ticket li b{font-size:clamp(19px,5.3vw,22px);line-height:1.3;text-align:right;align-self:start;min-width:52px}
+ .listino .ticket .foot{gap:12px}
+ .listino .ticket .bar{max-width:52%}
+ .listino .ticket .more{min-height:36px;align-items:center;margin-top:14px}
+}
+@media (max-width:390px){.listino .scissors{display:none}}
 }
 /* zoom: the ticket flies to the left, a card on the right explains it (outside the panel: fixed) */
 .sx-listino{
@@ -158,6 +182,15 @@ import { img } from '../data/img';
 .lz-nav button{min-height:44px;padding:0 18px;border-radius:999px;background:rgb(6 40 44 / .88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#F4EFE8;font:800 12px var(--f-display);letter-spacing:.1em;text-transform:uppercase;border:1px solid rgb(255 255 255 / .25)}
 .lz-nav button:hover{background:rgb(255 255 255 / .26)}
 @media (max-width:860px){.lz{grid-template-columns:1fr;align-items:start;padding-top:96px;padding-bottom:110px}.lz-stage{justify-self:center;width:min(340px,100%)}.lz-card{justify-self:center;transform:translateY(30px)}}
+@media (max-width:767px){
+ .lz{gap:18px;padding:calc(76px + env(safe-area-inset-top)) 18px calc(108px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+ .lz-stage{width:100%;max-width:440px}
+ .lz-card{min-width:0;width:100%;max-width:440px;padding:24px 20px;border-radius:20px}
+ .lz-card dt{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:12px;line-height:1.35}
+ .lz-card dt b{text-align:right}
+ .lz-x{top:max(14px,env(safe-area-inset-top));right:16px}
+ .lz-nav{bottom:max(14px,env(safe-area-inset-bottom))}
+}
 @media (prefers-reduced-motion:reduce){.ticket,.lz-card,.lz-bg{transition:none}}
 }
 </style>
@@ -173,7 +206,8 @@ const D: Record<string, any> = {}; listino.forEach((g: any, i: number) => (D[g.k
 const order = listino.map((g: any) => g.k);
 if (!reduced) {
   gsap.from(root.querySelector('.title'), { scrollTrigger: { trigger: root, start: 'top 75%' }, yPercent: 30, opacity: 0, duration: 1.2, ease: 'expo.out' });
-  gsap.utils.toArray<HTMLElement>('#tk .ticket').forEach((t, i) => gsap.from(t, { scrollTrigger: { trigger: '#tk', start: 'top 80%' }, y: 120, rotate: i % 2 ? 8 : -8, opacity: 0, duration: 1.1, delay: i * 0.12, ease: 'expo.out', clearProps: 'transform' }));
+  const compactTickets = matchMedia('(max-width:767px)').matches;
+  gsap.utils.toArray<HTMLElement>('#tk .ticket').forEach((t, i) => gsap.from(t, { scrollTrigger: { trigger: t, start: 'top 92%' }, y: compactTickets ? 24 : 120, rotate: compactTickets ? 0 : (i % 2 ? 8 : -8), opacity: 0, duration: compactTickets ? 0.6 : 1.1, delay: compactTickets ? 0 : i * 0.12, ease: 'expo.out', clearProps: 'transform' }));
 }
 // 3D tilt (mouse only)
 const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
