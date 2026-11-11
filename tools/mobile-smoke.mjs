@@ -211,7 +211,7 @@ try {
      'Game preview labels stay outside image and 3D figurine is uncropped at '+width+'px');
  }
  await page.setViewportSize({width:390,height:844});
- // Salone lives inside the phone Home while its dedicated page remains reachable.
+ // On phones, Salone exists only inside the Home; standalone visits must redirect.
  await open(page,'/');
  for(const width of [320,390,428]){
    await page.setViewportSize({width,height:844});
@@ -243,8 +243,13 @@ try {
    await page.locator('#salone').isVisible(),
    'Mobile Salone dock navigates to the section inside the Home');
  await open(page,'/salone');
+ check(new URL(page.url()).hash==='#salone' &&
+   new URL(page.url()).pathname.replace(/\\/$/,'').endsWith(base.replace(/\\/$/,'')),
+   'Direct phone visits to /salone redirect to the Home Salone anchor');
+ check(await page.locator('.sx-salone[data-home-mobile="true"] #salone').isVisible(),
+   'Direct phone Salone visits land at the same embedded Home gallery');
  check(await page.locator('.sx-salone img.hang').evaluate(el=>getComputedStyle(el).display==='none'),'Salone hanging foliage is disabled');
- const galleryImage=page.locator('.sx-salone .card .ph img').first();
+ const galleryImage=page.locator('.sx-salone[data-home-mobile="true"] .card .ph img').first();
  await galleryImage.scrollIntoViewIfNeeded();
  const photo=await galleryImage.evaluate(async img=>{
    try{await img.decode()}catch{}
@@ -440,6 +445,11 @@ try {
      'Top navigation is centered without collisions at '+width+'px');
  }
  await desktop.setViewportSize({width:1440,height:900});
+ await open(desktop,'/salone');
+ check(new URL(desktop.url()).hash!=='#salone' &&
+   await desktop.locator('.sx-salone:not([data-home-mobile]) #salone').isVisible(),
+   'Desktop standalone Salone remains independently accessible');
+ await open(desktop,'/');
  await desktop.locator('#gioco .preview').scrollIntoViewIfNeeded();
  const desktopGame=await desktop.locator('#gioco .preview').evaluate(el=>{
    const screen=el.querySelector('.screen').getBoundingClientRect(),ui=el.querySelector('.ui').getBoundingClientRect();
@@ -490,6 +500,10 @@ try {
  });
  check(tabletMascot.overlap>=4&&tabletMascot.overlap<=22&&tabletMascot.centered&&tabletMascot.clear,
    'Tablet mascot grips the center of its CTA card without covering its buttons');
+ await open(tablet,'/salone');
+ check(new URL(tablet.url()).hash!=='#salone' &&
+   await tablet.locator('.sx-salone:not([data-home-mobile]) #salone').isVisible(),
+   'Tablet standalone Salone remains independently accessible');
  await open(tablet,'/tagli');
  const tabletClearance=await tablet.locator('#testa').evaluate(el=>
    document.getElementById('tagli-t').getBoundingClientRect().top-el.getBoundingClientRect().bottom);
