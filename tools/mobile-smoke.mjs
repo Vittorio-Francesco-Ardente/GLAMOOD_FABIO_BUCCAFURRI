@@ -175,6 +175,19 @@ try {
  // The VHS carousel must have exactly eight physical cassettes (no cloned copies)
  // and all 32 photo/cover textures must load under the GitHub Pages base URL.
  await open(page,'/tagli');
+ const heroClearance=await page.locator('#testa').evaluate(header=>{
+   const h=header.getBoundingClientRect(), t=document.getElementById('tagli-t').getBoundingClientRect();
+   return t.top-h.bottom;
+ });
+ check(heroClearance>=12,'Phone VHS title starts below the floating header without collision');
+ await page.evaluate(()=>{window.lenis?.scrollTo(32,{immediate:true});window.scrollTo(0,32)});
+ await page.waitForTimeout(400);
+ check(await page.locator('#testa').evaluate(el=>getComputedStyle(el).visibility==='hidden' && getComputedStyle(el).opacity==='0'),
+   'Phone header disappears promptly on the first scroll');
+ check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),
+   'Phone dock remains hidden until its original scroll threshold');
+ await page.evaluate(()=>{window.lenis?.scrollTo(0,{immediate:true});window.scrollTo(0,0)});
+ await page.waitForTimeout(350);
  const tapes=page.locator('#tg-stage>.tape');
  check(await tapes.count()===8,'VHS shelf must contain exactly eight cassettes on mobile');
  check(await page.locator('#tg-stage>.tape[data-v="4"]').evaluate(el=>/^translate3d\(0(?:\.00)?px,/.test(el.style.transform)),
@@ -200,6 +213,18 @@ try {
  await page.keyboard.press('Enter');
  await page.locator('#tg-sheet').waitFor({state:'visible'});
  check(await page.locator('#sx').isVisible(),'Close X must be visible when VHS opens');
+ const mobileModal=await page.locator('#tg-sheet').evaluate(el=>{
+   const photo=el.querySelector('.big').getBoundingClientRect();
+   const close=el.querySelector('#sx').getBoundingClientRect();
+   const st=getComputedStyle(el);
+   el.scrollTop=el.scrollHeight;
+   return {native:el.hasAttribute('data-lenis-prevent')&&st.overflowY==='auto'&&st.touchAction==='pan-y',
+     photoHeight:photo.height, viewport:innerHeight, xReachable:close.top>=0&&close.bottom<=innerHeight,
+     scrollable:el.scrollHeight<=el.clientHeight+2||el.scrollTop>0};
+ });
+ check(mobileModal.native&&mobileModal.photoHeight<=mobileModal.viewport*.47&&
+   mobileModal.xReachable&&mobileModal.scrollable,
+   'Phone VHS details can scroll natively and the photo and X fit within the viewport');
  const loaded=await page.locator('#simg').evaluate(async img=>{try{await img.decode()}catch{}return img.complete&&img.naturalWidth>0;});
  check(loaded,'Haircut photo loads and decodes when detail opens');
  check(await page.locator('#photo-state').isHidden(),'Loading indicator disappears after photo loads');
@@ -277,9 +302,21 @@ try {
  check(tabletMascot.overlap>=4&&tabletMascot.overlap<=22&&tabletMascot.centered&&tabletMascot.clear,
    'Tablet mascot grips the center of its CTA card without covering its buttons');
  await open(tablet,'/tagli');
+ const tabletClearance=await tablet.locator('#testa').evaluate(el=>
+   document.getElementById('tagli-t').getBoundingClientRect().top-el.getBoundingClientRect().bottom);
+ check(tabletClearance>=16,'Tablet VHS title does not collide with the header');
  check(await tablet.locator('#tg-stage>.tape').count()===8 &&
    await tablet.locator('#tg-stage>.tape[data-v="4"]').evaluate(el=>/^translate3d\(0(?:\.00)?px,/.test(el.style.transform)),
    'Tablet shelf also opens on its middle cassette');
+ await tablet.locator('#shelf').focus();
+ await tablet.keyboard.press('Enter');
+ await tablet.locator('#tg-sheet').waitFor({state:'visible'});
+ check(await tablet.locator('#tg-sheet').evaluate(el=>{
+   const p=el.querySelector('.big').getBoundingClientRect();
+   return getComputedStyle(el).overflowY==='auto'&&p.height<=innerHeight*.46&&el.hasAttribute('data-lenis-prevent');
+ }), 'Tablet VHS detail stays compact and scrollable');
+ await tablet.locator('#sx').click({timeout:4000});
+ check(await tablet.locator('#tg-sheet').isHidden(),'Tablet close X releases the modal');
  await tablet.close();await tabCtx.close();
  // Fresh session: intro must self-dismiss quickly even if the full page load is slow.
  const fresh=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
