@@ -211,6 +211,37 @@ try {
      'Game preview labels stay outside image and 3D figurine is uncropped at '+width+'px');
  }
  await page.setViewportSize({width:390,height:844});
+ // Salone lives inside the phone Home while its dedicated page remains reachable.
+ await open(page,'/');
+ for(const width of [320,390,428]){
+   await page.setViewportSize({width,height:844});
+   const integrated=await page.locator('.sx-salone[data-home-mobile="true"]').evaluate(el=>{
+     const section=el.querySelector('#salone'),hero=document.querySelector('#home');
+     const before=section.getBoundingClientRect(),above=hero.getBoundingClientRect();
+     const track=section.querySelector('#track');
+     const images=[...track.querySelectorAll('figure img')];
+     const dock=document.querySelector('#barra a.voce[data-voce="salone"]');
+     const menu=document.querySelector('#mlist a[data-mobile-target="salone"]');
+     const expected=new URL('#salone',document.querySelector('.mark').href);
+     return {visible:getComputedStyle(el).display!=='none'&&before.width>0&&before.height>0,
+       afterHero:before.top>=above.bottom-2,
+       photos:images.length===6,swipe:getComputedStyle(track).overflowX==='auto'&&track.scrollWidth>track.clientWidth+50,
+       links:new URL(dock.href).href===expected.href&&new URL(menu.href).href===expected.href,
+       noOverflow:document.documentElement.scrollWidth-innerWidth<=2};
+   });
+   check(integrated.visible&&integrated.afterHero&&integrated.photos&&integrated.swipe&&integrated.links&&integrated.noOverflow,
+     'Mobile Home embeds full horizontal Salone gallery and local nav at '+width+'px');
+ }
+ await page.setViewportSize({width:390,height:844});
+ const salonPhoto=page.locator('.sx-salone[data-home-mobile="true"] #track figure img').first();
+ await salonPhoto.scrollIntoViewIfNeeded();
+ check(await salonPhoto.evaluate(async img=>{try{await img.decode()}catch{}return img.naturalWidth>0}),
+   'The integrated Salone photograph loads and decodes');
+ await page.locator('#barra a.voce[data-voce="salone"]').click();
+ await page.waitForTimeout(280);
+ check(new URL(page.url()).hash==='#salone'&&
+   await page.locator('#salone').isVisible(),
+   'Mobile Salone dock navigates to the section inside the Home');
  await open(page,'/salone');
  check(await page.locator('.sx-salone img.hang').evaluate(el=>getComputedStyle(el).display==='none'),'Salone hanging foliage is disabled');
  const galleryImage=page.locator('.sx-salone .card .ph img').first();
@@ -391,6 +422,9 @@ try {
  });
  check(captions,'Desktop book keeps Polaroid captions entirely below their photos');
  await open(desktop,'/');
+ check(await desktop.locator('.sx-salone[data-home-mobile="true"]').isHidden()&&
+   await desktop.locator('#testa .links a[data-mobile-target="salone"]').evaluate(a=>new URL(a.href).pathname.endsWith('/salone')),
+   'Desktop Home hides embedded Salone and retains dedicated Salone navigation');
  check(await desktop.locator('#h-ds').isVisible(),'Non-foliage decorations remain on desktop');
  // Header navigation must be centered against the page, not between unequal side groups.
  for(const width of [1024,1280,1440]){
@@ -445,6 +479,9 @@ try {
  await tabCtx.addInitScript(()=>{try{sessionStorage.setItem('glamood-intro','1')}catch{}});
  const tablet=await tabCtx.newPage();
  await open(tablet,'/');
+ check(await tablet.locator('.sx-salone[data-home-mobile="true"]').isHidden()&&
+   await tablet.locator('#barra a.voce[data-voce="salone"]').evaluate(a=>new URL(a.href).pathname.endsWith('/salone')),
+   'Tablet Home hides embedded Salone and keeps the separate Salone page');
  const tabletMascot=await tablet.locator('#foot').evaluate(el=>{
    const m=el.querySelector('.peekwrap').getBoundingClientRect();
    const card=el.querySelector('.cta').getBoundingClientRect();
