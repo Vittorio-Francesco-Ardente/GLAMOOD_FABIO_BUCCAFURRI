@@ -25,11 +25,16 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - uses: actions/cache@v4
+      - id: asset-cache
+        uses: actions/cache@v4
         with:
           path: public/img
           key: img-${{ hashFiles('assets/web/**', 'tools/assets.mjs') }}
+      # Git checkout refreshes source timestamps; trust generated images only when
+      # an exact content-hash cache was successfully restored.
       - run: npm run build
+        env:
+          ASSET_CACHE_HIT: ${{ steps.asset-cache.outputs.cache-hit }}
       - run: touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
