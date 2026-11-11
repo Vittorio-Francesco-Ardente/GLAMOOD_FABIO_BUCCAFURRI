@@ -15,8 +15,10 @@ const notify = wa(waText.info('il gioco Glamood, avvisami quando esce'));
       <div><p>Prossimamente: corri sul bancone del salone mentre aspetti il tuo turno. Un piccolo gioco 2D, la mascotte salta gli spuntoni e schiva le forbici volanti. Si gioca dal telefono, in pausa caffè.</p><a class="btn-pop" href={notify} target="_blank" rel="noopener" style="margin-top:20px">Avvisami quando esce</a></div>
     </div>
     <div class="media">
-      <div class="screen"><Img src="post-social/gioco-anteprima" alt="Anteprima del gioco: la mascotte corre sul bancone del salone" sizes="(min-width:900px) 60vw, 92vw" />
-        <div class="ui"><span>Prossimamente<small>anteprima grafica</small></span><span>Tocca per saltare<small>un dito, tutto qui</small></span><a href={notify} target="_blank" rel="noopener" aria-label="Avvisami quando esce"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div></div>
+      <div class="preview">
+        <div class="screen"><Img src="post-social/gioco-anteprima" alt="Anteprima del gioco: la mascotte corre sul bancone del salone" sizes="(min-width:900px) 60vw, 92vw" /></div>
+        <div class="ui"><span>Prossimamente<small>anteprima grafica</small></span><span>Tocca per saltare<small>un dito, tutto qui</small></span><a href={notify} target="_blank" rel="noopener" aria-label="Avvisami quando esce"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+      </div>
       <div class="side">
         <div class="fig"><Img src="mascotte/mascotte-figurina-3D" alt="Figurina 3D della mascotte" sizes="(min-width:900px) 30vw, 46vw" /></div>
         <div class="num"><span class="stat">1</span><div><p>Un solo comando:<br />salta.</p><ul><li>Spuntoni a onde</li><li>Forbici volanti</li><li>Punteggio sul bancone</li></ul></div></div>
@@ -35,22 +37,31 @@ const notify = wa(waText.info('il gioco Glamood, avvisami quando esce'));
 .top h2 .gb{display:inline-grid;font-size:.55em;margin-left:.25em;vertical-align:middle;text-shadow:none;letter-spacing:-.04em}
 .top p{color:#d9ebe8;max-width:44ch}
 .media{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(30px,4vw,56px);align-items:start}
+.preview{min-width:0;display:grid;grid-template-rows:auto auto;gap:12px;align-content:start}
 .screen{position:relative;border-radius:22px;overflow:hidden;background:#08393E;border:5px solid var(--cream);aspect-ratio:16/9;box-shadow:0 40px 70px -40px rgb(10 74 80 / .8)}
-.screen img{width:100%;height:100%;object-fit:cover}
-.screen .ui{position:absolute;left:14px;right:14px;bottom:14px;display:flex;gap:10px;flex-wrap:wrap}
-.screen .ui span{background:rgb(8 57 62 / .7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--cream);border-radius:12px;padding:12px 16px;font:800 clamp(14px,1.2vw,18px)/1.1 var(--f-display);text-transform:uppercase}
-.screen .ui span small{display:block;font:500 11px/1.2 var(--f-body);text-transform:none;opacity:.8;margin-top:4px}
-.screen .ui a{margin-left:auto;width:52px;height:52px;border-radius:12px;background:var(--cream);display:grid;place-items:center;color:var(--petrol)}
+.screen img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+.preview .ui{position:relative;min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-start}
+.preview .ui span{min-width:0;background:rgb(8 57 62 / .76);color:var(--cream);border:1px solid rgb(244 239 232 / .2);border-radius:12px;padding:11px 15px;font:800 clamp(13px,1.2vw,17px)/1.15 var(--f-display);text-transform:uppercase}
+.preview .ui span small{display:block;font:500 11px/1.25 var(--f-body);text-transform:none;opacity:.85;margin-top:4px}
+.preview .ui a{margin-left:auto;width:48px;height:48px;flex:none;border-radius:12px;background:var(--cream);display:grid;place-items:center;color:var(--petrol)}
 .side{display:grid;grid-template-rows:auto 1fr;gap:clamp(14px,2vw,24px)}
-.side .fig{position:relative;border-radius:22px;overflow:hidden;background:var(--petrol);border:5px solid var(--cream)}
-.side .fig img{width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 60%}
+.side .fig{position:relative;border-radius:22px;overflow:hidden;background:var(--petrol);border:5px solid var(--cream);aspect-ratio:4/5}
+.side .fig img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;aspect-ratio:auto}
 .side .num{display:flex;align-items:center;gap:16px;padding:6px 4px}
 .side .num .stat{font-size:clamp(70px,7vw,120px)}
 .side .num p{font:600 15px/1.3 var(--f-body);color:var(--cream)}
 .side ul{list-style:none;margin-top:8px;font-size:14px;color:#cfe3e1}
 .side ul li::before{content:"• ";color:var(--brass)}
 @media (max-width:900px){.top,.media{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr;grid-template-rows:none;align-items:center}}
-@media (max-width:560px){.side{grid-template-columns:1fr}.screen .ui span:nth-child(2){display:none}}
+@media (max-width:560px){
+ .top h2{font-size:clamp(42px,12vw,66px);line-height:.98}
+ .top h2 .gb{font-size:.38em;margin-left:.1em}
+ .side{grid-template-columns:1fr;justify-items:center}
+ .side .fig{width:min(82vw,360px)}
+ .side .num{width:min(100%,360px)}
+ .preview .ui span{flex:1 1 145px;padding:10px 12px;font-size:clamp(11px,3vw,13px)}
+ .preview .ui a{width:44px;height:44px;margin-left:0}
+}
 }
 </style>
 <script>
