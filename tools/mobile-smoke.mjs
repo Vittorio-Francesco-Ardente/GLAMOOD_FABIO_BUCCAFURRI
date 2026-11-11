@@ -22,7 +22,7 @@ const server = createServer(async (req,res)=>{
  try {const buf=await readFile(join('dist',path));res.writeHead(200,{'content-type':mime[extname(path)]||'application/octet-stream'});res.end(buf);}
  catch{res.writeHead(404);res.end('Not found');}
 }).listen(port);
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||undefined});
 let checks=0;
 const check=(condition,msg)=>{assert(condition,msg);checks++;};
 const open=async(page,path)=>{await page.goto('http://localhost:'+port+base+path,{waitUntil:'networkidle'});await page.waitForTimeout(300);};
@@ -95,7 +95,7 @@ try {
   return {width:rect.width,height:rect.height,opacity:parseFloat(css.opacity),links};
  });
  check(bar.width>=340 && bar.height>=60 && bar.height<=72,'Phone navbar is compact without losing tap targets');
- check(bar.links.length===6 && bar.links.every(v=>v.height>=54 && v.height<=60 && v.svg>=21 && v.svg<=24 && Number(v.label)>=.9),'All six mobile navigation buttons and labels remain legible');
+ check(bar.links.length===6 && bar.links.every(v=>v.height>=50 && v.height<=56 && v.svg>=19 && v.svg<=21 && Number(v.label)>=.9),'All six compact mobile navigation buttons and labels remain legible');
  // Verify the full label fits within its own link across phone widths.
  for(const width of [320,360,390,428]){
    await page.setViewportSize({width,height:844});
@@ -170,6 +170,41 @@ try {
  check(await page.evaluate(()=>getComputedStyle(document.body).paddingBottom==='0px'),'No double bottom padding');
  await open(page,'/salone');
  check(await page.locator('.sx-salone img.hang').evaluate(el=>getComputedStyle(el).display==='none'),'Salone hanging foliage is disabled');
+ // The listino used to squeeze 25px prices against long service names on iPhone.
+ // Check real geometric separation at small iPhone sizes, not only CSS strings.
+ await open(page,'/listino');
+ for(const viewport of [{width:320,height:568},{width:360,height:667},{width:390,height:844},{width:428,height:926}]){
+   await page.setViewportSize(viewport);
+   await page.locator('#tk .ticket').first().scrollIntoViewIfNeeded();
+   await page.waitForTimeout(750);
+   const layout=await page.locator('#tk .ticket').first().evaluate(ticket=>{
+     const box=ticket.getBoundingClientRect();
+     const rows=[...ticket.querySelectorAll('li')];
+     const priceSafe=rows.every(li=>{
+       const name=li.querySelector('span').getBoundingClientRect(),price=li.querySelector('b').getBoundingClientRect();
+       return name.right<=price.left-6 && price.right<=box.right-8 &&
+         name.left>=box.left+8 && getComputedStyle(li).display==='grid';
+     });
+     const title=ticket.querySelector('h3').getBoundingClientRect();
+     return {priceSafe,inside:box.left>=-1&&box.right<=innerWidth+1,
+       titleInside:title.left>=box.left-1&&title.right<=box.right+1,
+       overflow:document.documentElement.scrollWidth-innerWidth,
+       rowCount:rows.length};
+   });
+   check(layout.rowCount>0&&layout.priceSafe&&layout.inside&&layout.titleInside&&layout.overflow<=2,
+     'Phone listino keeps full labels, prices and ticket within '+viewport.width+'px');
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.locator('#tk .ticket').first().click();
+ await page.locator('#lz').waitFor({state:'visible'});
+ check(await page.locator('#lz-card, #lzCard').count()>=1,'Price details remain accessible after mobile layout changes');
+ const detail=await page.locator('#lzCard').evaluate(card=>({
+   inside:card.getBoundingClientRect().left>=-1&&card.getBoundingClientRect().right<=innerWidth+1,
+   rows:[...card.querySelectorAll('dt')].every(x=>x.querySelector('b')&&x.querySelector('b').getBoundingClientRect().left>=x.getBoundingClientRect().left)
+ }));
+ check(detail.inside&&detail.rows,'Detailed mobile price rows stay aligned without horizontal overflow');
+ await page.locator('#lzX').click();
+ await page.locator('#lz').waitFor({state:'hidden'});
  await open(page,'/prodotti');
  const separation=await page.evaluate(()=>{
   const item=document.querySelector('.t3.on');
