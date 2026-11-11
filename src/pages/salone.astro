@@ -3,5 +3,17 @@ import Site from '../layouts/Site.astro';
 import Salone from '../components/Salone.astro';
 ---
 <Site title="Il salone | Glamood, barber shop a Reggio Calabria" description="Pareti petrolio, rovere, ottone e poltrone vintage: il salone Glamood in Via Sbarre Centrali a Reggio Calabria." path="/salone" top="var(--petrol-darker)">
+  <!-- On phones Salone has one location: the Home. Redirect direct/bookmarked
+       /salone visits before the standalone page paints. Desktop and tablets
+       retain this page unchanged. Works for GitHub Pages project subpaths. -->
+  <script slot="head" is:inline>
+    if (window.matchMedia('(max-width:767px)').matches) {
+      const destination = new URL(window.location.href);
+      destination.pathname = destination.pathname.replace(/\/salone(?:\.html)?\/?$/, '/');
+      destination.search = '';
+      destination.hash = '#salone';
+      if (destination.href !== window.location.href) window.location.replace(destination.href);
+    }
+  </script>
   <Salone />
 </Site>
