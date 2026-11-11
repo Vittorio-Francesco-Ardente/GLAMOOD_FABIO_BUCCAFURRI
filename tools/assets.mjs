@@ -1,7 +1,8 @@
 // Asset pipeline (sharp). Input: assets/web/** (read-only sources, never modified).
 // Output: public/img/** with responsive AVIF + WebP widths and a capped WebP used by CSS backgrounds,
 // plus src/data/images.json with intrinsic sizes (width/height attributes, no CLS).
-// Files already generated are skipped, so re-runs are fast.
+// Existing variants are reused only when their source hash matches the restored CI cache.
+// For local builds, preserve the modification-time freshness check.
 import sharp from 'sharp';
 import { readdir, mkdir, stat, writeFile, copyFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -25,7 +26,8 @@ async function walk(dir) {
   return out;
 }
 
-const fresh = async (src, dst) => existsSync(dst) && (await stat(dst)).mtimeMs >= (await stat(src)).mtimeMs;
+const exactCacheHit = process.env.ASSET_CACHE_HIT === 'true';
+const fresh = async (src, dst) => existsSync(dst) && (exactCacheHit || (await stat(dst)).mtimeMs >= (await stat(src)).mtimeMs);
 
 const files = await walk(SRC);
 const manifest = {};
