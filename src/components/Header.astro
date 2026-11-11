@@ -182,29 +182,29 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
    opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 28px))
  }
 }
-/* Compact six-column phone dock. Every label stays inside its own button,
-   including PRODOTTI on 320px screens. Desktop and tablet are untouched. */
+/* Mobile dock: six equal touch targets and predictable text/icon alignment.
+   Reduced visual footprint without changing its scroll/menu behaviour. */
 @media (max-width:767px){
  .barra{
-   width:min(420px,calc(100vw - 24px));max-width:calc(100vw - 24px);
+   width:min(396px,calc(100vw - 28px));max-width:calc(100vw - 28px);
    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
-   gap:0;padding:5px;bottom:max(10px,env(safe-area-inset-bottom));
-   border-radius:23px;border:1px solid rgb(15 104 112 / .15);
+   gap:0;padding:4px;bottom:max(12px,env(safe-area-inset-bottom));
+   border-radius:21px;border:1px solid rgb(15 104 112 / .15);
    background-color:#F4EFE8;
-   box-shadow:0 12px 32px rgb(3 38 42 / .35),inset 0 1px rgb(255 255 255 / .85);
+   box-shadow:0 12px 28px rgb(3 38 42 / .3),inset 0 1px rgb(255 255 255 / .85);
  }
- .barra .cursore{top:5px;height:calc(100% - 10px);border-radius:17px;box-shadow:0 3px 9px rgb(3 38 42 / .22)}
+ .barra .cursore{top:4px;height:calc(100% - 8px);border-radius:15px;box-shadow:0 3px 9px rgb(3 38 42 / .22)}
  .barra .voce{
-   display:flex;min-width:0;min-height:56px;height:56px;
+   display:flex;min-width:0;min-height:52px;height:52px;
    flex-direction:column;justify-content:center;align-items:center;
-   padding:5px 0 4px;gap:3px;border-radius:17px;
-   font-size:clamp(7.4px,1.95vw,8.4px);font-weight:800;line-height:1.1;
-   letter-spacing:-.035em;text-align:center;white-space:nowrap;overflow:hidden;
+   padding:4px 1px;gap:3px;border-radius:15px;
+   font-size:clamp(8px,2.15vw,9px);font-weight:800;line-height:1.15;
+   letter-spacing:-.03em;text-align:center;white-space:nowrap;overflow:hidden;
  }
- .barra .voce svg{width:22px;height:22px;stroke-width:2.1;flex:none}
+ .barra .voce svg{width:20px;height:20px;stroke-width:2;flex:none}
  .barra .voce span,.barra .voce.on span,.barra .voce:focus-visible span{
    display:block;opacity:1;max-width:100%;width:100%;min-width:0;
-   margin:0!important;line-height:1.12;white-space:nowrap;
+   margin:0!important;line-height:1.15;white-space:nowrap;
    overflow:hidden;text-overflow:clip;transition:none;
  }
  .barra .voce.on{color:#fff}
