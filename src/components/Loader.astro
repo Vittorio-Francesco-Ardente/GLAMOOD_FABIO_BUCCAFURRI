@@ -1,5 +1,5 @@
 ---
-/* One-time progressive wordmark reveal. No reflection, sheen, blur or image-load wait. */
+/* ARDAKÉ-inspired left-to-right letter build, no reflection or loading blockers. */
 import art from './loader-art.txt?raw';
 ---
 <script is:inline>
@@ -41,15 +41,22 @@ import art from './loader-art.txt?raw';
 .gl-intro .ld-mask{display:block;width:100%}
 .gl-intro .intro-wm{
   display:block;width:100%;height:auto;overflow:visible;
-  color:#0F6870;opacity:0;
-  clip-path:inset(0 100% 0 0);
-  transform:translate3d(0,8px,0);
-  filter:none!important;mask:none!important;-webkit-mask:none!important;
+  color:#0F6870;filter:none!important;mask:none!important;-webkit-mask:none!important;
 }
-.gl-intro.gioca .intro-wm{animation:ld-reveal 1.22s cubic-bezier(.65,0,.35,1) .08s both}
-@keyframes ld-reveal{
-  from{opacity:1;clip-path:inset(0 100% 0 0);transform:translate3d(0,8px,0)}
-  to{opacity:1;clip-path:inset(0 0 0 0);transform:none}
+.gl-intro .ld-letter{
+  opacity:0;
+  transform-box:view-box;
+  transform-origin:50% 100%;
+  will-change:transform,opacity;
+}
+.gl-intro.gioca .ld-letter{
+  animation:ld-letter-pop 560ms cubic-bezier(.2,.9,.25,1) both;
+  animation-delay:var(--ld-delay,0ms);
+}
+@keyframes ld-letter-pop{
+  from{opacity:0;transform:translateY(18px) scaleY(.9)}
+  65%{opacity:1}
+  to{opacity:1;transform:translateY(0) scaleY(1)}
 }
 @media(max-width:767px){.gl-intro .intro-logo{width:88vw}}
 @media(prefers-reduced-motion:reduce){.gl-intro{display:none}}
