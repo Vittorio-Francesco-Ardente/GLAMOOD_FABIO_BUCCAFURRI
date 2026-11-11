@@ -55,11 +55,13 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 <style is:global>
 .sx-header{display:contents;
 /* ---------- top header (pattern from Vittorio's site): visible at the top, fades up after 70 px ---------- */
-.testa{position:fixed;z-index:var(--z-header);top:max(14px,env(safe-area-inset-top));left:var(--gutter);right:var(--gutter);display:flex;align-items:center;gap:24px;pointer-events:none;transition:opacity .4s var(--ease-out),transform .5s var(--ease-out);--hc:#F4EFE8}
+.testa{position:fixed;z-index:var(--z-header);top:max(14px,env(safe-area-inset-top));left:var(--gutter);right:var(--gutter);display:flex;align-items:center;gap:24px;pointer-events:none;--hc:#F4EFE8;transition:opacity .22s ease,transform .32s var(--ease-out),visibility 0s linear .32s}
 &[data-tone="light"] .testa{--hc:var(--petrol)}
 .testa>*{pointer-events:auto}
-&.scorre .testa{opacity:0;transform:translateY(-24px)}
-&.scorre .testa>*{pointer-events:none}
+/* Fade the floating header immediately after the first scroll; keep the bottom
+   dock's separate 120px phone threshold. Do not leave invisible buttons tappable. */
+&.header-hidden .testa{opacity:0;transform:translate3d(0,-110%,0);visibility:hidden;pointer-events:none}
+&.header-hidden .testa>*{pointer-events:none}
 .mark{display:block;flex:none;padding:6px 0}
 .mark img{height:24px;width:auto;filter:var(--hf, brightness(0) invert(1))}
 &[data-tone="light"] .mark img{--hf:none}
@@ -221,7 +223,11 @@ wireMaps(menu);
 // Show the mobile dock only after a meaningful scroll, then keep it stable.
 // Desktop/tablet retain their original four-pixel threshold.
 const phoneViewport = matchMedia('(max-width:767px)');
-const onScroll = () => root.classList.toggle('scorre', scrollY > (phoneViewport.matches ? 120 : 4));
+const onScroll = () => {
+  const y = window.scrollY || document.documentElement.scrollTop;
+  root.classList.toggle('header-hidden', y > (phoneViewport.matches ? 12 : 4));
+  root.classList.toggle('scorre', y > (phoneViewport.matches ? 120 : 4));
+};
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
 addEventListener('resize', onScroll, { passive: true });
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
