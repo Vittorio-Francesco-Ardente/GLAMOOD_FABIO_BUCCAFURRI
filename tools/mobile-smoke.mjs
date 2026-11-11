@@ -233,6 +233,20 @@ try {
  check(captions,'Desktop book keeps Polaroid captions entirely below their photos');
  await open(desktop,'/');
  check(await desktop.locator('#h-ds').isVisible(),'Non-foliage decorations remain on desktop');
+ // Header navigation must be centered against the page, not between unequal side groups.
+ for(const width of [1024,1280,1440]){
+   await desktop.setViewportSize({width,height:900});
+   const navGeometry=await desktop.locator('#testa').evaluate(el=>{
+     const h=el.getBoundingClientRect(), links=el.querySelector('.links').getBoundingClientRect();
+     const mark=el.querySelector('.mark').getBoundingClientRect();
+     const actions=el.querySelector('.soc').getBoundingClientRect();
+     return {centerOffset:Math.abs((links.left+links.right)/2-(h.left+h.right)/2),
+       clearLeft:links.left>=mark.right+4,clearRight:links.right<=actions.left-4};
+   });
+   check(navGeometry.centerOffset<=2&&navGeometry.clearLeft&&navGeometry.clearRight,
+     'Top navigation is centered without collisions at '+width+'px');
+ }
+ await desktop.setViewportSize({width:1440,height:900});
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
  check(await desktop.locator('#tg-stage>.tape').count()===16,'Desktop fills the shelf with sixteen VHS, repeating the eight originals');
