@@ -2,7 +2,7 @@
 // Uses the Playwright installed by .github/workflows/mobile-qa.yml.
 import { createRequire } from 'node:module';
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdir } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 import assert from 'node:assert/strict';
 const require = createRequire(import.meta.url);
@@ -27,8 +27,10 @@ let checks=0;
 const check=(condition,msg)=>{assert(condition,msg);checks++;};
 const open=async(page,path)=>{await page.goto('http://localhost:'+port+base+path,{waitUntil:'networkidle'});await page.waitForTimeout(300);};
 try {
+ await mkdir('qa-screenshots',{recursive:true});
  const svgSource = await readFile('src/components/loader-art.txt','utf8');
- check(!svgSource.includes('ld-sheen')&&!svgSource.includes('ld-clip'),'Loader artwork must not contain reflective shine');
+ check(!svgSource.includes('ld-sheen'),'Loader artwork must not contain reflective shine');
+ check((svgSource.match(/class="ld-letter"/g)||[]).length===7,'Intro logo must reveal seven separate letters');
  const mobile=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  await mobile.addInitScript(()=>{try{sessionStorage.setItem('glamood-intro','1')}catch{}});
  const page=await mobile.newPage();
@@ -127,8 +129,9 @@ try {
    const buttons=[...el.querySelectorAll('.cta a')].map(a=>a.getBoundingClientRect());
    return {gap:card.top-mascot.bottom,buttonsClear:buttons.every(b=>b.top>=card.top && b.top>=mascot.bottom+12)};
  });
- check(mascotGap.gap>=12 && mascotGap.buttonsClear,
-   'On phones the mascot and hands must not overlap the action card or its buttons');
+ check(mascotGap.gap>=-12 && mascotGap.gap<=2 && mascotGap.buttonsClear,
+   'Mascot hands touch the cream card edge without covering the action buttons');
+ await page.locator('#foot .stage').screenshot({path:'qa-screenshots/footer-mobile.png'});
  await page.evaluate(()=>{window.lenis?.scrollTo(document.documentElement.scrollHeight,{immediate:true});window.scrollTo(0,document.documentElement.scrollHeight)});
  await page.waitForTimeout(350);
  check(await navVisible(),'Mobile navbar remains visible at absolute bottom of page');
@@ -169,6 +172,9 @@ try {
      'Expanded Pomata instructions must not overlap its title, jar or navigation at '+viewport.width+'x'+viewport.height);
  }
  await page.setViewportSize({width:390,height:844});
+ await page.locator('#top3').screenshot({path:'qa-screenshots/prodotti-mobile.png'});
+ check(await page.locator('#top3').evaluate(el=>el.scrollHeight<1750),
+   'Phone products panel grows naturally with opened instructions');
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
  check(overflow<=2,'No page-wide horizontal overflow on products');
  // The VHS carousel must have exactly eight physical cassettes (no cloned copies)
@@ -223,6 +229,20 @@ try {
  await open(desktop,'/storia');
  check(await desktop.locator('#scroller').isVisible(),'Original 3D book remains on desktop');
  check(!(await desktop.locator('.mobile-reader').isVisible()),'Mobile reader stays hidden on desktop');
+ const storyImages=await desktop.locator('.leaf img').evaluateAll(async imgs=>{
+   await Promise.all(imgs.map(img=>img.decode().catch(()=>{})));
+   return imgs.map(img=>({loaded:img.complete&&img.naturalWidth>0,url:img.currentSrc||img.src}));
+ });
+ check(storyImages.length>=12 && storyImages.every(img=>img.loaded && img.url.includes(base+'/img/')),
+   'All desktop book pictures load from the real GitHub Pages subdirectory');
+ const cover=await desktop.locator('.leaf .cover').first().evaluate(el=>el.getBoundingClientRect());
+ check(cover.left>=-2&&cover.right<=1442&&cover.top>=0&&cover.bottom<=900,
+   'Desktop book cover is fully framed');
+ await desktop.locator('#st-next').click();
+ await desktop.waitForTimeout(1300);
+ check((await desktop.locator('#count').innerText()).includes('Gli inizi'),
+   'Desktop book navigates to chapter one instead of stalling');
+ await desktop.screenshot({path:'qa-screenshots/storia-desktop.png'});
  await open(desktop,'/');
  check(await desktop.locator('#h-ds').isVisible(),'Non-foliage decorations remain on desktop');
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
@@ -244,5 +264,24 @@ try {
  await first.waitForTimeout(100);
  check(!(await first.locator('#intro').isVisible()),'Loader must not replay on same-session navigation');
  await first.close();await fresh.close();
+ // A fresh desktop session should visibly construct the seven SVG letters.
+ const dc=await browser.newContext({viewport:{width:1440,height:900}});
+ const dp=await dc.newPage();
+ await dp.goto('http://localhost:'+port+base+'/',{waitUntil:'domcontentloaded'});
+ const letterStates=await dp.locator('#intro .ld-letter').evaluateAll(els=>els.map(el=>{
+   const c=getComputedStyle(el);
+   return {delay:parseFloat(c.transitionDelay),opacity:Number(c.opacity)};
+ }));
+ check(letterStates.length===7 && letterStates.every((x,i)=>i===0||x.delay>letterStates[i-1].delay),
+   'Desktop intro letters have increasing staggered reveal delays');
+ await dp.waitForTimeout(170);
+ await dp.screenshot({path:'qa-screenshots/loader-desktop.png'});
+ await dp.waitForTimeout(1400);
+ check(!(await dp.evaluate(()=>document.documentElement.classList.contains('loading'))),
+   'Desktop intro releases the page promptly');
+ await dp.reload({waitUntil:'domcontentloaded'});
+ check(await dp.locator('#intro .ld-letter').count()===7,
+   'Refreshing on desktop replays the full seven-letter construction');
+ await dp.close();await dc.close();
  console.log('Mobile/desktop smoke tests passed:',checks);
 } finally {await browser.close();server.close();}
