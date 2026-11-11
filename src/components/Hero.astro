@@ -77,17 +77,28 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .toggle{position:absolute;z-index:8;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:rgb(10 74 80 / .7);border:1px solid rgb(244 239 232 / .4);color:#F4EFE8;font-size:14px;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .toggle i{width:22px;height:22px;border-radius:50%;background:url("/img/brand/faccia-petrolio-trasparente-480.webp") center/80% no-repeat #F4EFE8}
 /* MOBILE */
-.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(60svh,125vw);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(56svh,112vw,490px);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(100px + env(safe-area-inset-bottom))}
 .stage{position:relative;grid-row:1}
-.copy{grid-row:2;padding:18px var(--gutter) 0;margin-top:-10svh;background:linear-gradient(transparent,var(--petrol) 22%)}
+.copy{grid-row:2;min-width:0;margin-top:0;padding:clamp(28px,5vw,40px) var(--gutter) 0;background:var(--petrol)}
+/* The mobile portrait and the content have separate rows; no negative
+   margin or fade overlay may squash the headline into the character. */
+@media (max-width:767px){
+ .hero .copy{isolation:isolate}
+ .hero .kick{font-size:clamp(11px,3vw,13px);line-height:1.4;letter-spacing:.06em}
+ .hero .copy h1{font-size:clamp(34px,9vw,54px);line-height:1.05;max-width:12ch;margin-top:16px}
+ .hero .copy p{font-size:clamp(15px,4vw,17px);line-height:1.6;margin-top:18px;max-width:38ch}
+ .hero .ctas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:24px;max-width:440px}
+ .hero .ctas .btn{display:inline-flex;justify-content:center;align-items:center;min-height:48px;padding:10px 12px;text-align:center;font-size:clamp(12px,3.6vw,15px)}
+}
+@media (max-width:359px){.hero .ctas{grid-template-columns:1fr}}
 .card{display:none}
 .stamp{display:none}
 .toggle{right:12px;top:auto;bottom:calc(100% - var(--hdr) - var(--fh) + 14svh)}
 #h-ds{display:none}
 /* TABLET */
 @media (min-width:768px) and (max-width:1023px){
- .hero{--gy:calc(var(--hdr) + 3vh);--fh:min(64svh,90vw);--st:120px;padding-bottom:120px}
- .copy{display:block;margin-top:-6svh;background:linear-gradient(transparent,var(--petrol) 30%)}
+ .hero{--gy:calc(var(--hdr) + 3vh);--fh:min(57svh,76vw);--st:120px;padding-bottom:120px}
+ .copy{display:block;margin-top:0;background:var(--petrol);padding-top:clamp(30px,4vw,44px)}
  .copy>*{max-width:640px}
  .card{display:block;right:5%;top:calc(var(--hdr) + var(--fh)*.62)}
  .stamp{display:block;right:6%;top:calc(var(--hdr) + 18vh)}
