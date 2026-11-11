@@ -148,11 +148,11 @@ Promise.all([document.fonts.load('900 100px Archivo'), document.fonts.ready]).th
 const sm = (x: number) => x * x * (3 - 2 * x);
 const Bf = (r: number) => (Math.abs(r) < 1 ? (r + Math.sin(Math.PI * r) / Math.PI) / 2 : Math.sign(r) * 0.5);
 const F = (r: number) => r * (ws + gap) + (d - ws + 2.4 * gap + d * 0.22) * Bf(r);
-// Finite shelf positions prevent teleporting; repeated desktop sleeves have independent indices.
+// Finite shelf positions prevent teleporting. On phone and desktop, the middle cassette is selected first.
 const relr = (v: number, s: number) => v - s;
 const bound = (n: number) => Math.max(0, Math.min(N - 1, n));
 /* ---- state ---- */
-let s = desktopShelf ? NC : 0, Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
+let s = Math.floor(N / 2), Tg = s, sv = 0, sig = '', hover = -1, active = -1, mx = -1e4, my = -1e4, cx = -1e4, cy = -1e4, tiltX = 0, tiltY = 0, onCover = false, isOpen = false, drag: any = null, vis = false, last = performance.now(), inSec = false;
 const fine = matchMedia('(pointer:fine)').matches;
 const idx = () => bound(Math.round(s));
 /* ---- caption: each change slides through a mask ---- */
