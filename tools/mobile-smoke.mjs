@@ -262,6 +262,10 @@ try {
  });
  check(tabletMascot.overlap>=4&&tabletMascot.overlap<=22&&tabletMascot.centered&&tabletMascot.clear,
    'Tablet mascot grips the center of its CTA card without covering its buttons');
+ await open(tablet,'/tagli');
+ check(await tablet.locator('#tg-stage>.tape').count()===8 &&
+   await tablet.locator('#tg-stage>.tape[data-v="4"]').evaluate(el=>/^translate3d\(0(?:\.00)?px,/.test(el.style.transform)),
+   'Tablet shelf also opens on its middle cassette');
  await tablet.close();await tabCtx.close();
  // Fresh session: intro must self-dismiss quickly even if the full page load is slow.
  const fresh=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
