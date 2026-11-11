@@ -75,6 +75,12 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
  .card .ph img{transform:scale(1.04)}
  .arch .ph,.tall .ph{width:min(68vw,340px)}.blob .ph,.wide .ph{width:min(82vw,520px)}.circle .ph{width:min(64vw,320px)}
 }
+/* On phones, avoid the extra gallery zoom which cropped heads and tools.
+   Keep each photograph's carefully chosen object-position and frame shape. */
+@media (max-width:767px){
+ .card .ph img{transform:none}
+ .card .fr{padding:10px}
+}
 @media (min-width:1200px) and (prefers-reduced-motion:reduce){
  .salone{height:auto}.track{overflow-x:auto;scroll-snap-type:x mandatory}
 }
