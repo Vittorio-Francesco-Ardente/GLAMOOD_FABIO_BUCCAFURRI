@@ -244,7 +244,7 @@ try {
    'Mobile Salone dock navigates to the section inside the Home');
  await open(page,'/salone');
  check(new URL(page.url()).hash==='#salone' &&
-   new URL(page.url()).pathname.replace(/\\/$/,'').endsWith(base.replace(/\\/$/,'')),
+    new URL(page.url()).pathname===base+'/',
    'Direct phone visits to /salone redirect to the Home Salone anchor');
  check(await page.locator('.sx-salone[data-home-mobile="true"] #salone').isVisible(),
    'Direct phone Salone visits land at the same embedded Home gallery');
