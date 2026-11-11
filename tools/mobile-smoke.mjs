@@ -310,7 +310,7 @@ try {
  const expected=await page.evaluate(()=>{const c=JSON.parse(document.getElementById('tagli-data').textContent).CUTS[7];return c[1]+'-foto.webp'});
  check(chosen.endsWith(expected),'The selected later cassette opens the correct photo rather than the previous cut');
  const shelfShift=await page.locator('#tg-stage>.tape[data-v="7"]').evaluate((el,prev)=>{
-   const position=s=>{const match=s.match(/translate3d\\(([-\\d.]+)px,([-\\d.]+)px,([-\\d.]+)px\\)/);return match?match.slice(1).map(Number):null};
+   const position=s=>{const start=s.indexOf('translate3d(');if(start<0)return null;return s.slice(start+12,s.indexOf(')',start+12)).split(',').map(v=>parseFloat(v))};
    const a=position(prev),b=position(el.style.transform);
    return a&&b?Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]):Infinity;
  },before);
