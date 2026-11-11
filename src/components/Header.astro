@@ -40,7 +40,7 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 </nav>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" inert>
   <div class="top"><span class="lab">Menu, Glamood</span><button class="x" id="menu-close" aria-label="Chiudi il menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <ul id="mlist">{[['', 'Home'] as [string, string], ...items].map(([id, t], i) => <li><a href={`/${id}`} data-mobile-target={id === "salone" ? "salone" : undefined} aria-current={cur(id)}><span style={`transition-delay:${120 + i * 70}ms`}>{t}</span></a></li>)}</ul>
+  <ul id="mlist">{[['', 'Home'] as [string, string], ...items].map(([id, t], i) => <li class={id === "salone" ? "phone-salone-item" : undefined}><a href={`/${id}`} data-mobile-target={id === "salone" ? "salone" : undefined} aria-current={cur(id)}><span style={`transition-delay:${120 + i * 70}ms`}>{t}</span></a></li>)}</ul>
   <div class="pills">
     <a href={wa()} target="_blank" rel="noopener" class="wide">Prenota su WhatsApp</a>
     {phone && <a href={phone}>Chiama</a>}
@@ -182,12 +182,12 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
    opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 28px))
  }
 }
-/* Mobile dock: six equal touch targets and predictable text/icon alignment.
+/* Mobile dock: five equal touch targets. Salone is in the phone Home,\n   so that redundant link is hidden in both menus without changing desktop.
    Reduced visual footprint without changing its scroll/menu behaviour. */
 @media (max-width:767px){
  .barra{
    width:min(396px,calc(100vw - 28px));max-width:calc(100vw - 28px);
-   display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+   display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
    gap:0;padding:4px;bottom:max(12px,env(safe-area-inset-bottom));
    border-radius:21px;border:1px solid rgb(15 104 112 / .15);
    background-color:#F4EFE8;
@@ -208,6 +208,8 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
    overflow:hidden;text-overflow:clip;transition:none;
  }
  .barra .voce.on{color:#fff}
+ .barra .voce[data-voce="salone"]{display:none}
+ .menu .phone-salone-item{display:none}
  .barra .menu-btn{display:none}
 }
 @media (prefers-reduced-motion:reduce){.menu{transition:none}.menu li a span{transform:none}}
