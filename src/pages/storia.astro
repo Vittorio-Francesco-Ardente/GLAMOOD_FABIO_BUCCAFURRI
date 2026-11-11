@@ -154,7 +154,14 @@ function goPage(dir: number) {
  const tgt = Math.max(0, Math.min(N, Math.round(st.p) + dir));
  const start = scrollY + sc.getBoundingClientRect().top;
  const y = start + (tgt / N) * Math.max(0, sc.offsetHeight - innerHeight);
- window.lenis ? window.lenis.scrollTo(y, {duration: reduced ? 0 : .5}) : scrollTo({top:y, behavior:reduced?'auto':'smooth'});
+ // An explicit page button must actually reach that spread. Do not delegate
+ // the state change to an asynchronous Lenis/ScrollTrigger race.
+ gsap.killTweensOf(st);
+ if (window.lenis) window.lenis.scrollTo(y, {immediate:true, force:true});
+ else window.scrollTo({top:y, behavior:'instant'});
+ ScrollTrigger.update();
+ st.p = tgt;
+ render(tgt);
 }
 document.getElementById('st-prev')!.addEventListener('click', () => goPage(-1));
 document.getElementById('st-next')!.addEventListener('click', () => goPage(1));
