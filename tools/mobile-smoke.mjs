@@ -45,6 +45,26 @@ try {
  const flat=await page.locator('#mobile-page>.face').evaluate(el=>getComputedStyle(el).transform);
  check(flat==='none','Mobile page is flat rather than flipped/mirrored');
  await open(page,'/');
+ // The Home portrait and headline must occupy separate rows on small phones.
+ for(const viewport of [{width:320,height:568},{width:360,height:667},{width:390,height:844},{width:428,height:926}]){
+   await page.setViewportSize(viewport);
+   await page.waitForTimeout(120);
+   const home=await page.locator('#home').evaluate(el=>{
+     const stage=el.querySelector('.stage').getBoundingClientRect();
+     const figure=el.querySelector('#fig').getBoundingClientRect();
+     const copy=el.querySelector('.copy').getBoundingClientRect();
+     const title=el.querySelector('.copy h1').getBoundingClientRect();
+     const buttons=[...el.querySelectorAll('.ctas a')].map(x=>x.getBoundingClientRect());
+     return {separate:copy.top>=stage.bottom-2 && copy.top>=figure.bottom-2,
+       titleInside:title.left>=-1&&title.right<=innerWidth+1,
+       buttonsInside:buttons.length===2&&buttons.every(b=>b.left>=0&&b.right<=innerWidth&&b.height>=44),
+       widthOverflow:document.documentElement.scrollWidth-innerWidth};
+   });
+   check(home.separate&&home.titleInside&&home.buttonsInside&&home.widthOverflow<=2,
+     'Mobile Home has separate portrait, headline and full-size CTA at '+viewport.width+'px');
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForTimeout(160);
  // The real photo and cartoon have different contours at the raised right
  // elbow. Force the animated cloud to cross that region and verify the pixels
  // remain cartoon-only throughout the elbow, with no photo bleeding through.
@@ -168,6 +188,29 @@ try {
  check(await navVisible(),'Mobile navbar remains visible at absolute bottom of page');
  check(await page.locator('#foot .legal').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)>=110),'Footer retains clearance below its final links');
  check(await page.evaluate(()=>getComputedStyle(document.body).paddingBottom==='0px'),'No double bottom padding');
+ // The game preview keeps all labels OUTSIDE the image and its mascot complete.
+ await open(page,'/');
+ for(const width of [320,390,428]){
+   await page.setViewportSize({width,height:844});
+   await page.locator('#gioco .preview').scrollIntoViewIfNeeded();
+   await page.waitForTimeout(240);
+   const game=await page.locator('#gioco').evaluate(async el=>{
+     const preview=el.querySelector('.preview'),screen=el.querySelector('.screen'),ui=preview.querySelector('.ui');
+     const image=screen.querySelector('img'),figurine=el.querySelector('.side .fig img');
+     try{await Promise.all([image.decode(),figurine.decode()])}catch{}
+     const p=preview.getBoundingClientRect(),r=screen.getBoundingClientRect(),labels=ui.getBoundingClientRect();
+     const fig=figurine.getBoundingClientRect();
+     return {separate:labels.top>=r.bottom+6,
+       labelsFit:[...ui.children].every(ch=>{const b=ch.getBoundingClientRect();return b.left>=p.left-1&&b.right<=p.right+1}),
+       imageLoaded:image.naturalWidth>0&&figurine.naturalWidth>0,
+       fits:getComputedStyle(image).objectFit==='contain'&&getComputedStyle(figurine).objectFit==='contain',
+       inside:fig.left>=-1&&fig.right<=innerWidth+1,
+       overflow:document.documentElement.scrollWidth-innerWidth};
+   });
+   check(game.separate&&game.labelsFit&&game.imageLoaded&&game.fits&&game.inside&&game.overflow<=2,
+     'Game preview labels stay outside image and 3D figurine is uncropped at '+width+'px');
+ }
+ await page.setViewportSize({width:390,height:844});
  await open(page,'/salone');
  check(await page.locator('.sx-salone img.hang').evaluate(el=>getComputedStyle(el).display==='none'),'Salone hanging foliage is disabled');
  const galleryImage=page.locator('.sx-salone .card .ph img').first();
@@ -305,6 +348,14 @@ try {
    'Phone VHS details can scroll natively and the photo and X fit within the viewport');
  const loaded=await page.locator('#simg').evaluate(async img=>{try{await img.decode()}catch{}return img.complete&&img.naturalWidth>0;});
  check(loaded,'Haircut photo loads and decodes when detail opens');
+ const mobileCutPhoto=await page.locator('#simg').evaluate(img=>{
+   const frame=img.closest('.big').getBoundingClientRect(),im=img.getBoundingClientRect();
+   return {fit:getComputedStyle(img).objectFit==='contain',position:getComputedStyle(img).objectPosition,
+     centered:Math.abs((frame.left+frame.right-im.left-im.right)/2)<10,
+     natural:img.naturalWidth>0&&img.naturalHeight>0};
+ });
+ check(mobileCutPhoto.fit&&mobileCutPhoto.centered&&mobileCutPhoto.natural,
+   'Phone haircut image stays centered and shows the whole original photo');
  check(await page.locator('#photo-state').isHidden(),'Loading indicator disappears after photo loads');
  await page.locator('#sx').click({timeout:4000});
  check(await page.locator('#tg-sheet').isHidden(),'X closes sheet immediately on phone');
@@ -355,6 +406,16 @@ try {
      'Top navigation is centered without collisions at '+width+'px');
  }
  await desktop.setViewportSize({width:1440,height:900});
+ await desktop.locator('#gioco .preview').scrollIntoViewIfNeeded();
+ const desktopGame=await desktop.locator('#gioco .preview').evaluate(el=>{
+   const screen=el.querySelector('.screen').getBoundingClientRect(),ui=el.querySelector('.ui').getBoundingClientRect();
+   const fig=el.closest('.media').querySelector('.side .fig img');
+   return {clear:ui.top>=screen.bottom+6,
+     imageFit:getComputedStyle(el.querySelector('.screen img')).objectFit==='contain',
+     figureFit:getComputedStyle(fig).objectFit==='contain'};
+ });
+ check(desktopGame.clear&&desktopGame.imageFit&&desktopGame.figureFit,
+   'Desktop game labels stay beneath image and mascot photograph stays uncropped');
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
  check(await desktop.locator('#tg-stage>.tape').count()===16,'Desktop fills the shelf with sixteen VHS, repeating the eight originals');
@@ -362,6 +423,14 @@ try {
    'Desktop shelf starts from its middle VHS rather than the left end');
  await desktop.locator('#shelf').focus();await desktop.keyboard.press('Enter');
  await desktop.locator('#tg-sheet').waitFor({state:'visible'});
+ const desktopCutPhoto=await desktop.locator('#simg').evaluate(async img=>{
+   try{await img.decode()}catch{}
+   const frame=img.closest('.big').getBoundingClientRect(),text=img.closest('.sheet').querySelector('.in>div:last-child').getBoundingClientRect();
+   return {loaded:img.naturalWidth>0,fit:getComputedStyle(img).objectFit==='contain',
+     visible:frame.width>150&&frame.height>300&&frame.right<=text.left-8};
+ });
+ check(desktopCutPhoto.loaded&&desktopCutPhoto.fit&&desktopCutPhoto.visible,
+   'Desktop haircut photo keeps its portrait ratio without overlapping text');
  await desktop.locator('#sx').click({timeout:4000});
  check(await desktop.locator('#tg-sheet').isHidden(),'Desktop X immediately closes VHS detail');
  await desktop.locator('#shelf').focus();await desktop.keyboard.press('ArrowRight');
@@ -394,6 +463,12 @@ try {
  await tablet.locator('#shelf').focus();
  await tablet.keyboard.press('Enter');
  await tablet.locator('#tg-sheet').waitFor({state:'visible'});
+ check(await tablet.locator('#simg').evaluate(async img=>{
+   try{await img.decode()}catch{}
+   const p=img.closest('.big').getBoundingClientRect();
+   return img.naturalWidth>0&&getComputedStyle(img).objectFit==='contain'&&
+     p.left>=0&&p.right<=innerWidth&&p.top>=0&&p.height<=innerHeight*.46;
+ }), 'Tablet haircut photo is fully visible and centered in its portrait frame');
  check(await tablet.locator('#tg-sheet').evaluate(el=>{
    const p=el.querySelector('.big').getBoundingClientRect();
    return getComputedStyle(el).overflowY==='auto'&&p.height<=innerHeight*.46&&el.hasAttribute('data-lenis-prevent');
