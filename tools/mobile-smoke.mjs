@@ -170,6 +170,16 @@ try {
  check(await page.evaluate(()=>getComputedStyle(document.body).paddingBottom==='0px'),'No double bottom padding');
  await open(page,'/salone');
  check(await page.locator('.sx-salone img.hang').evaluate(el=>getComputedStyle(el).display==='none'),'Salone hanging foliage is disabled');
+ const galleryImage=page.locator('.sx-salone .card .ph img').first();
+ await galleryImage.scrollIntoViewIfNeeded();
+ const photo=await galleryImage.evaluate(async img=>{
+   try{await img.decode()}catch{}
+   const css=getComputedStyle(img),frame=img.closest('.ph').getBoundingClientRect(),rect=img.getBoundingClientRect();
+   return {loaded:img.naturalWidth>0,fullFrame:rect.width>=frame.width-1&&rect.height>=frame.height-1,
+     unzoomed:css.transform==='none',fit:css.objectFit==='cover'};
+ });
+ check(photo.loaded&&photo.fullFrame&&photo.unzoomed&&photo.fit,
+   'Mobile gallery photos decode and fill their frame without extra face-cropping zoom');
  // The listino used to squeeze 25px prices against long service names on iPhone.
  // Check real geometric separation at small iPhone sizes, not only CSS strings.
  await open(page,'/listino');
