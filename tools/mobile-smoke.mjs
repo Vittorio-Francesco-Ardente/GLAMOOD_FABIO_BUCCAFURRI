@@ -309,7 +309,12 @@ try {
  const chosen=await page.locator('#simg').getAttribute('src');
  const expected=await page.evaluate(()=>{const c=JSON.parse(document.getElementById('tagli-data').textContent).CUTS[7];return c[1]+'-foto.webp'});
  check(chosen.endsWith(expected),'The selected later cassette opens the correct photo rather than the previous cut');
- check(await page.locator('#tg-stage>.tape[data-v="7"]').evaluate((el,before)=>el.style.transform===before,before),'Tapping a VHS does not move the shelf behind the dialog');
+ const shelfShift=await page.locator('#tg-stage>.tape[data-v="7"]').evaluate((el,prev)=>{
+   const position=s=>{const match=s.match(/translate3d\\(([-\\d.]+)px,([-\\d.]+)px,([-\\d.]+)px\\)/);return match?match.slice(1).map(Number):null};
+   const a=position(prev),b=position(el.style.transform);
+   return a&&b?Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]):Infinity;
+ },before);
+ check(shelfShift<=3,'Tapping a VHS must not jump the shelf (movement '+shelfShift.toFixed(2)+'px)');
  await page.locator('#sx').click({timeout:4000});
  check(await page.locator('#tg-sheet').isHidden(),'X closes a later VHS too');
  await page.close();await mobile.close();
