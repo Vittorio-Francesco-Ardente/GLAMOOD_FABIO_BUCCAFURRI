@@ -9,6 +9,10 @@ import { img } from '../data/img';
 <div class="sx-listino">
 <div class="page-frame">
 <section class="panel listino" id="listino" aria-labelledby="listino-t">
+  <div class="retro-waves" aria-hidden="true">
+    <span class="retro-wave retro-wave--top"></span>
+    <span class="retro-wave retro-wave--bottom"></span>
+  </div>
   <div class="top">
     <p class="marker">Listino prezzi</p>
     <h2 class="title type-pop on-petrol" id="listino-t" aria-label="Listino, quello che vedi, paghi">Listino<span class="script-over" aria-hidden="true">quello che vedi, paghi</span></h2>
@@ -46,17 +50,49 @@ import { img } from '../data/img';
 
 <style is:global>
 .sx-listino{display:contents;
-.listino{background:var(--petrol) url("/img/pattern/listino-fiori.webp") 0 0/clamp(440px,38vw,620px) repeat;padding:clamp(56px,7vw,110px) var(--gutter) 0}
-.listino::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgb(8 57 62 / .35),transparent 40%,rgb(8 57 62 / .2))}
-.listino>*:not(.bgref){position:relative;z-index:1}
+/* Retro concentric waves: the original composition rebuilt with Glamood petrol
+   and aqua tones. The two GPU-composited layers move independently, without
+   repainting the pattern on each animation frame or shipping a large PNG. */
+.listino{background:#C9EEEB;padding:clamp(56px,7vw,110px) var(--gutter) 0}
+.listino .retro-waves{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;--wave-size:max(115vw,100svh)}
+.listino .retro-wave{
+  position:absolute;display:block;width:var(--wave-size);height:var(--wave-size);
+  border-radius:50%;will-change:transform;
+  background:radial-gradient(circle at center,
+    #08393E 0 10%,#0A4A50 10% 18%,#0C5A61 18% 26%,
+    #0F6870 26% 34%,#12757E 34% 42%,#319BA1 42% 50%,
+    #67C1C3 50% 58%,#A1E0DD 58% 66%,transparent 66% 100%);
+}
+.listino .retro-wave--top{
+  top:calc(var(--wave-size) * -.52);right:calc(var(--wave-size) * -.55);
+  animation:listino-retro-top 25s ease-in-out infinite alternate;
+}
+.listino .retro-wave--bottom{
+  bottom:calc(var(--wave-size) * -.52);left:calc(var(--wave-size) * -.55);
+  animation:listino-retro-bottom 30s ease-in-out infinite alternate;
+}
+@keyframes listino-retro-top{
+  from{transform:translate3d(-1.2%,.5%,0) scale(1.025)}
+  to{transform:translate3d(1.2%,1.8%,0) scale(1.06)}
+}
+@keyframes listino-retro-bottom{
+  from{transform:translate3d(1%,-.6%,0) scale(1.05)}
+  to{transform:translate3d(-1.3%,-1.9%,0) scale(1.025)}
+}
+@media (max-width:767px){.listino .retro-waves{--wave-size:max(135vw,95svh)}}
+@media (prefers-reduced-motion:reduce){
+ .listino .retro-wave{animation:none;transform:none;will-change:auto}
+}
+.listino>*:not(.retro-waves):not(.bgref){position:relative;z-index:1}
 .top{position:relative;display:grid;gap:18px;justify-items:start;max-width:1300px;margin:0 auto}
 .title{position:relative;font-size:clamp(78px,17vw,300px);margin-left:-.04em}
-.title .script-over{display:block;font-size:.2em;color:var(--cream)!important;-webkit-text-stroke:0;text-shadow:0 .08em 0 #08393E,0 .2em .5em rgb(6 40 44 / .45);margin-top:.35em;letter-spacing:.12em}
+.listino .title.type-pop.on-petrol{color:#08393E;text-shadow:0 .045em 0 rgb(255 255 255 / .48)}
+.title .script-over{display:block;font-size:.2em;color:#0A4A50!important;-webkit-text-stroke:0;text-shadow:0 .08em 0 rgb(255 255 255 / .6);margin-top:.35em;letter-spacing:.12em}
 .scissors{position:absolute;right:4%;top:6%;width:clamp(110px,13vw,220px);height:auto;transform:rotate(-24deg);filter:drop-shadow(0 16px 16px rgb(0 0 0 / .35));pointer-events:none}
 .lb{right:4%;bottom:-6px;font-size:clamp(56px,6vw,104px);transform:rotate(-6deg)}
 @media (max-width:1023px){.lb{display:none}}
-.intro{max-width:44ch;color:#d9ebe8;font-size:clamp(16px,1.2vw,19px)}
-.marker{color:#cfe3e1;width:100%;max-width:1300px;margin:0 auto}
+.intro{max-width:44ch;color:#08393E;font-size:clamp(16px,1.2vw,19px)}
+.marker{color:#0A4A50;width:100%;max-width:1300px;margin:0 auto}
 .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
 .board{position:relative;display:grid;grid-template-columns:minmax(0,1fr);max-width:1360px;margin:0 auto;justify-items:center}
 .tickets{width:100%;position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,3vw,56px);max-width:1320px;margin:clamp(48px,6vw,84px) auto 0;justify-content:center;padding-bottom:clamp(60px,7vw,110px);align-items:start}
