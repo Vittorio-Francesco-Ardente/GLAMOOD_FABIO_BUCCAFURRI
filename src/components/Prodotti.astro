@@ -192,43 +192,38 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 @media (max-width:1023px){.split{grid-template-columns:1fr}.how .cards{grid-template-columns:1fr;max-width:460px;margin-inline:auto}}
 @media (max-width:767px){
  .band{min-height:520px}
- .band-t{font-size:12.5vw;top:18%}.band-k{font-size:10px;white-space:normal;text-align:center;width:max-content;max-width:86%;line-height:1.3}
+ .band-t{font-size:12.5vw;top:18%}
+ .band-k{font-size:10px;white-space:normal;text-align:center;max-width:86%;line-height:1.3}
  .jars{top:24%;bottom:12%}.jars img{width:44vw}
  .band .peel{display:none}
- /* Keep styling tools away from labels, instructions and the navigation. */
- .top3 .t3-head{padding:20px 18px;gap:12px}
- .top3 .t3-k{font-size:11px;line-height:1.35;max-width:18ch}
- .top3 .t3-dots{gap:6px}
- .top3 .t3-dots button{width:38px;height:34px;flex:none}
- .top3 .t3-num{left:22px;top:90px}
- .top3 .t3-title{top:142px}
- .top3 .t3-parts .pt{max-width:80px;opacity:.72;pointer-events:none}
- .top3 .pt.p1{right:5%;left:auto;top:33%;width:15vw}
- .top3 .pt.p2{display:none} /* Remove the secondary floating prop on narrow screens: it collides with copy during entrance animation. */
- .top3 .t3-desc{left:22px;right:22px;bottom:clamp(214px,26svh,245px);z-index:7;max-width:none}
- .top3 .t3-desc h4{font-size:clamp(17px,4.4vw,20px);line-height:1.1}
- .top3 .t3-acc{left:22px;right:22px;bottom:clamp(145px,17svh,165px);z-index:7}
- .top3 .t3-jar{max-width:65vw}
- /* A single flowing copy column, instead of two absolute blocks that overlap
-    whenever the "Come si usa" disclosure grows. Navigation stays separate. */
- .top3{height:max(780px,100svh);min-height:780px}
- .top3 .t3{
-   display:flex;flex-direction:column;justify-content:flex-end;
-   padding:0 22px clamp(158px,20svh,180px);
- }
- .top3 .t3-desc,.top3 .t3-acc{
-   position:relative;left:auto;right:auto;bottom:auto;
-   width:100%;max-width:none;min-width:0;flex:0 0 auto;
-   z-index:7;
- }
- .top3 .t3-desc{margin:0 0 16px}
- .top3 .t3-desc h4{line-height:1.18;margin-bottom:6px;overflow-wrap:break-word}
- .top3 .t3-desc p{font-size:14px;line-height:1.4}
- .top3 .t3-acc{margin:0}
- .top3 .t3-acc summary{min-height:52px;padding:12px 0;line-height:1.2}
- .top3 .t3-acc p{line-height:1.45;margin:0}
- .top3 .t3-jw{top:clamp(175px,23svh,205px);bottom:clamp(360px,46svh,420px)}
- .top3 .t3-nav{bottom:clamp(92px,12svh,110px)}
+ /* Phone: genuine document flow, without fixed-height absolute caption blocks. */
+ .top3{height:auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+ .top3 .t3-head{position:relative;inset:auto;flex:none;align-items:center;padding:20px 18px 12px;gap:10px}
+ .top3 .t3-k{font-size:11px;line-height:1.3;max-width:18ch}
+ .top3 .t3-dots{gap:5px}.top3 .t3-dots button{width:36px;height:32px;flex:none}
+ .top3 .t3{position:relative;inset:auto;display:none;visibility:hidden;padding:0 18px;min-height:0;min-width:0;
+  grid-template-columns:minmax(0,1fr);grid-template-areas:"number" "title" "visual" "description" "instructions"}
+ .top3 .t3.on{display:grid;visibility:visible}
+ .top3 .t3-num{grid-area:number;position:relative;inset:auto;font-size:clamp(37px,11vw,54px);line-height:1;margin:12px 0 4px}
+ .top3 .t3-title{grid-area:title;position:relative;inset:auto;width:100%;min-width:0;transform:none;white-space:nowrap;
+  font-size:clamp(54px,16vw,94px);line-height:.9;text-align:center;letter-spacing:-.035em;margin:0 0 6px}
+ .top3 .t3-parts{grid-area:visual;position:relative;z-index:1;min-height:clamp(235px,34svh,315px);pointer-events:none}
+ .top3 .t3-parts .pt{max-width:74px;opacity:.7;pointer-events:none}
+ .top3 .pt.p1{left:auto;right:2%;top:13%;width:15vw}
+ .top3 .pt.p2{display:none}
+ .top3 .t3-jw{grid-area:visual;position:relative;inset:auto;z-index:2;
+  min-height:clamp(235px,34svh,315px);height:clamp(235px,34svh,315px);display:grid;place-items:center;pointer-events:none}
+ .top3 .t3-jar{width:min(62vw,300px);max-width:100%;max-height:270px;height:auto;object-fit:contain;
+  filter:drop-shadow(0 24px 24px rgb(0 0 0 / .25))}
+ .top3 .t3-desc{grid-area:description;position:relative;inset:auto;width:100%;max-width:none;min-width:0;z-index:5;margin:12px 0 0}
+ .top3 .t3-desc .dash{margin:0 0 12px}
+ .top3 .t3-desc h4{font-size:clamp(17px,4.4vw,20px);line-height:1.2;margin:0 0 8px;overflow-wrap:break-word}
+ .top3 .t3-desc p{display:block;font-size:14px;line-height:1.5;margin:0}
+ .top3 .t3-acc{grid-area:instructions;position:relative;inset:auto;width:100%;max-width:none;min-width:0;z-index:5;margin:18px 0 0}
+ .top3 .t3-acc summary{min-height:48px;padding:12px 0;line-height:1.3}
+ .top3 .t3-acc p{font-size:14px;line-height:1.5;margin:0;padding-bottom:14px}
+ .top3 .t3-nav{position:relative;inset:auto;transform:none;flex:none;margin:24px auto 0;align-self:center;justify-content:center;gap:14px;z-index:8}
+ .top3 .t3-nav button{width:48px;height:48px}
 }
 @media (prefers-reduced-motion:reduce){.top3{height:auto;min-height:0}.t3{position:relative;visibility:visible;min-height:100svh}}
 }
@@ -246,6 +241,14 @@ import { gsap, ScrollTrigger, Flip } from '../scripts/motion.js';
     box.style.setProperty('--bg', s.dataset.bg!); const light = s.dataset.bg!.toUpperCase() === '#F4EFE8'; box.style.setProperty('--hk', light ? '#0F6870' : '#F4EFE8');
     dots.forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
     box.querySelector<HTMLElement>('.t3-prev')!.hidden = i === 0; box.querySelector<HTMLElement>('.t3-next')!.hidden = i === sl.length - 1;
+    if (matchMedia('(max-width:767px)').matches) {
+      sl.forEach(slide => {
+        const pieces=slide.querySelectorAll('.t3-title,.t3-jar,.pt,.t3-num,.t3-desc,.t3-acc');
+        gsap.killTweensOf(pieces);gsap.set(pieces,{clearProps:'transform,opacity'});
+        slide.classList.toggle('on',slide===s);
+      });
+      return;
+    }
     if (prev) {
       gsap.to(prev.querySelector('.t3-title'), { yPercent: -60 * dir, opacity: 0, duration: 0.6, ease: 'power3.in' });
       gsap.to(prev.querySelector('.t3-jar'), { xPercent: -90 * dir, rotate: -14 * dir, opacity: 0, duration: 0.6, ease: 'power3.in' });
@@ -262,7 +265,8 @@ import { gsap, ScrollTrigger, Flip } from '../scripts/motion.js';
   const fit = () => sl.forEach((s) => { const t = s.querySelector<HTMLElement>('.t3-title')!; t.style.fontSize = ''; const max = box.clientWidth * 0.94; const w = t.scrollWidth; if (w > max) t.style.fontSize = (parseFloat(getComputedStyle(t).fontSize) * max) / w + 'px'; });
   fit(); addEventListener('resize', fit); document.fonts.ready.then(fit);
   if (reduced) { sl.forEach((s) => s.classList.add('on')); box.querySelector<HTMLElement>('.t3-nav')!.hidden = true; box.querySelector<HTMLElement>('.t3-dots')!.hidden = true; return; }
-  sl.forEach((s) => s.querySelectorAll('.pt').forEach((p, k) => gsap.to(p, { yPercent: k % 2 ? 12 : -12, rotation: '+=8', duration: 2.6 + k * 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut' })));
+  if (!matchMedia('(max-width:767px)').matches)
+    sl.forEach((s) => s.querySelectorAll('.pt').forEach((p, k) => gsap.to(p, { yPercent: k % 2 ? 12 : -12, rotation: '+=8', duration: 2.6 + k * 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut' })));
   show(0);
   // horizontal carousel: arrows, dots, keys and swipe change the product (no scroll hijack)
   const go = (i: number) => { i = Math.max(0, Math.min(sl.length - 1, i)); if (i !== cur) show(i, i > cur ? 1 : -1); };
