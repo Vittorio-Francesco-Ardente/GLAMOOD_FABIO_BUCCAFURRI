@@ -149,11 +149,36 @@ function draw() {
   if (full > 0) { mx.globalAlpha = full; mx.fillRect(W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)); mx.globalAlpha = 1; }
   const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
   ctx.clearRect(0, 0, W, H);
-  if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
-  // Preserve the photo wherever the cartoon is transparent: cutting away the
-  // entire cloud first made unmatched areas of the arm/elbow disappear.
-  // Also retain the photo while the cartoon file is still loading.
-  if (cart.complete && cart.naturalWidth) {
+  const photoReady = photoEl.complete && photoEl.naturalWidth > 0;
+  if (!photoReady) return;
+  ctx.drawImage(photoEl, ...R);
+  photoEl.style.opacity = '0';
+  const cartoonReady = cart.complete && cart.naturalWidth > 0;
+  if (cartoonReady && pts.length) {
+    // The cloud is a REAL replacement region, not a translucent overlay:
+    // first erase ALL photographic pixels under the cloud, even in areas
+    // where the cartoon image happens to have transparent alpha.
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.drawImage(mask, 0, 0);
+    ctx.restore();
+
+    // Keep the cloud stroke behind the people, not across the arm/elbow.
+    // Subtract BOTH portrait silhouettes from the stroke so it cannot
+    // draw a white cut through either silhouette.
+    rx.globalCompositeOperation = 'destination-out';
+    rx.drawImage(mask, 0, 0);
+    rx.drawImage(photoEl, ...R);
+    rx.drawImage(cart, ...R);
+    rx.globalCompositeOperation = 'source-over';
+    if (full < 1) {
+      ctx.globalAlpha = 1 - full;
+      ctx.drawImage(rim, 0, 0);
+      ctx.globalAlpha = 1;
+    }
+
+    // Render ONLY cartoon pixels inside the cloud, with transparent gaps
+    // exposing the petrol background rather than the realistic photo.
     if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; }
     tx.globalCompositeOperation = 'source-over';
     tx.clearRect(0, 0, W, H);
@@ -161,12 +186,6 @@ function draw() {
     tx.globalCompositeOperation = 'destination-in';
     tx.drawImage(mask, 0, 0);
     tx.globalCompositeOperation = 'source-over';
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.drawImage(tmp, 0, 0);
-    ctx.restore();
-    rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
-    if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
     ctx.drawImage(tmp, 0, 0);
   }
   active = pts.length > 0 || (full > 0 && full < 1); if (active) requestAnimationFrame(draw);
