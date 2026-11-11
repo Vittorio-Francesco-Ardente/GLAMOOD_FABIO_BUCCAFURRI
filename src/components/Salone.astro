@@ -5,6 +5,8 @@
 import Img from './Img.astro';
 import { img } from '../data/img';
 import { business } from '../data/business';
+interface Props { homeMobile?: boolean }
+const { homeMobile = false } = Astro.props;
 const cards: [shape: string, src: string, alt: string, cap: string, pos?: string][] = [
   ['arch', 'salone/salone-12-facciata', "La facciata del salone Glamood con l'insegna", 'si entra da qui'],
   ['wide', 'salone/salone-05', 'Le postazioni con specchi in legno e poltrone nere e oro', 'le postazioni'],
@@ -14,7 +16,7 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
   ['arch', 'salone/salone-11-titolare', 'Fabio al lavoro nel salone', 'Fabio al lavoro', '72% 50%'],
 ];
 ---
-<div class="sx-salone">
+<div class="sx-salone" data-home-mobile={homeMobile ? "true" : undefined}>
 <section class="salone" id="salone" aria-labelledby="salone-t"><div class="bgref r-corallo-tono"></div>
   <img class="hang" {...img('piante/13_pothos_variegato')} alt="" loading="lazy" style="width:clamp(90px,9vw,160px);right:1.5%" />
   <div class="head"><p class="kicker" style="color:#cfe3e1">{business.address}</p><h2 class="giant-title" id="salone-t">Benvenuto</h2><p>Pareti petrolio, rovere, ottone e poltrone vintage. Siediti, il resto lo facciamo noi.</p></div>
@@ -85,19 +87,24 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
  .salone{height:auto}.track{overflow-x:auto;scroll-snap-type:x mandatory}
 }
 }
+/* The home embeds this section only on phones. Keep the original standalone
+   Salone route available (and the desktop/tablet home unchanged). */
+@media (min-width:768px){.sx-salone[data-home-mobile="true"]{display:none}}
 </style>
 
 <script>
 import { gsap } from '../scripts/motion.js';
-const track = document.getElementById('track')!;
+const section = document.querySelector<HTMLElement>('.sx-salone')!;
+const track = section.querySelector<HTMLElement>('#track')!;
+const homeMobile = section.dataset.homeMobile === 'true';
 const mm = gsap.matchMedia();
-mm.add('(min-width:1200px) and (prefers-reduced-motion:no-preference)', () => {
+if (!homeMobile) mm.add('(min-width:1200px) and (prefers-reduced-motion:no-preference)', () => {
   const dist = () => track.scrollWidth - innerWidth;
   const tween = gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '#salone', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
   track.querySelectorAll<HTMLElement>('.card .ph img').forEach((im) => gsap.fromTo(im, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: im.closest('.card')!, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } }));
   return () => { gsap.set(track, { clearProps: 'all' }); };
 });
-mm.add('(prefers-reduced-motion:no-preference)', () => {
+mm.add(homeMobile ? '(max-width:767px) and (prefers-reduced-motion:no-preference)' : '(prefers-reduced-motion:no-preference)', () => {
   gsap.from('#salone .head .giant-title', { scrollTrigger: { trigger: '#salone', start: 'top 80%' }, yPercent: 40, opacity: 0, duration: 1.2, ease: 'expo.out' });
 });
 </script>
