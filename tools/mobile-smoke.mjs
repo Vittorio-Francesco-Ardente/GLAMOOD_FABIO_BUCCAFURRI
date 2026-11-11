@@ -125,10 +125,10 @@ try {
    const mascot=el.querySelector('.peekwrap').getBoundingClientRect();
    const card=el.querySelector('.cta').getBoundingClientRect();
    const buttons=[...el.querySelectorAll('.cta a')].map(a=>a.getBoundingClientRect());
-   return {gap:card.top-mascot.bottom,buttonsClear:buttons.every(b=>b.top>=card.top && b.top>=mascot.bottom+12)};
+   return {gap:card.top-mascot.bottom,buttonsClear:buttons.every(b=>b.top>=card.top && b.top>=mascot.bottom+8)};
  });
- check(mascotGap.gap>=12 && mascotGap.buttonsClear,
-   'On phones the mascot and hands must not overlap the action card or its buttons');
+ check(mascotGap.gap<=-4 && mascotGap.gap>=-22 && mascotGap.buttonsClear,
+   'On phones the mascot must grip the card edge without covering its buttons');
  await page.evaluate(()=>{window.lenis?.scrollTo(document.documentElement.scrollHeight,{immediate:true});window.scrollTo(0,document.documentElement.scrollHeight)});
  await page.waitForTimeout(350);
  check(await navVisible(),'Mobile navbar remains visible at absolute bottom of page');
@@ -223,11 +223,16 @@ try {
  await open(desktop,'/storia');
  check(await desktop.locator('#scroller').isVisible(),'Original 3D book remains on desktop');
  check(!(await desktop.locator('.mobile-reader').isVisible()),'Mobile reader stays hidden on desktop');
+ const captions=await desktop.locator('.pg.duo .photo').first().evaluate(photo=>{
+   const img=photo.querySelector('img'),cap=photo.querySelector('figcaption');
+   return getComputedStyle(cap).position==='static' && cap.offsetTop>=img.offsetTop+img.offsetHeight-2 && cap.offsetTop+cap.offsetHeight<=photo.clientHeight+2;
+ });
+ check(captions,'Desktop book keeps Polaroid captions entirely below their photos');
  await open(desktop,'/');
  check(await desktop.locator('#h-ds').isVisible(),'Non-foliage decorations remain on desktop');
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
- check(await desktop.locator('#tg-stage>.tape').count()===8,'Desktop also uses eight unique VHS');
+ check(await desktop.locator('#tg-stage>.tape').count()===16,'Desktop fills the shelf with sixteen VHS, repeating the eight originals');
  await desktop.locator('#shelf').focus();await desktop.keyboard.press('Enter');
  await desktop.locator('#tg-sheet').waitFor({state:'visible'});
  await desktop.locator('#sx').click({timeout:4000});
@@ -237,7 +242,10 @@ try {
  const fresh=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const first=await fresh.newPage();
  await first.goto('http://localhost:'+port+base+'/',{waitUntil:'domcontentloaded'});
- await first.waitForTimeout(1650);
+ await first.waitForTimeout(150);
+ check(await first.locator('#intro .intro-wm').evaluate(el=>getComputedStyle(el).animationName.includes('ld-reveal')),
+   'Loader progressively constructs the wordmark without a shine pass');
+ await first.waitForTimeout(1500);
  check(!(await first.evaluate(()=>document.documentElement.classList.contains('loading'))),'Loader must release the page within 1.65 seconds');
  check((await first.evaluate(()=>sessionStorage.getItem('glamood-intro')))==='1','Loader should mark its completion');
  await first.reload({waitUntil:'domcontentloaded'});
