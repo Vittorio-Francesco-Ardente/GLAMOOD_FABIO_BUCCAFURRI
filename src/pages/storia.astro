@@ -5,10 +5,11 @@
 import Base from '../layouts/Base.astro';
 import '../styles/storia.css';
 import { wa } from '../data/business';
+const BASE = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 ---
 <Base title="Il libro di Fabio | Glamood" description="La storia di Glamood e di Fabio Buccafurri, dagli inizi al salone di oggi in Via Sbarre Centrali a Reggio Calabria." path="/storia" bodyClass="storia-page">
 <div id="storia-data" data-wa={wa()} hidden></div>
-<main>
+<main style={`--st-paper:url('${BASE}img/texture/carta-grana.webp');--st-cover:url('${BASE}img/svg/pattern-macchie.svg');--st-back:url('${BASE}img/svg/pattern-swirl-retro.svg');--st-todo:url('${BASE}img/pattern/liquido-petrolio.webp')`}>
 
 <div class="sfondo" aria-hidden="true"><svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
  <rect width="1000" height="1000" fill="var(--bg)"/>
@@ -19,7 +20,7 @@ import { wa } from '../data/business';
  <path class="b b5" fill="var(--w3)" d="M720-80C770 40 880 100 1080 116V-80Z"/>
  <path class="b b6" fill="var(--w2)" d="M-80 180C60 210 130 300 118 400 108 470 50 510-80 520Z"/>
 </svg></div>
-<div class="top"><a class="chip-back" href="/">&larr; Torna al sito</a><span class="count" id="count">Copertina</span></div>
+<div class="top"><a class="chip-back" href={BASE}>&larr; Torna al sito</a><span class="count" id="count">Copertina</span></div>
 <p class="hint" id="hint">scorri per sfogliare<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></p>
 
 <nav class="storia-nav" aria-label="Navigazione del libro"><button type="button" id="st-prev" aria-label="Pagina precedente">← Indietro</button><button type="button" id="st-next" aria-label="Pagina successiva">Avanti →</button></nav>
@@ -46,7 +47,7 @@ import { reduced } from '../scripts/core.js';
 import { gsap, ScrollTrigger, startMotion } from '../scripts/motion.js';
 startMotion();
 const WA = (document.getElementById('storia-data') as HTMLElement).dataset.wa!;
-const A='/img/';
+const A=`${import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/'}img/`;
 const wm=A+'brand/wordmark-petrolio-trasparente.webp', G=A+'brand/G-rasoio-petrolio-trasparente.webp', Gc=A+'brand/G-rasoio-crema-trasparente.webp';
 const todo=t=>`<span class="todo-ph" style="width:100%;height:100%">${t}</span>`;
 // Each leaf = [front (right page), back (left page of the next spread)]. Photos marked TODO come from Fabio.
@@ -81,12 +82,13 @@ function render(p){ // p from 0 to N
   // stack depth: no z-fighting between resting leaves; the turning leaf lifts off the block
   const rest=e>.5?(i+1)*.8:(N-i)*.8;
   l.style.transform=`translateZ(${rest+lift*36}px) rotateY(${-180*e}deg)`;
-  l.style.zIndex=e>.5?i+1:N-i;
+  // Keep the actual turning sheet above both resting stacks.
+  l.style.zIndex=(e>.001&&e<.999)?100+i:(e>=.999?i+1:N-i);
   const fs=l.querySelector('.face.front .shade'),bs=l.querySelector('.face.back .shade');
   // self shading while turning + shadow cast on the pages underneath
   // the right page under a turning leaf darkens near the spine, and the left page above which a leaf lands
-  if(fs)fs.style.opacity=Math.max(lift*.9,(e<.5&&i>0)?Math.sin(E[i-1]*Math.PI)*.75:0);
-  if(bs)bs.style.opacity=Math.max(lift*.9,(e>=.5&&i+1<N&&E[i+1]>0&&E[i+1]<1)?Math.sin(E[i+1]*Math.PI)*.75:0);
+  if(fs)fs.style.opacity=Math.max(lift*.45,(e<.5&&i>0)?Math.sin(E[i-1]*Math.PI)*.4:0);
+  if(bs)bs.style.opacity=Math.max(lift*.45,(e>=.5&&i+1<N&&E[i+1]>0&&E[i+1]<1)?Math.sin(E[i+1]*Math.PI)*.4:0);
  });
  let x; const sm=v=>v*v*(3-2*v);
  {x=p<1?-.5+.5*sm(p):(p>N-1?sm(p-(N-1))*.5:0)}
