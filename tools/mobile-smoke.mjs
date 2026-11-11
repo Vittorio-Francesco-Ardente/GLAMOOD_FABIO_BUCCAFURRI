@@ -237,7 +237,27 @@ try {
  await desktop.locator('#tg-sheet').waitFor({state:'visible'});
  await desktop.locator('#sx').click({timeout:4000});
  check(await desktop.locator('#tg-sheet').isHidden(),'Desktop X immediately closes VHS detail');
+ await desktop.locator('#shelf').focus();await desktop.keyboard.press('ArrowRight');
+ await desktop.waitForTimeout(850);await desktop.keyboard.press('Enter');
+ await desktop.locator('#tg-sheet').waitFor({state:'visible'});
+ const repeatedSrc=await desktop.locator('#simg').getAttribute('src');
+ const secondCut=await desktop.evaluate(()=>JSON.parse(document.getElementById('tagli-data').textContent).CUTS[1][1]);
+ check(repeatedSrc.endsWith(secondCut+'-foto.webp'),'Repeated desktop VHS opens its corresponding haircut');
+ await desktop.locator('#sx').click({timeout:4000});
  await desktop.close();await desk.close();
+ const tabCtx=await browser.newContext({viewport:{width:820,height:1180}});
+ await tabCtx.addInitScript(()=>{try{sessionStorage.setItem('glamood-intro','1')}catch{}});
+ const tablet=await tabCtx.newPage();
+ await open(tablet,'/');
+ const tabletMascot=await tablet.locator('#foot').evaluate(el=>{
+   const m=el.querySelector('.peekwrap').getBoundingClientRect();
+   const card=el.querySelector('.cta').getBoundingClientRect();
+   const btn=el.querySelector('.cta a').getBoundingClientRect();
+   return {overlap:m.bottom-card.top,centered:Math.abs((m.left+m.right-card.left-card.right)/2)<2,clear:btn.top>=m.bottom+8};
+ });
+ check(tabletMascot.overlap>=4&&tabletMascot.overlap<=22&&tabletMascot.centered&&tabletMascot.clear,
+   'Tablet mascot grips the center of its CTA card without covering its buttons');
+ await tablet.close();await tabCtx.close();
  // Fresh session: intro must self-dismiss quickly even if the full page load is slow.
  const fresh=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  const first=await fresh.newPage();
