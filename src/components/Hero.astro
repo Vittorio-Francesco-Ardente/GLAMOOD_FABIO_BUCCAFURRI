@@ -51,7 +51,6 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .giant .o{color:transparent;-webkit-text-stroke:.018em #F4EFE8;text-shadow:none}
 .fig{position:absolute;left:50%;bottom:0;translate:-50% 0;z-index:4;will-change:transform;height:var(--fh);aspect-ratio:1087/1447;touch-action:pan-y;filter:drop-shadow(0 30px 40px rgb(0 0 0 / .35))}
 .fig img,.fig canvas{position:absolute;inset:0;width:100%;height:100%}
-.fig img{object-fit:contain}
 .fig canvas{pointer-events:none;inset:-45% -45%;width:190%;height:190%;max-width:none}
 .decor{position:absolute;pointer-events:none;will-change:transform;height:auto}
 .band{position:absolute;left:0;right:0;bottom:-1px;z-index:6;height:clamp(54px,7vw,96px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;filter:drop-shadow(0 -10px 20px rgb(0 0 0 / .2))}
@@ -78,7 +77,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .toggle{position:absolute;z-index:8;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;background:rgb(10 74 80 / .7);border:1px solid rgb(244 239 232 / .4);color:#F4EFE8;font-size:14px;font-weight:600;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .toggle i{width:22px;height:22px;border-radius:50%;background:url("/img/brand/faccia-petrolio-trasparente-480.webp") center/80% no-repeat #F4EFE8}
 /* MOBILE */
-.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(60svh,114vw);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.hero{--gy:calc(var(--hdr) + 1svh);--fh:min(60svh,125vw);--st:92px;display:grid;grid-template-rows:calc(var(--fh) + var(--hdr)) auto;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 .stage{position:relative;grid-row:1}
 .copy{grid-row:2;padding:18px var(--gutter) 0;margin-top:-10svh;background:linear-gradient(transparent,var(--petrol) 22%)}
 .card{display:none}
@@ -141,44 +140,25 @@ function puffs(c: CanvasRenderingContext2D, grow: number) {
   for (const p of pts) { const k = (now - p.t) / LIFE; if (k >= 1) continue; const s = Math.max(0, ease(k)) * base;
     for (const f of p.puffs) { c.beginPath(); c.arc(p.x + f.dx * s, p.y + f.dy * s, f.r * s + grow, 0, 6.283); c.fill(); } }
 }
-// The photo and its cartoon twin are not pixel-identical around the raised
-// right elbow. A local cutout mixes their incompatible silhouettes, creating
-// a severed arm. The cloud now triggers a COMPLETE figure swap instead.
+const tmp = document.createElement('canvas'); const tx = tmp.getContext('2d')!;
 function draw() {
-  const now = performance.now();
-  pts = pts.filter((p) => now - p.t < LIFE);
-  mx.clearRect(0, 0, W, H);
-  rx.clearRect(0, 0, W, H);
-  mx.fillStyle = '#000';
-  rx.fillStyle = '#F4EFE8';
-  puffs(mx, 0);
-  puffs(rx, 6 * dpr);
-
+  const now = performance.now(); pts = pts.filter((p) => now - p.t < LIFE);
+  mx.clearRect(0, 0, W, H); rx.clearRect(0, 0, W, H); mx.fillStyle = '#000'; rx.fillStyle = '#F4EFE8';
+  puffs(mx, 0); puffs(rx, 6 * dpr);
+  if (full > 0) { mx.globalAlpha = full; mx.fillRect(W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)); mx.globalAlpha = 1; }
   const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
-  const photoReady = photoEl.complete && photoEl.naturalWidth > 0;
-  if (!photoReady) { active = false; return; }
-  const cartoonReady = cart.complete && cart.naturalWidth > 0;
-  const showCartoon = cartoonReady && pts.length > 0;
-
   ctx.clearRect(0, 0, W, H);
-  photoEl.style.opacity = '0';
-  if (showCartoon) {
-    // The animated cloud border stays behind the COMPLETE cartoon character.
-    // No realistic pixels can appear through its transparent elbow/arm areas.
-    rx.globalCompositeOperation = 'destination-out';
-    rx.drawImage(mask, 0, 0);
-    rx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(rim, 0, 0);
-    ctx.drawImage(cart, ...R);
-  } else {
-    ctx.drawImage(photoEl, ...R);
-  }
-  active = pts.length > 0;
-  if (active) requestAnimationFrame(draw);
+  if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
+  ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.drawImage(mask, 0, 0); ctx.restore();
+  rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
+  if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
+  if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; } else tx.clearRect(0, 0, W, H);
+  tx.globalCompositeOperation = 'source-over'; tx.drawImage(mask, 0, 0); tx.globalCompositeOperation = 'source-in';
+  if (cart.complete && cart.naturalWidth) tx.drawImage(cart, ...R);
+  ctx.drawImage(tmp, 0, 0);
+  active = pts.length > 0 || (full > 0 && full < 1); if (active) requestAnimationFrame(draw);
 }
 function wake() { if (!active) { active = true; requestAnimationFrame(draw); } }
-photoEl.addEventListener('load', wake);
-cart.addEventListener('load', wake);
 if (!reduced) {
   fig.addEventListener('pointermove', (e) => add(e.clientX, e.clientY));
   fig.addEventListener('pointerdown', (e) => add(e.clientX, e.clientY));
