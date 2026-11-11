@@ -13,6 +13,14 @@ body{background:var(--petrol-darker)}
 .page-top>.sx-salone .head{padding-top:calc(110px + env(safe-area-inset-top))!important}
 .page-top>.sx-dove .page-frame,.page-top>.sx-listino .page-frame,.page-top>.sx-prodotti .page-frame{padding-top:calc(84px + env(safe-area-inset-top))!important}
 .page-top>.sx-tagli .tagli{padding-top:calc(96px + env(safe-area-inset-top))}
+/* The tagli heading must clear the fixed GLAMOOD wordmark and booking controls
+   before the header starts disappearing. Keep the decorative VHS shelf intact. */
+@media (max-width:767px){
+ .page-top>.sx-tagli .tagli{padding-top:calc(150px + env(safe-area-inset-top))}
+}
+@media (min-width:768px) and (max-width:1023px){
+ .page-top>.sx-tagli .tagli{padding-top:calc(126px + env(safe-area-inset-top))}
+}
 /* phones: room for the bottom tab bar at the end of every page */
 @media (max-width:767px){body{padding-bottom:0}}
 /* Glamood scrollbar: petrol track, cream pill thumb with a petrol ring */
