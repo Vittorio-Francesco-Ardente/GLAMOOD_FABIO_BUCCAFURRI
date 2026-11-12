@@ -10,7 +10,7 @@ const ico = {
 const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falcomatà'], ['03', 'Centro e Castello'], ['04', 'Museo Archeologico']];
 ---
 <div class="sx-gioco">
-<section class="gioco has-bgref" id="gioco" aria-labelledby="gioco-t"><div class="bgref r-geometrico"></div>
+<section class="gioco has-bgref" id="gioco" data-lv="0" aria-labelledby="gioco-t"><div class="bgref lvbg lv0 r-macchie-tono"></div><div class="bgref lvbg lv1 r-liquido-tono"></div><div class="bgref lvbg lv2 r-geometrico"></div><div class="bgref lvbg lv3 r-swirl-teal"></div>
   <div class="in">
     <p class="marker">Il gioco</p>
     <div class="top">
@@ -38,11 +38,10 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
     </div>
     <div class="ov ov-end" data-ov="end" hidden>
      <div class="panel">
-      <p class="kick" data-end-kicker>Fine corsa</p>
+      <p class="kick" data-end-kicker>Peccato! Riprova</p>
       <p class="big" data-end-score>00000</p>
       <p class="line"><span data-end-level></span><br><b data-end-drops>0</b> <span data-end-dl>gocce d'oro</span> · record <b data-end-best>00000</b></p>
-      <label data-name-wrap hidden><span>Sei sul podio: il tuo nome</span><input type="text" maxlength="12" autocomplete="nickname" placeholder="Il tuo nome" aria-label="Il tuo nome in classifica"></label>
-      <div class="acts"><button class="again" type="button" data-again>Rigioca</button><a class="book" data-book href={wa(waText.generic)} target="_blank" rel="noopener">Prenota un taglio</a></div>
+      <div class="acts"><button class="again" type="button" data-again>Riprova</button></div>
      </div>
     </div>
     <div class="load">Carico il salone…</div>
@@ -76,6 +75,9 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 <style is:global>
 .sx-gioco{display:contents;
 .gioco{padding:clamp(56px,7vw,110px) var(--gutter);background:var(--petrol);color:var(--cream)}
+.lvbg{opacity:0;transition:opacity 1.2s var(--ease-out)}
+.gioco[data-lv="0"] .lv0,.gioco[data-lv="1"] .lv1,.gioco[data-lv="2"] .lv2,.gioco[data-lv="3"] .lv3{opacity:1}
+.lv3{opacity:0}.gioco[data-lv="3"] .lv3{opacity:.55}
 .in{max-width:1320px;margin:0 auto}
 .marker{color:#cfe3e1}
 .top{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,4vw,60px);align-items:end;margin:clamp(20px,3vw,34px) 0 clamp(26px,3vw,40px)}
@@ -109,6 +111,8 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 .places li{display:flex;gap:12px;align-items:center;font:700 15px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
 .places li b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--cream);color:var(--petrol);font:900 12px/1 var(--f-display);flex:none}
 @media (max-width:1023px){.info{grid-template-columns:1fr 1fr}.how2{grid-column:1/-1}}
+#run-wrap .ov-end .acts{grid-template-columns:1fr!important}
+#run-wrap .ov-end .again{width:100%!important}
 @media (max-width:760px){
  .top{grid-template-columns:1fr;gap:12px}
  .top h2{font-size:clamp(44px,13vw,64px)}
@@ -139,6 +143,8 @@ new IntersectionObserver(async (es, o) => {
   ]);
   createGame(root, { assets: ASSETS, hair: HAIR, onEvent: (type: string, data: any) => {
     if (type === 'board') renderBoard(data);
+    if (type === 'level' && data) (document.getElementById('gioco') as HTMLElement).dataset.lv = String(Math.max(0, Math.min(3, Number(data.index) || 0)));
+    if (type === 'start') (document.getElementById('gioco') as HTMLElement).dataset.lv = '0';
     if (type === 'start' && matchMedia('(max-width:760px)').matches) root.scrollIntoView({ block: 'center', behavior: 'smooth' });
   } });
 }, { rootMargin: '300px' }).observe(wrap);

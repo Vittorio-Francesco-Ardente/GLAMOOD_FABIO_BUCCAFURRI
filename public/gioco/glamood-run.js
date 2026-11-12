@@ -520,7 +520,7 @@ export function createGame(root, opts = {}) {
     $('[data-end-best]').textContent = pad(store.best);
     const lvl = $('[data-end-level]'); if (lvl) lvl.textContent = curL().name;
     const isBest = pts >= store.best && pts > 0;
-    $('[data-end-kicker]').textContent = isBest ? 'Nuovo record' : 'Fine corsa';
+    $('[data-end-kicker]').textContent = isBest ? 'Nuovo record! Riprova a batterlo' : 'Peccato! Riprova';
     const inTop = board().some(e => e.id === entryId);
     const nameWrap = $('[data-name-wrap]'); const input = nameWrap && nameWrap.querySelector('input');
     if (nameWrap) { nameWrap.hidden = !inTop; if (input && inTop) input.value = store.name || ''; }
