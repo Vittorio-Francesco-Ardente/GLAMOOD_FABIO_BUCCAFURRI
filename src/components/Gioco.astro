@@ -50,6 +50,7 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
       <div class="rot-stage" aria-hidden="true"><i class="rot-phone"><i class="rot-spk"></i></i></div>
       <b>Ruota il telefono</b><span>Si gioca in orizzontale: la corsa parte appena lo giri.</span>
     </div></div>
+    <div class="cd" data-cd hidden><div><span class="cd-k">Si parte tra</span><b class="cd-n" data-cd-n>10</b><button class="cd-go" type="button" data-cd-go>Parti ora</button></div></div>
     <button class="fs-x" type="button" data-fs-x aria-label="Esci dallo schermo intero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
    </div>
     </div>
@@ -137,6 +138,13 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 #run-wrap .run.fs .fs-x{display:grid;place-items:center;position:absolute;z-index:8;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;border:0;background:rgb(8 57 62 / .82);color:#F4EFE8}
 #run-wrap .run.fs .fs-x svg{width:20px;height:20px}
 #run-wrap .run.fs .hud{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+#run-wrap .cd{position:absolute;inset:0;z-index:7;display:grid;place-items:center;text-align:center;background:rgb(6 44 48 / .86);color:#F4EFE8}
+#run-wrap .cd[hidden]{display:none}
+#run-wrap .run:has(.cd:not([hidden])) .ov-start,#run-wrap .run:has(.cd:not([hidden])) .hud{visibility:hidden}
+#run-wrap .cd-k{display:block;font:800 13px/1 var(--f-display);letter-spacing:.18em;text-transform:uppercase;color:#d9ebe8}
+#run-wrap .cd-n{display:block;margin:10px 0 18px;font:400 clamp(72px,22vh,120px)/.9 "Glamood Bubble",var(--f-display);color:#F4EFE8;-webkit-text-stroke:.06em #08393E;paint-order:stroke fill;font-variant-numeric:tabular-nums}
+#run-wrap .cd-n.tick{animation:cdTick .5s cubic-bezier(.2,.9,.25,1)}
+#run-wrap .cd-go{min-height:48px;padding:0 26px;border-radius:999px;border:0;background:#F4EFE8;color:#0A4A50;font:900 15px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;box-shadow:0 6px 0 -1px #052a2e;cursor:pointer}
 #run-wrap .rot{position:absolute;inset:0;z-index:7;display:grid;place-items:center;text-align:center;padding:24px;background:#08393E;color:#F4EFE8}
 #run-wrap .rot[hidden]{display:none}
 #run-wrap .rot b{display:block;margin-top:14px;font:400 30px/1 "Glamood Bubble",var(--f-display);text-transform:uppercase}
@@ -176,6 +184,7 @@ html.run-fs,html.run-fs body{overflow:hidden!important;overscroll-behavior:none}
  44%{transform:rotate(-98deg);animation-timing-function:cubic-bezier(.3,0,.4,1)}
  54%,80%{transform:rotate(-90deg);animation-timing-function:cubic-bezier(.6,0,.35,1)}
  100%{transform:rotate(0)}}
+@keyframes cdTick{from{transform:scale(1.35);opacity:.3}}
 </style>
 
 <script>
@@ -209,29 +218,44 @@ function setupFullscreen(game: any) {
   const run = (document.getElementById('run') as HTMLElement), rot = root.querySelector<HTMLElement>('[data-rot]')!;
   const land = matchMedia('(orientation: landscape)');
   let fs = false, pending = false, autoPaused = false;
+  const cd = root.querySelector<HTMLElement>('[data-cd]')!, cdN = root.querySelector<HTMLElement>('[data-cd-n]')!;
+  let cdT = 0, cdDone: (() => void) | null = null;
+  const stopCd = () => { clearInterval(cdT); cdT = 0; cdDone = null; cd.hidden = true; };
+  const countdown = (secs: number, done: () => void) => {
+    stopCd(); let n = secs; cdDone = done; cd.hidden = false; cdN.textContent = String(n);
+    cdT = window.setInterval(() => { n--; if (n <= 0) { const d = cdDone; stopCd(); d?.(); return; }
+      cdN.textContent = String(n); cdN.classList.remove('tick'); void cdN.offsetWidth; cdN.classList.add('tick'); }, 1000);
+  };
+  root.querySelector('[data-cd-go]')!.addEventListener('click', (e) => { e.stopPropagation(); const d = cdDone; stopCd(); d?.(); });
+  ['pointerdown', 'touchstart'].forEach((t) => root.querySelector('[data-cd-go]')!.addEventListener(t, (e) => e.stopPropagation()));
+  // a fixed layer inside transformed ancestors is not truly full screen on iOS: move the game under <body> while playing
+  const home = document.createComment('run-wrap'); const portal = document.createElement('div'); portal.className = 'sx-gioco run-portal';
+  const toBody = () => { wrap.before(home); portal.append(wrap); document.body.append(portal); };
+  const back = () => { if (home.parentNode) { home.replaceWith(wrap); portal.remove(); } };
   const state = () => game?.debug?.state ?? run.dataset.state;
   const check = () => {
     if (!fs) return;
     if (land.matches) {
       rot.hidden = true;
-      if (pending) { pending = false; setTimeout(() => game.start(), 250); }
-      else if (autoPaused && state() === 'pause') { autoPaused = false; game.resume(); }
+      if (cdT) return;
+      if (pending) countdown(10, () => { pending = false; game.start(); });
+      else if (autoPaused && state() === 'pause') countdown(3, () => { autoPaused = false; game.resume(); });
     } else {
-      rot.hidden = false;
+      rot.hidden = false; stopCd();
       if (state() === 'play') { game.pause(); autoPaused = true; }
     }
   };
   const enter = async () => {
     fs = true; pending = true; autoPaused = false;
-    run.classList.add('fs'); document.documentElement.classList.add('run-fs'); (window as any).lenis?.stop?.();
+    toBody(); run.classList.add('fs'); document.documentElement.classList.add('run-fs'); (window as any).lenis?.stop?.();
     try { await (run.requestFullscreen?.({ navigationUI: 'hide' }) ?? (run as any).webkitRequestFullscreen?.()); } catch { /* iOS: stays as a fixed full-viewport layer */ }
     try { await (screen.orientation as any)?.lock?.('landscape'); } catch { /* not supported: we wait for the user to turn the phone */ }
     check();
   };
   const exit = () => {
-    if (!fs) return; fs = false; pending = false; autoPaused = false; rot.hidden = true;
+    if (!fs) return; fs = false; pending = false; autoPaused = false; rot.hidden = true; stopCd();
     if (state() === 'play') game.pause();
-    run.classList.remove('fs'); document.documentElement.classList.remove('run-fs'); (window as any).lenis?.start?.();
+    run.classList.remove('fs'); back(); document.documentElement.classList.remove('run-fs'); (window as any).lenis?.start?.();
     try { (screen.orientation as any)?.unlock?.(); } catch { /* ignore */ }
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   };
