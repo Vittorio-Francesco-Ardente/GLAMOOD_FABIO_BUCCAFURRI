@@ -60,7 +60,7 @@ if (!reduced) {
   ScrollTrigger.create({ trigger: '#build', start: 'top bottom', end: 'bottom top', onToggle: (s) => (on = s.isActive), onUpdate: (s) => (dir = s.direction) });
   gsap.ticker.add((_t, dt) => {
     if (!on) return;
-    const v = Math.abs((window as any).lenis ? (window as any).lenis.velocity : 0); x += (0.04 + v * 0.02) * dt * dir;
+    const v = Math.abs((window as any).lenis ? (window as any).lenis.velocity : 0); x += (0.04 + v * 0.02) * dt * dir * (innerWidth <= 760 ? 0.5 : 1);
     mqs.forEach((m) => { const w = m.scrollWidth / 4; m.style.transform = `translateX(${-((((x * +m.dataset.mq!) % w) + w) % w)}px)`; });
   });
   // manifesto words light up one by one

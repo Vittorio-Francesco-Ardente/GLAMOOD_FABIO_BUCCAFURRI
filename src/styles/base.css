@@ -40,3 +40,6 @@ html{scrollbar-color:#F4EFE8 #0A4A50;scrollbar-width:thin}
 #foot img.leaf-frame {
   display:none!important;
 }
+
+/* while Glamood Run is being played the bottom bar steps aside */
+html.game-on .barra{opacity:0!important;pointer-events:none!important;transform:translate(-50%,calc(100% + 40px))!important}

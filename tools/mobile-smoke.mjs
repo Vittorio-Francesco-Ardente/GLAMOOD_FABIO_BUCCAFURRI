@@ -45,7 +45,7 @@ try {
  const flat=await page.locator('#mobile-page>.face').evaluate(el=>getComputedStyle(el).transform);
  check(flat==='none','Mobile page is flat rather than flipped/mirrored');
  await open(page,'/');
- // The Home portrait and headline must occupy separate rows on small phones.
+ // Phone hero: full-screen portrait, headline and CTA overlaid at the bottom, never over the face.
  for(const viewport of [{width:320,height:568},{width:360,height:667},{width:390,height:844},{width:428,height:926}]){
    await page.setViewportSize(viewport);
    await page.waitForTimeout(120);
@@ -55,13 +55,13 @@ try {
      const copy=el.querySelector('.copy').getBoundingClientRect();
      const title=el.querySelector('.copy h1').getBoundingClientRect();
      const buttons=[...el.querySelectorAll('.ctas a')].map(x=>x.getBoundingClientRect());
-     return {separate:copy.top>=stage.bottom-2 && copy.top>=figure.bottom-2,
+     return {separate:title.top>=figure.top+figure.height*0.45,
        titleInside:title.left>=-1&&title.right<=innerWidth+1,
-       buttonsInside:buttons.length===2&&buttons.every(b=>b.left>=0&&b.right<=innerWidth&&b.height>=44),
+       buttonsInside:buttons.length===2&&buttons.every(b=>b.left>=0&&b.right<=innerWidth&&b.height>=44&&b.bottom<=innerHeight),
        widthOverflow:document.documentElement.scrollWidth-innerWidth};
    });
    check(home.separate&&home.titleInside&&home.buttonsInside&&home.widthOverflow<=2,
-     'Mobile Home has separate portrait, headline and full-size CTA at '+viewport.width+'px');
+     'Mobile Home keeps headline below the face and full-size CTA at '+viewport.width+'px');
  }
  await page.setViewportSize({width:390,height:844});
  await page.waitForTimeout(160);
@@ -191,28 +191,19 @@ try {
  check(await navVisible(),'Mobile navbar remains visible at absolute bottom of page');
  check(await page.locator('#foot .legal').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)>=110),'Footer retains clearance below its final links');
  check(await page.evaluate(()=>getComputedStyle(document.body).paddingBottom==='0px'),'No double bottom padding');
- // The game preview keeps all labels OUTSIDE the image and its mascot complete.
+ // Glamood Run: the playable game fits the phone, loads lazily and starts.
  await open(page,'/');
  for(const width of [320,390,428]){
    await page.setViewportSize({width,height:844});
-   await page.locator('#gioco .preview').scrollIntoViewIfNeeded();
-   await page.waitForTimeout(240);
-   const game=await page.locator('#gioco').evaluate(async el=>{
-     const preview=el.querySelector('.preview'),screen=el.querySelector('.screen'),ui=preview.querySelector('.ui');
-     const image=screen.querySelector('img'),figurine=el.querySelector('.side .fig img');
-     try{await Promise.all([image.decode(),figurine.decode()])}catch{}
-     const p=preview.getBoundingClientRect(),r=screen.getBoundingClientRect(),labels=ui.getBoundingClientRect();
-     const fig=figurine.getBoundingClientRect();
-     return {separate:labels.top>=r.bottom+6,
-       labelsFit:[...ui.children].every(ch=>{const b=ch.getBoundingClientRect();return b.left>=p.left-1&&b.right<=p.right+1}),
-       imageLoaded:image.naturalWidth>0&&figurine.naturalWidth>0,
-       fits:getComputedStyle(image).objectFit==='contain'&&getComputedStyle(figurine).objectFit==='contain',
-       inside:fig.left>=-1&&fig.right<=innerWidth+1,
-       overflow:document.documentElement.scrollWidth-innerWidth};
-   });
-   check(game.separate&&game.labelsFit&&game.imageLoaded&&game.fits&&game.inside&&game.overflow<=2,
-     'Game preview labels stay outside image and 3D figurine is uncropped at '+width+'px');
+   await page.locator('#run').scrollIntoViewIfNeeded();
+   await page.waitForFunction(()=>window.__glamoodRun&&window.__glamoodRun.debug.ready,null,{timeout:20000});
+   const game=await page.locator('#run').evaluate(el=>{const r=el.getBoundingClientRect();
+     return {inside:r.left>=-1&&r.right<=innerWidth+1,portrait:r.height>r.width,overflow:document.documentElement.scrollWidth-innerWidth};});
+   check(game.inside&&game.portrait&&game.overflow<=2,'Game frame fits the phone in portrait at '+width+'px');
  }
+ await page.locator('#run [data-start]').click();
+ await page.waitForTimeout(400);
+ check(await page.locator('#run').evaluate(el=>el.dataset.state==='play'),'Game starts from the Corri button');
  await page.setViewportSize({width:390,height:844});
  // On phones, Salone exists only inside the Home; standalone visits must redirect.
  await open(page,'/');
@@ -228,12 +219,12 @@ try {
      const remaining=[...document.querySelectorAll('#barra a.voce')].filter(a=>a.getClientRects().length>0).map(a=>a.dataset.voce);
      return {visible:getComputedStyle(el).display!=='none'&&before.width>0&&before.height>0,
        afterHero:before.top>=above.bottom-2,
-       photos:images.length===6,swipe:getComputedStyle(track).overflowX==='auto'&&track.scrollWidth>track.clientWidth+50,
+       photos:images.length===6,swipe:getComputedStyle(track).flexDirection==='column'&&images.every(i=>{const r=i.closest('.ph').getBoundingClientRect();return r.width>=innerWidth*0.8&&Math.abs(r.height/r.width-1.25)<0.03}),
        links:getComputedStyle(dock).display==='none'&&getComputedStyle(menu.closest('li')).display==='none'&&remaining.join(',')===',tagli,listino,prodotti,dove',
        noOverflow:document.documentElement.scrollWidth-innerWidth<=2};
    });
    check(integrated.visible&&integrated.afterHero&&integrated.photos&&integrated.swipe&&integrated.links&&integrated.noOverflow,
-     'Mobile Home embeds full Salone gallery, without duplicate phone navigation at '+width+'px');
+     'Mobile Home embeds full Salone gallery as full-width 4:5 photos, without duplicate phone navigation at '+width+'px');
  }
  await page.setViewportSize({width:390,height:844});
  const salonPhoto=page.locator('.sx-salone[data-home-mobile="true"] #track figure img').first();
@@ -451,16 +442,10 @@ try {
    await desktop.locator('.sx-salone:not([data-home-mobile]) #salone').isVisible(),
    'Desktop standalone Salone remains independently accessible');
  await open(desktop,'/');
- await desktop.locator('#gioco .preview').scrollIntoViewIfNeeded();
- const desktopGame=await desktop.locator('#gioco .preview').evaluate(el=>{
-   const screen=el.querySelector('.screen').getBoundingClientRect(),ui=el.querySelector('.ui').getBoundingClientRect();
-   const fig=el.closest('.media').querySelector('.side .fig img');
-   return {clear:ui.top>=screen.bottom+6,
-     imageFit:getComputedStyle(el.querySelector('.screen img')).objectFit==='contain',
-     figureFit:getComputedStyle(fig).objectFit==='contain'};
- });
- check(desktopGame.clear&&desktopGame.imageFit&&desktopGame.figureFit,
-   'Desktop game labels stay beneath image and mascot photograph stays uncropped');
+ await desktop.locator('#run').scrollIntoViewIfNeeded();
+ await desktop.waitForFunction(()=>window.__glamoodRun&&window.__glamoodRun.debug.ready,null,{timeout:20000});
+ check(await desktop.locator('#run').evaluate(el=>{const r=el.getBoundingClientRect();return Math.abs(r.width/r.height-16/9)<0.05&&r.right<=innerWidth}),
+   'Desktop game frame is 16:9 and fits the page');
  check(await desktop.locator('#foot img.leaf-frame').evaluateAll(els=>els.length===2&&els.every(el=>getComputedStyle(el).display==='none')),'Footer foliage is hidden on desktop too');
  await open(desktop,'/tagli');
  check(await desktop.locator('#tg-stage>.tape').count()===16,'Desktop fills the shelf with sixteen VHS, repeating the eight originals');

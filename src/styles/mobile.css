@@ -1,0 +1,96 @@
+/* Phone experience (<= 760 px): one idea per screen, thumb-first, app-like.
+   Desktop and tablet are untouched: every rule lives inside this media query.
+   Selectors start with `html` so they win over the component styles. */
+
+/* footer accordions: on desktop they are always open and look like plain columns */
+.sx-footer .fcol summary{list-style:none;pointer-events:none}
+.sx-footer .fcol summary::-webkit-details-marker{display:none}
+.sx-footer .fcol summary i{display:none}
+.sx-esplora .ico{display:none}
+
+@media (max-width:760px){
+ html{--gutter:20px}
+
+ /* ---------- header: logo + menu only ---------- */
+ html .sx-header .btn-pre,html .sx-header .icon{display:none}
+
+ /* ---------- hero: Fabio full screen, text over the bottom gradient ---------- */
+ html .sx-hero .hero{display:block;min-height:100svh;padding:0}
+ html .sx-hero .stage{position:absolute;inset:0}
+ html .sx-hero .giant{top:calc(var(--hdr) + 1svh)}
+ html .sx-hero .fig{height:min(100svh,185vw);bottom:0}
+ @media (max-height:700px){html .sx-hero .kick{display:none}html .sx-hero .copy h1{font-size:clamp(34px,10.5vw,44px)}html .sx-hero .ctas{margin-top:12px;gap:4px}}
+ html .sx-hero .card,html .sx-hero .stamp,html .sx-hero #h-dk,html .sx-hero #h-dm2{display:none}
+ html .sx-hero #h-dm{width:150px!important;right:-40px!important;bottom:30%!important}
+ html .sx-hero .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;z-index:6;pointer-events:none;background:linear-gradient(transparent,rgb(10 74 80 / .78) 38%,#0A4A50 78%)}
+ html .sx-hero .band{display:none}
+ html .sx-hero .copy{position:absolute;left:0;right:0;bottom:0;z-index:7;margin:0;padding:0 var(--gutter) calc(96px + env(safe-area-inset-bottom));background:none}
+ html .sx-hero .copy h1{font-size:clamp(40px,12vw,56px);max-width:none}
+ html .sx-hero .copy p{display:none}
+ html .sx-hero .kick{display:inline-flex;align-items:center;gap:8px;background:rgb(8 57 62 / .7);border:1px solid rgb(244 239 232 / .25);border-radius:999px;padding:7px 12px;font-size:11px;letter-spacing:.1em}
+ html .sx-hero .kick::before{display:none}
+ html .sx-hero .ctas{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px;margin-top:18px;width:100%}
+ html .sx-hero .ctas .btn-cream{width:100%!important;max-width:none!important;justify-content:center;min-height:56px;font-size:17px}
+ html .sx-hero .copy{width:auto!important;right:0}
+ html .sx-hero .ctas .btn-ghost{border:0;min-height:44px;justify-content:center;text-decoration:underline;text-underline-offset:4px}
+
+ /* ---------- salone: one 4:5 photo per screen, caption below ---------- */
+ html .sx-salone .track{flex-direction:column;align-items:stretch;overflow:visible;scroll-snap-type:none;gap:48px;padding:24px var(--gutter) 64px}
+ html .sx-salone .card{width:100%}
+ html .sx-salone .card .fr{width:100%;border-radius:24px!important}
+ html .sx-salone .card .ph{width:100%!important;height:auto!important;aspect-ratio:4/5!important;border-radius:16px!important}
+ html .sx-salone .card .ph img{transform:none!important}
+ html .sx-salone .head .giant-title{font-size:clamp(40px,13vw,64px)}
+
+ /* ---------- word band: a single slow row ---------- */
+ html .sx-fasce .build{height:auto}
+ html .sx-fasce .pin{position:relative;height:auto;padding:0}
+ html .sx-fasce .plank{display:none;transform:none!important}
+ html .sx-fasce .plank:first-child{display:block;height:64px}
+ html .sx-fasce .plank .mq{font-size:30px}
+
+ /* ---------- manifesto: a centred quote ---------- */
+ html .sx-fasce .manifesto{padding:96px var(--gutter);text-align:center}
+ html .sx-fasce .manifesto .wrap{padding:0}
+ html .sx-fasce .manifesto p.big{margin:16px auto 0;font-size:clamp(32px,9.5vw,44px);line-height:1}
+ html .sx-fasce .manifesto .w{opacity:1}
+
+ /* ---------- accomodati: app menu rows ---------- */
+ html .sx-esplora .esplora{padding:72px var(--gutter)}
+ html .sx-esplora h2{font-size:clamp(40px,12vw,56px)}
+ html .sx-esplora .grid{display:grid;grid-template-columns:1fr;gap:10px}
+ html .sx-esplora .c,html .sx-esplora .c0,html .sx-esplora .c1{grid-column:auto;display:flex;align-items:center;gap:14px;min-height:68px;padding:10px 12px 10px 14px;border-radius:18px}
+ html .sx-esplora .c:hover{transform:none}
+ html .sx-esplora .c .ph,html .sx-esplora .c .k{display:none!important}
+ html .sx-esplora .ico{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--petrol);color:var(--cream);flex:none}
+ html .sx-esplora .ico svg{width:22px;height:22px}
+ html .sx-esplora b{flex:1;font-size:22px;padding:0}
+ html .sx-esplora .go{position:static;width:40px;height:40px}
+
+ /* ---------- social: horizontal carousel, the price card first ---------- */
+ html .sx-social .social{padding:72px var(--gutter)}
+ html .sx-social .head h2{font-size:clamp(26px,7.5vw,34px)}
+ html .sx-social .row{grid-auto-columns:82%;margin-inline:calc(-1*var(--gutter));padding-inline:var(--gutter);scroll-padding-inline:var(--gutter)}
+ html .sx-social .post{aspect-ratio:1}
+ html .sx-social .post.ticket{order:-1}
+
+ /* ---------- footer: big mascot, stacked actions, accordions ---------- */
+ html .sx-footer .peekwrap{--pw:min(84vw,360px)}
+ html .sx-footer .cta{flex-direction:column;margin-top:calc(min(84vw,360px) * -0.0387);padding:28px 18px 18px}
+ html .sx-footer .cta .btn-pop{flex:none;width:100%;min-height:56px}
+ html .sx-footer .big{font-size:clamp(44px,13vw,64px)}
+ html .sx-footer .cols{grid-template-columns:1fr;gap:0;padding-top:28px;padding-bottom:8px}
+ html .sx-footer .cols>div:first-child{padding-bottom:20px}
+ html .sx-footer .fcol{border-top:1.5px solid #dfe7e7}
+ html .sx-footer .fcol summary{pointer-events:auto;display:flex;justify-content:space-between;align-items:center;min-height:60px;cursor:pointer}
+ html .sx-footer .fcol summary h4{margin:0;font-size:16px}
+ html .sx-footer .fcol summary i{display:block;position:relative;width:16px;height:16px}
+ html .sx-footer .fcol summary i::before,html .sx-footer .fcol summary i::after{content:"";position:absolute;left:0;top:7px;width:16px;height:2px;background:var(--petrol);transition:transform .3s}
+ html .sx-footer .fcol summary i::after{transform:rotate(90deg)}
+ html .sx-footer .fcol[open] summary i::after{transform:rotate(0)}
+ html .sx-footer .fbody{padding-bottom:16px}
+ html .sx-footer .fbody a,html .sx-footer .fbody p{font-size:18px;line-height:2.2}
+
+ /* ---------- motion: short and light ---------- */
+ html .bgref{animation:none}
+}

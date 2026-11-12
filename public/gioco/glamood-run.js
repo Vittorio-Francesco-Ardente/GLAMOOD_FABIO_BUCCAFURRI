@@ -158,7 +158,7 @@ export function createGame(root, opts = {}) {
     L.layers.forEach((ly, i) => {
       const im = sp(ly.n); if (!im) return;
       let h = ly.h; if (ly.cover) h = Math.min(floorTop + 2, Math.max(ly.h, floorTop * .9));
-      tile(c, im, ly.par, floorTop + ly.b - h, h, ly.cover ? 1 : 1.04);
+      tile(c, im, ly.par, floorTop + ly.b - h, h, 1);
       if (i === nl - 2 || nl === 1 || (nl === 2 && i === 0 && false)) drawMon(c, L, floorTop);
     });
     if (nl === 2) { /* salon & seafront: monument after the first strip */ }

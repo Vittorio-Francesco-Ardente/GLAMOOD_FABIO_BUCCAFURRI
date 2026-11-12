@@ -1,6 +1,7 @@
 ---
 // Home: one card per page (salone, tagli, listino, prodotti, dove siamo), in the cream "ticket" style.
 import Img from './Img.astro';
+const icons = ['<path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/>','<circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>','<path d="M4 2.5v19l2-1.2 2 1.2 2-1.2 2 1.2 2-1.2 2 1.2 2-1.2v-19l-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2-2 1.2Z"/><path d="M8 8h7M8 12h7M8 16h4"/>','<rect x="7" y="2.5" width="10" height="3.5" rx="1"/><path d="M6 6h12v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M6 11.5h12"/>','<path d="M20 10c0 5-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'];
 const cards: [href: string, k: string, t: string, src: string, alt: string][] = [
   ['/salone', 'Via Sbarre Centrali', 'Il salone', 'salone/salone-05', 'Le postazioni del salone Glamood'],
   ['/tagli', 'Scegli il tuo', 'I tagli', 'tagli/sfumato-basso-foto', 'Uno sfumato basso fatto da Glamood'],
@@ -16,7 +17,7 @@ const cards: [href: string, k: string, t: string, src: string, alt: string][] = 
     <h2 class="type-pop on-petrol" id="esplora-t">Accomodati</h2>
     <div class="grid">
       {cards.map(([href, k, t, src, alt], i) => (
-        <a class={`c c${i}`} href={href}><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1024px) 30vw, 90vw" /></div><span class="k">{k}</span><b>{t}</b><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class={`c c${i}`} href={href}><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[i]} /></span><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1024px) 30vw, 90vw" /></div><span class="k">{k}</span><b>{t}</b><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       ))}
     </div>
   </div>
