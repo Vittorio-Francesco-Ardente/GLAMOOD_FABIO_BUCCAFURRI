@@ -130,19 +130,23 @@ export function createGame(root, opts = {}) {
 
   /* ---------------- layout ---------------- */
   let VWMIN = 560; const VHMIN = 280, GROUND_H = 58;
+  let quality = (() => { try { const q = +localStorage.getItem(KEY + '-q'); return q >= 0 && q <= 2 && localStorage.getItem(KEY + '-q') !== null ? q : 2; } catch (e) { return 2; } })(), SD = 1, OX = 0, OY = 0, vign = null, vignK = -1;
+  const scaled = new Map();
   let S = 1, VW = VWMIN, VH = 360, GY = 300, DPR = 1, cssW = 0, cssH = 0;
   let oc = null, octx = null;
   function layout() {
     const r = canvas.getBoundingClientRect();
     if (!r.width || !r.height) return;
     cssW = r.width; cssH = r.height;
-    DPR = Math.min(cssW < 700 ? 1.5 : 2, window.devicePixelRatio || 1); // phones: 1.5x is sharp enough and ~45% fewer pixels to paint
+    const cap = quality >= 2 ? (cssW < 700 ? 1.5 : 2) : quality === 1 ? 1.25 : 1;   // adaptive: slow devices paint fewer pixels
+    DPR = Math.min(cap, window.devicePixelRatio || 1);
     canvas.width = Math.round(cssW * DPR); canvas.height = Math.round(cssH * DPR);
     VWMIN = cssW / cssH < 1.5 ? 380 : 560;
     S = Math.min(cssW / VWMIN, cssH / VHMIN);
     VW = cssW / S; VH = cssH / S;
     GY = Math.round(VH - GROUND_H);
     oc = document.createElement('canvas'); oc.width = canvas.width; oc.height = canvas.height; octx = oc.getContext('2d', { alpha: false });
+    scaled.clear(); vign = null;
   }
 
   /* ---------------- state ---------------- */
@@ -158,40 +162,55 @@ export function createGame(root, opts = {}) {
   
 
   /* ---------------- scenery ---------------- */
-  const tile = (c, im, par, y, h, gapK = 1, hang = false) => {
-    const w = im.width * h / im.height, step = w * gapK, off = -((scroll * par) % step);
-    for (let x = off - step; x < VW; x += step) if (x + w > 0) {
-      c.drawImage(im, x, y, w + (gapK === 1 ? 1 : 0), h);
-      if (hang && y > 0) c.drawImage(im, 0, 0, im.width, 1, x, 0, w + 1, y + 1); // pendant cords reach the ceiling
+  // scale each background once to the exact device-pixel height; optional dim baked in (replaces a full-screen overlay)
+  const fit = (im, h, dim) => {
+    const ph = Math.max(1, Math.round(h * SD)), key = im.src + '|' + ph + '|' + (dim || 0);
+    let cv = scaled.get(key); if (cv) return cv;
+    if (!im.width) return null;
+    cv = document.createElement('canvas'); cv.height = ph; cv.width = Math.max(1, Math.round(im.width * ph / im.height));
+    const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(im, 0, 0, cv.width, cv.height);
+    if (dim) { g.globalCompositeOperation = 'source-atop'; g.fillStyle = `rgba(6,34,38,${dim})`; g.fillRect(0, 0, cv.width, cv.height); }
+    scaled.set(key, cv); return cv;
+  };
+  const tile = (c, im0, par, y, h, gapK = 1, hang = false, dim = 0) => {
+    const im = fit(im0, h, dim); if (!im) return;
+    const w = im.width, step = Math.round(w * gapK), off = -Math.round((scroll * par * SD) % step), Y = Math.round(y * SD) + OY, W = Math.round(VW * SD);
+    c.save(); c.setTransform(1, 0, 0, 1, OX, 0);
+    for (let x = off - step; x < W; x += step) if (x + w > 0) {
+      c.drawImage(im, x, Y);
+      if (hang && Y > 0) c.drawImage(im, 0, 0, w, 1, x, 0, w, Y + 1); // pendant cords reach the ceiling
     }
+    c.restore();
   };
   let mon = null;                                 // set piece of the current level
   function scene(c, L, nightK) {
-    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = quality >= 2 ? 'medium' : 'low';
+    const DIM = .22;
     const floorTop = VH - FH;
     c.fillStyle = '#0A4A50'; c.fillRect(0, 0, VW, VH);
     const sky = sp(L.sky);
-    if (sky) { tile(c, sky, .03, 0, floorTop + 4); if (L.skyNight && nightK > .01) { c.globalAlpha = nightK; tile(c, sp(L.skyNight), .03, 0, floorTop + 4); c.globalAlpha = 1; } }
+    if (sky) { tile(c, sky, .03, 0, floorTop + 4, 1, false, DIM); if (L.skyNight && nightK > .01) { c.globalAlpha = nightK; tile(c, sp(L.skyNight), .03, 0, floorTop + 4, 1, false, DIM); c.globalAlpha = 1; } }
     const nl = L.layers.length;
     L.layers.forEach((ly, i) => {
       const im = sp(ly.n); if (!im) return;
       let h = ly.h; if (ly.cover) h = floorTop + 2;
-      tile(c, im, ly.par, floorTop + ly.b - h, h, 1, ly.hang);
+      if (quality === 0 && i === 0 && nl > 2) return;          // weakest devices: skip the farthest strip
+      tile(c, im, ly.par, floorTop + ly.b - h, h, 1, ly.hang, DIM);
       if (i === nl - 2 || nl === 1 || (nl === 2 && i === 0 && false)) drawMon(c, L, floorTop);
     });
     if (nl === 2) { /* salon & seafront: monument after the first strip */ }
     if (nightK > .01) { c.fillStyle = `rgba(6,22,40,${.38 * nightK})`; c.fillRect(0, 0, VW, floorTop + 2); }
-    c.fillStyle = 'rgba(6,34,38,.22)'; c.fillRect(0, 0, VW, floorTop + 2); // backdrop steps back so the run lane reads
     const gr = sp(L.ground); if (gr) tile(c, gr, 1, floorTop, FH + 1);
     if (nightK > .01) { c.fillStyle = `rgba(6,22,40,${.3 * nightK})`; c.fillRect(0, floorTop, VW, FH + 2); }
-    if (L.light && sp(L.light)) { c.globalAlpha = .55; tile(c, sp(L.light), .2, 0, floorTop); c.globalAlpha = 1; }
+    if (L.light && sp(L.light) && quality >= 1) { c.globalAlpha = .55; tile(c, sp(L.light), .2, 0, floorTop); c.globalAlpha = 1; }
   }
   function drawMon(c, L, floorTop) {
     if (!mon || mon.L !== L.id) return;
     const im = sp(L.id + '_mon'); if (!im) return;
     const h = L.mon.h, w = im.width * h / im.height;
     if (mon.x + w < -10) return;
-    c.drawImage(im, mon.x, floorTop + L.mon.b - h, w, h);
+    const cv = fit(im, h, .22); if (!cv) return;
+    c.save(); c.setTransform(1, 0, 0, 1, OX, OY); c.drawImage(cv, Math.round(mon.x * SD), Math.round((floorTop + L.mon.b - h) * SD)); c.restore();
   }
   function drawFg(c, L) {
     const f = L.fg, im = f && sp(f.n); if (!im) return;
@@ -260,7 +279,7 @@ export function createGame(root, opts = {}) {
   function obSprite(o) { return o.spr; }
   function drawObstacle(c, o) {   // obstacles get a cream halo + soft dark rim so they read over any background
     const pulse = .7 + .3 * Math.sin(t * 6 + (o.x * .01));
-    glowOn = pulse; drawObstacle0(c, o); glowOn = 0;
+    if (quality >= 1) { glowOn = pulse; drawObstacle0(c, o); glowOn = 0; }
     haloOn = true; drawObstacle0(c, o); haloOn = false;
   }
   function drawObstacle0(c, o) {
@@ -568,16 +587,17 @@ export function createGame(root, opts = {}) {
   }
   function render() {
     if (!cssW || !ready) return;
-    ctx.setTransform(S * DPR, 0, 0, S * DPR, 0, 0);
-    if (shake > 0) { const m = shake * 18; ctx.translate(rnd(-m, m), rnd(-m, m)); }
+    SD = S * DPR; OX = 0; OY = 0;
+    if (shake > 0) { const m = shake * 18 * SD; OX = Math.round(rnd(-m, m)); OY = Math.round(rnd(-m, m)); }
+    ctx.setTransform(SD, 0, 0, SD, OX, OY);
     const L = curL();
     const nk = L.night ? night : 0;
     if (lvFade < 1 && prevLv >= 0) {
       scene(ctx, LEVELS[prevLv], LEVELS[prevLv].night ? 1 : 0);
-      octx.setTransform(S * DPR, 0, 0, S * DPR, 0, 0); scene(octx, L, nk);
+      octx.setTransform(SD, 0, 0, SD, OX, OY); scene(octx, L, nk);
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = smooth(lvFade); ctx.drawImage(oc, 0, 0); ctx.restore();
     } else scene(ctx, L, nk);
-    for (const k of pickups) { const bob = Math.sin(t * 4 + k.ph) * 2.5, n = 'drop_' + (Math.floor(t * 10 + k.ph * 3) % 6); shine(ctx, k.x, GY - k.y + bob, 19, .55 + .25 * Math.sin(t * 5 + k.ph)); glow(ctx, n, 'good', k.x, GY - k.y + bob + 10, 20, 1); spr(ctx, n, k.x, GY - k.y + bob + 10, 20); }
+    for (const k of pickups) { const bob = Math.sin(t * 4 + k.ph) * 2.5, n = 'drop_' + (Math.floor(t * 10 + k.ph * 3) % 6); if (quality >= 1) { shine(ctx, k.x, GY - k.y + bob, 19, .55 + .25 * Math.sin(t * 5 + k.ph)); glow(ctx, n, 'good', k.x, GY - k.y + bob + 10, 20, 1); } spr(ctx, n, k.x, GY - k.y + bob + 10, 20); }
     for (const k of powers) { const bob = Math.sin(t * 3 + k.ph) * 3, sc = 1 + .06 * Math.sin(t * 5 + k.ph), n = POWER[k.kind].img;
       ctx.save(); ctx.globalAlpha = .35 + .15 * Math.sin(t * 4 + k.ph); ctx.fillStyle = '#FFE7A0'; ctx.beginPath(); ctx.arc(k.x, GY - k.y + bob - 2, 24 * sc, 0, TAU); ctx.fill(); ctx.restore();
       glow(ctx, n, 'good', k.x, GY - k.y + bob + 16, 32 * sc, 1); spr(ctx, n, k.x, GY - k.y + bob + 16, 32 * sc); }
@@ -597,18 +617,29 @@ export function createGame(root, opts = {}) {
     let bx = VW / 2 - 40; const by = 10;
     const chip = (img, frac) => { spr(ctx, img, bx, by + 22, 22); if (frac < 1) { ctx.fillStyle = 'rgba(244,239,232,.9)'; ctx.fillRect(bx - 11, by + 26, 22 * frac, 2.5); } bx += 30; };
     if (buff.shield) chip('pw_corno', 1); if (buff.slow > 0) chip('pw_asciugamano', buff.slow / POWER.asciugamano.dur); if (buff.magnet > 0) chip('pw_flacone', buff.magnet / POWER.flacone.dur); if (buff.double > 0) chip('pw_doppio', buff.double / POWER.doppio.dur);
-    const vg = ctx.createRadialGradient(VW / 2, VH * .55, VH * .5, VW / 2, VH * .55, VW * .78);
-    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(2,20,23,${.16 + nk * .14})`);
-    ctx.fillStyle = vg; ctx.fillRect(-20, -20, VW + 40, VH + 40);
+    const vk = Math.round(nk * 10);
+    if (quality >= 1) {
+      if (!vign || vignK !== vk) {           // the vignette is built once (per night step), then copied
+        vign = document.createElement('canvas'); vign.width = canvas.width; vign.height = canvas.height; vignK = vk;
+        const g = vign.getContext('2d'), sd = SD, vg = g.createRadialGradient(VW / 2 * sd, VH * .55 * sd, VH * .5 * sd, VW / 2 * sd, VH * .55 * sd, VW * .78 * sd);
+        vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(2,20,23,${.16 + vk / 10 * .14})`); g.fillStyle = vg; g.fillRect(0, 0, vign.width, vign.height);
+      }
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(vign, 0, 0); ctx.restore();
+    }
     if (flash > 0) { ctx.fillStyle = `rgba(244,239,232,${flash * .5})`; ctx.fillRect(-20, -20, VW + 40, VH + 40); }
   }
 
   /* ---------------- loop ---------------- */
-  let raf = 0, last = 0, inView = true;
+  let raf = 0, last = 0, inView = true, ftAvg = .016, ftN = 0;
   const frame = ts => {
     raf = requestAnimationFrame(frame);
-    const dt = Math.min(.05, (ts - last) / 1000 || 0); last = ts;
+    const raw = (ts - last) / 1000 || 0, dt = Math.min(.05, raw); last = ts;
     update(dt); render();
+    // adaptive quality: after warming up, if frames stay slow, step down (resolution, then extras); never step back up mid-run
+    if (state === 'play' && raw > 0 && raw < .5) {
+      ftAvg += (raw - ftAvg) * .05; ftN++;
+      if (ftN > 90 && ftAvg > (quality === 2 ? .021 : .024) && quality > 0) { quality--; ftN = 0; ftAvg = .016; layout(); try { localStorage.setItem(KEY + '-q', String(quality)); } catch (e) { /* ignore */ } }
+    }
   };
   const startLoop = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } };
   const stopLoop = () => { cancelAnimationFrame(raf); raf = 0; };
@@ -733,7 +764,7 @@ export function createGame(root, opts = {}) {
   return {
     start, pause, resume, menu, train: () => { setState('idle'); start(true); }, get training() { return tut ? tut.step : 0; }, board, badges: () => ({ ...store.badges }), labels: BADGES, badgeImg: BADGE_IMG, levels: LEVELS,
     debug: {
-      get state() { return state; }, get score() { return score; }, get night() { return night; }, get drops() { return drops; }, get speed() { return speed; }, get level() { return lv; }, get ready() { return ready; },
+      get state() { return state; }, get quality() { return quality; }, setQuality(q) { quality = q; layout(); }, get score() { return score; }, get night() { return night; }, get drops() { return drops; }, get speed() { return speed; }, get level() { return lv; }, get ready() { return ready; },
       player: () => ({ ...p, x: PX }), obstacles: () => obstacles.map(o => ({ type: o.type, kind: o.kind, x: o.x, y: o.y, w: o.w, h: o.h })),
       setScore: n => { score = n; }, godMode: v => { godMode = v; }, reset: () => { store = { best: 0, runs: 0, name: '', board: [], badges: {} }; persist(); },
       setLevel: n => { startLv = n; }, power: k => takePower(k), jumpAxes: () => ({ JUMP, G, GY, VW, VH, S }),
