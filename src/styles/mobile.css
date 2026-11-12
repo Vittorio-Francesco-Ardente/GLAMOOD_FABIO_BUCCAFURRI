@@ -93,6 +93,12 @@
  html .sx-footer .fbody{padding-bottom:16px}
  html .sx-footer .fbody a,html .sx-footer .fbody p{font-size:18px;line-height:2.2}
 
+ /* ---------- navbar: exactly as wide as the cards, continuous Apple-like corners ---------- */
+ html .sx-header .barra{width:calc(100vw - 2*var(--gutter))!important;max-width:none!important;padding:5px!important;border-radius:28px!important;corner-shape:squircle;bottom:max(14px,env(safe-area-inset-bottom))!important}
+ html .sx-header .barra .cursore{top:5px!important;height:calc(100% - 10px)!important;border-radius:23px!important;corner-shape:squircle}
+ html .sx-header .barra .voce{border-radius:23px!important;corner-shape:squircle}
+ @supports (corner-shape:squircle){html .sx-header .barra{border-radius:44px!important}html .sx-header .barra .cursore,html .sx-header .barra .voce{border-radius:38px!important}}
+
  /* ---------- type floor: nothing below 12px, body copy at 16px+ ---------- */
  html .sx-header .barra .voce{font-size:clamp(9.5px,2.7vw,10.5px)!important;letter-spacing:0;gap:4px}
  html .sx-header .barra .voce svg{width:22px;height:22px}
