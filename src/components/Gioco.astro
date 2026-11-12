@@ -27,12 +27,15 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
     </div>
     <div class="toast" data-toast role="status" aria-live="polite"></div>
     <div class="pop" data-pop><img data-pop-img alt=""><div><b data-pop-t></b><span data-pop-s></span></div></div>
+    <div class="tut" data-tut hidden aria-live="polite"><b data-tut-t></b><span data-tut-s></span></div>
+    <button class="tut-skip" type="button" data-tut-skip>Vai alla partita</button>
     <div class="zone" aria-hidden="true"><span>Tieni premuto: scivola</span><span>Tocca: salta</span></div>
     <div class="ov ov-start" data-ov="start">
      <div class="ov-card">
       <p class="kick">Glamood · Reggio Calabria</p>
       <h3 class="title">Glamood<span>Run</span></h3>
       <button class="go" type="button" data-start><span class="when-idle">Corri</span><span class="when-pause">Riprendi</span></button>
+      <button class="train" type="button" data-train>Allenamento</button>
       <button class="fs-go" type="button" data-fs><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Gioca a schermo intero</button>
       <p class="how"><span class="k-desk">Spazio o clic: salta · freccia in giù: abbassati</span><span class="k-touch">Schermo intero in orizzontale · destra: salta · sinistra: scivola</span></p>
      </div>
@@ -129,6 +132,18 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 #run-wrap .pop{background:rgb(8 57 62 / .82)!important;border:2px solid rgb(244 239 232 / .35)}
 #run-wrap .pop b{font:400 clamp(24px,3.6vw,44px)/.95 "Glamood Bubble",var(--f-display)!important;text-transform:uppercase!important;letter-spacing:0;color:#F4EFE8;-webkit-text-stroke:.12em #08393E;paint-order:stroke fill;text-shadow:0 .1em 0 #08393E}
 #run-wrap .pop span{color:#ECC46C!important;opacity:1!important;font-weight:700!important}
+/* warm-up run */
+#run-wrap .tut{position:absolute;z-index:5;left:50%;top:22%;transform:translateX(-50%);display:grid;justify-items:center;gap:6px;text-align:center;pointer-events:none;width:max-content;max-width:90%}
+#run-wrap .tut[hidden]{display:none}
+#run-wrap .tut b{font:400 clamp(30px,5.4vw,54px)/.95 "Glamood Bubble",var(--f-display);text-transform:uppercase;color:#F4EFE8;-webkit-text-stroke:.12em #08393E;paint-order:stroke fill;text-shadow:0 .1em 0 #08393E}
+#run-wrap .tut[data-ok="1"] b{color:#ECC46C}
+#run-wrap .tut span{padding:7px 14px;border-radius:999px;background:rgb(8 57 62 / .84);color:#F4EFE8;font:700 clamp(13px,1.3vw,16px)/1.2 var(--f-body)}
+#run-wrap .tut span:empty{display:none}
+#run-wrap .tut.tut-in{animation:tutPop .45s cubic-bezier(.2,1.3,.4,1) both}
+#run-wrap .tut-skip{display:none;position:absolute;z-index:6;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));min-height:40px;padding:0 16px;border-radius:999px;border:2px solid rgb(244 239 232 / .55);background:rgb(8 57 62 / .78);color:#F4EFE8;font:800 12px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+#run-wrap .run:has(.tut:not([hidden])) .tut-skip{display:block}
+#run-wrap .train{display:block;margin:10px auto 0;min-height:40px;padding:0 16px;border:0;background:none;color:#F4EFE8;font:800 13px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+#run-wrap .ov-start[data-mode="pause"] .train{display:none}
 /* touch zones: left half slides, right half jumps; no browser gestures inside the game while full screen */
 #run-wrap .run.fs,#run-wrap .run.fs *{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #run-wrap .run.fs button{touch-action:manipulation}
@@ -194,6 +209,7 @@ html.run-fs,html.run-fs body{overflow:hidden!important;overscroll-behavior:none}
  54%,80%{transform:rotate(-90deg);animation-timing-function:cubic-bezier(.6,0,.35,1)}
  100%{transform:rotate(0)}}
 @keyframes cdTick{from{transform:scale(1.35);opacity:.3}}
+@keyframes tutPop{from{opacity:0;transform:translateX(-50%) scale(.7)}}
 </style>
 
 <script>

@@ -267,6 +267,57 @@ export function createGame(root, opts = {}) {
   }
   const curL = () => LEVELS[lv];
 
+  /* ---------- warm-up run: jump, slide, drops, then the real run starts from zero ---------- */
+  let tut = null;                       // { step, t, k, wait, o, done }
+  const tutEl = $('[data-tut]'), tutT = $('[data-tut-t]'), tutS = $('[data-tut-s]');
+  const TUT = {
+    1: { t: 'Salta', s: coarse ? 'Tocca la metà destra dello schermo' : 'Premi Spazio o clicca' },
+    2: { t: 'Scivola', s: coarse ? 'Tieni premuta la metà sinistra' : 'Tieni premuta la freccia giù' },
+    3: { t: 'Gocce d’oro', s: 'Prendile tutte: valgono punti' },
+    4: { t: 'Pronto?', s: 'Si parte, ora conta il punteggio' },
+  };
+  function tutShow(step, ok) {
+    if (!tutEl) return;
+    const c = TUT[step]; tutT.textContent = ok ? 'Perfetto!' : c.t; tutS.textContent = ok ? '' : c.s;
+    tutEl.dataset.ok = ok ? '1' : ''; tutEl.hidden = false; tutEl.classList.remove('tut-in'); void tutEl.offsetWidth; tutEl.classList.add('tut-in');
+  }
+  function tutStep(step) {
+    tut.step = step; tut.t = 0; tut.wait = false; tut.go = false; tut.o = null; tut.done = false; tutShow(step, false);
+    const L = curL(), x = VW + 60;
+    if (step === 1) {
+      const i = L.ob.findIndex(h => h >= 34 && h <= 46), k = i < 0 ? 0 : i, h = L.ob[k], im = sp(`${L.id}_ob${k}`), w = im ? im.width * h / im.height : 30;
+      tut.o = { type: 'ground', name: `${L.id}_ob${k}`, x: x + 140, y: 0, w, h, vx: 0, box: [w * .16, 2, w * .68, h * .88] }; obstacles.push(tut.o);
+    } else if (step === 2) {
+      const E = L.en.find(e => e.kind === 'fly') || L.en[0], im = sp(`${L.id}_e${E.i}_0`), w = im ? im.width * E.h / im.height : 40;
+      tut.o = { type: 'fly', kind: 'fly', E, which: E.i, L: L.id, x: x + 140, w, h: E.h, y: 40, vx: 0, anim: 0, ph: 0, falling: false, box: [w * .2, E.h * .2, w * .6, E.h * .6] }; obstacles.push(tut.o);
+    } else if (step === 3) {
+      for (let i = 0; i < 6; i++) pickups.push({ x: x + 80 + i * 34, y: 16 + Math.sin(i / 5 * Math.PI) * 26, ph: i, kind: 'drop' });
+      tut.o = { x: x + 80 + 5 * 34 };
+    }
+  }
+  function tutUpdate(dt) {          // returns the time scale for this frame
+    tut.t += dt;
+    const o = tut.o;
+    if (tut.step === 1 || tut.step === 2) {
+      const acted = tut.step === 1 ? p.h > 1 : p.duck;
+      if (!tut.done && o) {
+        const near = o.x - (PX + 22) < (tut.step === 1 ? 80 : 110) && o.x + o.w > PX - 10;
+        if (acted && near) tut.go = true;
+        tut.wait = near && !acted && !tut.go;
+        if (o.x + o.w < PX - 20) { tut.done = true; tut.t = 0; tutShow(tut.step, true); }
+      } else if (tut.done && tut.t > 1.1) tutStep(tut.step + 1);
+    } else if (tut.step === 3) {
+      if (!tut.done) { o.x -= speed * dt; if (o.x < PX - 40) { tut.done = true; tut.t = 0; tutShow(3, true); } }
+      else if (tut.t > 1.1) tutStep(4);
+    } else if (tut.step === 4 && tut.t > 1.4) {
+      tut = null; if (tutEl) tutEl.hidden = true; store.trained = true; persist();
+      resetRun(); grace = 1.2; setHud(); toast('Via!'); return 1;
+    }
+    tut.k += ((tut.wait ? .02 : 1) - tut.k) * Math.min(1, dt * 24);
+    return tut.k;
+  }
+  function tutSkip() { if (!tut) return; tut = null; if (tutEl) tutEl.hidden = true; store.trained = true; persist(); resetRun(); grace = 1.2; setHud(); }
+
   function spawn() {
     const L = curL(), sc = score, v = speed;
     const gmin = Math.max(.9, 1.25 - sc / 2600), gap = v * rnd(gmin, gmin + .8);
@@ -361,6 +412,7 @@ export function createGame(root, opts = {}) {
   function update(dt) {
     t += dt;
     if (state === 'pause') return;
+    if (tut && state === 'play') dt *= tutUpdate(dt);
     const living = state === 'play';
     const L = curL();
     // night (only levels with a night range)
@@ -371,7 +423,7 @@ export function createGame(root, opts = {}) {
     if (lvFade < 1) lvFade = Math.min(1, lvFade + dt / .7);
 
     const slowK = buff.slow > 0 ? .7 : 1;
-    const target = state === 'idle' ? 200 : state === 'play' ? Math.min(520, 235 + score * .22) * slowK : 0;
+    const target = state === 'idle' ? 200 : state === 'play' ? (tut ? 230 : Math.min(520, 235 + score * .22) * slowK) : 0;
     speed += (target - speed) * (1 - Math.exp(-dt * (state === 'dead' ? 7 : 3)));
     scroll += speed * dt;
     if (mon) mon.x -= speed * dt * (LEVELS.find(l => l.id === mon.L) || L).mon.par;
@@ -389,11 +441,13 @@ export function createGame(root, opts = {}) {
       }
       landT = Math.max(0, landT - dt);
       p.phase += dt * (9 + speed * .012);
+      if (!tut) {
       score += speed * dt * .04 * (buff.double > 0 ? 2 : 1);
       if (grace > 0) grace -= dt;
       gapLeft -= speed * dt;
       if (grace <= 0 && gapLeft <= 0) spawn();
       powerLeft -= dt; if (powerLeft <= 0 && grace <= 0) { spawnPower(); powerLeft = rnd(14, 22); }
+      }
       
       const nl = Math.floor(score / LVLEN) % LEVELS.length;
       if (nl !== lv) enterLevel(nl);
@@ -422,7 +476,7 @@ export function createGame(root, opts = {}) {
           if (o.falling) o.vx = 0;
         }
       }
-      if (living && !godMode && hits(o)) {
+      if (living && !godMode && !tut && hits(o)) {
         if (buff.shield) { buff.shield = false; o.dead = true; burst(o.x + o.w / 2, GY - o.y - o.h / 2, 12, 'rgba(240,204,116,1)', 140); addFx('fx_hit_', 6, o.x + o.w / 2, GY - o.y - o.h / 2, 70, 16); toast('Cornetto: salvo!'); shake = reducedMotion ? 0 : .12; }
         else hurt();
       }
@@ -435,7 +489,7 @@ export function createGame(root, opts = {}) {
         const cy = p.h + (p.duck ? 14 : 30);
         if (buff.magnet > 0 && Math.hypot(k.x - PX, GY - k.y - (GY - cy)) < 170) { k.x += (PX - k.x) * Math.min(1, dt * 7); k.y += (cy - k.y) * Math.min(1, dt * 7); }
         if (Math.hypot(k.x - PX, k.y - cy) < 24) {
-          k.got = true; drops++; const val = k.kind === 'berg' ? 25 : 10; score += val;
+          k.got = true; drops++; const val = k.kind === 'berg' ? 25 : 10; if (!tut) score += val;
           addFx('fx_spark_', 6, k.x, GY - k.y, 34, 18);
           texts.push({ x: k.x, y: GY - k.y, life: .7, s: '+' + val });
           setHud(); emit('drops', drops);
@@ -506,6 +560,10 @@ export function createGame(root, opts = {}) {
     for (const o of obstacles) drawObstacle(ctx, o);
     drawHero(ctx);
     drawFx(ctx);
+    if (tut && tut.wait && coarse) {
+      const a = .16 + .1 * Math.sin(t * 8), left = tut.step === 2;
+      ctx.fillStyle = `rgba(244,239,232,${a})`; ctx.fillRect(left ? 0 : VW / 2, 0, VW / 2, VH);
+    }
     if (lvFade < 1 && prevLv >= 0) { ctx.globalAlpha = 1 - smooth(lvFade); drawFg(ctx, LEVELS[prevLv]); ctx.globalAlpha = smooth(lvFade); drawFg(ctx, L); ctx.globalAlpha = 1; } else drawFg(ctx, L);
     for (const q of parts) { ctx.globalAlpha = clamp(q.life / q.max, 0, 1); ctx.fillStyle = q.col; ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, TAU); ctx.fill(); }
     ctx.globalAlpha = 1;
@@ -567,15 +625,16 @@ export function createGame(root, opts = {}) {
     const v = input.value.trim().slice(0, 12);
     if (v) { store.name = v; const e = store.board.find(x => x.id === entryId); if (e) e.n = v; persist(); emit('board', board()); }
   }
-  function start() {
+  function start(train) {
     if (state === 'play' || !ready) return;
     saveName(); show(ov.end, false); show(ov.start, false);
     resetRun(); setState('play'); root.classList.add('run-playing'); setHud(); emit('start');
+    if (train === true || (train !== false && !store.trained)) { tut = { step: 0, t: 0, k: 1, wait: false }; tutStep(1); root.classList.add('zone-off'); } else if (tutEl) tutEl.hidden = true;
     if (hud.lv) hud.lv.textContent = curL().name;
-    if (store.runs >= 3) root.classList.add('zone-off');
+    if (store.runs >= 3 || tut) root.classList.add('zone-off'); else root.classList.remove('zone-off');
   }
   function menu() {                       // back to the start screen from the end screen
-    show(ov.end, false); resetRun(); setState('idle'); root.classList.remove('run-playing');
+    tut = null; if (tutEl) tutEl.hidden = true; show(ov.end, false); resetRun(); setState('idle'); root.classList.remove('run-playing');
     if (ov.start) { ov.start.dataset.mode = ''; show(ov.start, true); } setHud();
   }
   function pause() { if (state !== 'play') return; setState('pause'); root.classList.remove('run-playing'); const s = ov.start; if (s) { s.dataset.mode = 'pause'; show(s, true); } }
@@ -620,6 +679,8 @@ export function createGame(root, opts = {}) {
   const release = () => { jumpHeld = false; duckHold = false; };
   window.addEventListener('pointerup', release); window.addEventListener('pointercancel', release);
   $$('[data-start]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (state === 'pause') resume(); else start(); }));
+  $$('[data-train]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (state === 'pause') { tut = null; } setState('idle'); start(true); }));
+  $$('[data-tut-skip]').forEach(b => { b.addEventListener('click', e => { e.stopPropagation(); tutSkip(); }); b.addEventListener('pointerdown', e => e.stopPropagation()); });
   $$('[data-menu]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); menu(); }));
   $$('[data-again]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); start(); }));
   const nameInput = $('[data-name-wrap] input');
@@ -640,7 +701,7 @@ export function createGame(root, opts = {}) {
   });
 
   return {
-    start, pause, resume, menu, board, badges: () => ({ ...store.badges }), labels: BADGES, badgeImg: BADGE_IMG, levels: LEVELS,
+    start, pause, resume, menu, train: () => { setState('idle'); start(true); }, get training() { return tut ? tut.step : 0; }, board, badges: () => ({ ...store.badges }), labels: BADGES, badgeImg: BADGE_IMG, levels: LEVELS,
     debug: {
       get state() { return state; }, get score() { return score; }, get night() { return night; }, get drops() { return drops; }, get speed() { return speed; }, get level() { return lv; }, get ready() { return ready; },
       player: () => ({ ...p, x: PX }), obstacles: () => obstacles.map(o => ({ type: o.type, kind: o.kind, x: o.x, y: o.y, w: o.w, h: o.h })),
