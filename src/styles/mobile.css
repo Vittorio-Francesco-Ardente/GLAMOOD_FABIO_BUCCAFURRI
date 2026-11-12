@@ -19,8 +19,9 @@
  html .sx-hero .stage{position:absolute;inset:0}
  html .sx-hero .giant{top:calc(var(--hdr) + 3.5svh)}
  html .sx-hero .fig{height:min(94svh,178vw);bottom:0}
- html .sx-hero .card,html .sx-hero .stamp,html .sx-hero #h-dk,html .sx-hero #h-dm2{display:none}
- html .sx-hero #h-dm{width:150px!important;right:-40px!important;bottom:30%!important}
+ html .sx-hero .card,html .sx-hero .stamp{display:none}
+ html .sx-hero #h-pr{display:block;width:min(46vw,210px);z-index:3}
+ html .sx-hero #h-ds{display:block;width:min(20vw,90px);left:2%;right:auto;top:calc(var(--hdr) + 14svh);z-index:5}
  html .sx-hero .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;z-index:6;pointer-events:none;background:linear-gradient(transparent,rgb(10 74 80 / .78) 38%,#0A4A50 78%)}
  html .sx-hero .band{display:none}
  html .sx-hero .copy{position:absolute;left:0;right:0;bottom:0;z-index:7;margin:0;padding:0 var(--gutter) calc(30px + env(safe-area-inset-bottom));background:none}

@@ -13,6 +13,6 @@ for (const f of files) {
   if (rel.startsWith('..') || rel.startsWith('svg/')) continue;
   const isVariant = /-\d+\.(webp|avif)$/.test(rel);
   // hero cartoon is chosen at runtime from the photo URL: keep its variants
-  if (isVariant && !used.has(rel) && !rel.startsWith('hero/')) { await unlink(f); n++; } else kept++;
+  if (isVariant && !used.has(rel) && !rel.startsWith('hero/') && !rel.startsWith('v2/hero/fabio/')) { await unlink(f); n++; } else kept++;
 }
 console.log(`prune: removed ${n} unused variants, kept ${kept} images`);

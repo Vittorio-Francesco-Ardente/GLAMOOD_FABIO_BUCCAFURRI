@@ -6,7 +6,8 @@ import images from '../data/images.json';
 import { wa, hoursLabel, business } from '../data/business';
 import { img } from '../data/img';
 const im = images as Record<string, { w: number; h: number; widths: number[] }>;
-const hero = im['hero/fabio-foto'];
+const FOTO = 'v2/hero/fabio/fabio-foto-maglia';
+const hero = im[FOTO];
 const set = (n: string, f: string) => im[n].widths.map((w) => `/img/${n}-${w}.${f} ${w}w`).join(', ');
 const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 ---
@@ -15,15 +16,20 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
   <div class="bg" id="hero-bg"></div><div class="vig"></div><div class="paper"></div>
   <div class="stage">
     <div class="giant" id="giant" aria-hidden="true">Glam<span class="o">oo</span>d</div>
-    <img class="decor" id="h-dm" {...img("piante/09_monstera_grande")} alt="" style="z-index:5;width:clamp(170px,26vw,460px);right:-8%;bottom:4%;transform:rotate(-18deg)" />
-    <img class="decor" id="h-dm2" {...img("piante/10_monstera_piccola-front")} alt="" style="z-index:6;width:clamp(120px,16vw,300px);left:-5%;bottom:-3%;transform:rotate(30deg)" />
-    <img class="decor" id="h-dk" {...img("piante/11_pampas_secca")} alt="" style="z-index:3;width:clamp(70px,8vw,150px);right:4%;top:calc(var(--hdr) + 2%);transform:rotate(14deg)" />
-    <img class="decor" id="h-ds" {...img("attrezzi/01_forbici_aperte")} alt="" style="z-index:5;width:clamp(120px,15vw,260px);left:calc(50% - var(--fh)*.66);top:calc(var(--hdr) + var(--fh)*.36);transform:rotate(-30deg)" />
+    <img class="decor palm" id="h-pl" {...img("v2/hero/piante/palma-alto-sx", 960)} alt="" />
+    <img class="decor palm" id="h-pr" {...img("v2/hero/piante/palma-alto-dx", 960)} alt="" />
+    <img class="decor" id="h-ml" {...img("v2/hero/piante/monstera-ramo-sx", 960)} alt="" />
+    <img class="decor" id="h-mr" {...img("v2/hero/piante/monstera-ramo-dx", 960)} alt="" />
+    <img class="decor blur" id="h-mf" {...img("v2/hero/piante/monstera-ramo-dx", 960)} alt="" />
+    <img class="decor tool" id="h-ds" {...img("v2/hero/attrezzi/forbici-aperte-a30", 480)} alt="" />
+    <img class="decor tool" id="h-tc" {...img("v2/hero/attrezzi/ciocca-capelli", 480)} alt="" />
+    <img class="decor tool" id="h-tn" {...img("v2/hero/attrezzi/nastro-onde", 480)} alt="" />
+    <img class="decor tool" id="h-ta" {...img("v2/hero/attrezzi/asciugamano-arrotolato-a30", 480)} alt="" />
     <div class="fig" id="fig">
       <picture>
-        <source type="image/avif" srcset={set('hero/fabio-foto', 'avif')} sizes={sizes} />
-        <source type="image/webp" srcset={set('hero/fabio-foto', 'webp')} sizes={sizes} />
-        <img id="photo" src="/img/hero/fabio-foto.webp" alt="Fabio Buccafurri con il grembiule Glamood inquadra chi guarda con le dita, forbici e spazzola in mano" width={hero.w} height={hero.h} fetchpriority="high" decoding="async" />
+        <source type="image/avif" srcset={set(FOTO, 'avif')} sizes={sizes} />
+        <source type="image/webp" srcset={set(FOTO, 'webp')} sizes={sizes} />
+        <img id="photo" src={`/img/${FOTO}.webp`} alt="Fabio Buccafurri con la maglia Glamood inquadra chi guarda con le dita, forbici e spazzola in mano" width={hero.w} height={hero.h} fetchpriority="high" decoding="async" />
       </picture>
       <canvas id="cv" aria-hidden="true"></canvas>
     </div>
@@ -52,7 +58,17 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .fig{position:absolute;left:50%;bottom:0;translate:-50% 0;z-index:4;will-change:transform;height:var(--fh);aspect-ratio:1087/1447;touch-action:pan-y;filter:drop-shadow(0 30px 40px rgb(0 0 0 / .35))}
 .fig img,.fig canvas{position:absolute;inset:0;width:100%;height:100%}
 .fig canvas{pointer-events:none;inset:-45% -45%;width:190%;height:190%;max-width:none}
-.decor{position:absolute;pointer-events:none;will-change:transform;height:auto}
+.decor{position:absolute;pointer-events:none;will-change:transform;height:auto;object-fit:contain}
+.decor.tool{z-index:5;filter:drop-shadow(0 18px 18px rgb(0 0 0 / .35));animation:heroFloat var(--fd,7s) ease-in-out infinite alternate}
+.decor.tool:nth-of-type(2n){--fd:8.5s}
+/* palms glued to the top corners: the files keep a small empty margin, pulled off-screen so leaves touch the edge */
+#h-pl{z-index:3;top:0;left:0;width:clamp(220px,24vw,420px);margin:-1.7% 0 0 -1.7%}
+#h-pr{z-index:3;top:0;right:0;width:clamp(240px,27vw,470px)}
+/* monstera branches peek from behind Fabio; a blurred copy in front gives depth */
+#h-ml{z-index:3;width:calc(var(--fh)*.3);left:calc(50% - var(--fh)*.48);bottom:9%}
+#h-mr{z-index:3;width:calc(var(--fh)*.52);left:calc(50% + var(--fh)*.26);bottom:8%}
+#h-mf{z-index:6;width:clamp(180px,16vw,270px);right:.5%;bottom:3%;filter:blur(6px);opacity:.92}
+#h-ds{width:clamp(110px,10vw,170px)}#h-tc{width:clamp(90px,7.5vw,130px)}#h-tn{width:clamp(70px,6vw,96px)}#h-ta{width:clamp(96px,8vw,130px)}
 .band{position:absolute;left:0;right:0;bottom:-1px;z-index:6;height:clamp(54px,7vw,96px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;filter:drop-shadow(0 -10px 20px rgb(0 0 0 / .2))}
 .copy{position:relative;z-index:7}
 .kick{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#F4EFE8}
@@ -94,7 +110,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
 .card{display:none}
 .stamp{display:none}
 .toggle{right:12px;top:auto;bottom:calc(100% - var(--hdr) - var(--fh) + 14svh)}
-#h-ds{display:none}
+.decor.tool,#h-ml,#h-mr,#h-mf,#h-pl{display:none}
 /* TABLET */
 @media (min-width:768px) and (max-width:1023px){
  .hero{--gy:calc(var(--hdr) + 3vh);--fh:min(57svh,76vw);--st:120px;padding-bottom:120px}
@@ -103,6 +119,7 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
  .card{display:block;right:5%;top:calc(var(--hdr) + var(--fh)*.62)}
  .stamp{display:block;right:6%;top:calc(var(--hdr) + 18vh)}
  .toggle{left:auto;right:5%;top:calc(var(--hdr) + 8px);bottom:auto}
+ #h-pl,#h-ds{display:block}#h-pl{width:min(30vw,260px)}#h-ds{width:min(16vw,130px);left:4%;top:calc(var(--hdr) + var(--fh)*.42)}
 }
 /* DESKTOP */
 @media (min-width:1024px){
@@ -112,12 +129,19 @@ const sizes = '(min-width:1200px) 66svh, (min-width:768px) 48svh, 45svh';
  .card{display:block;right:calc(var(--gutter) + 20px);top:54%}
  .stamp{display:block;right:calc(var(--gutter) + 230px);top:auto;bottom:14%}
  .toggle{left:auto;right:var(--gutter);top:calc(var(--hdr) + 8px)}
- #h-ds{display:block;left:calc(50% + var(--fh)*.22)!important;top:calc(var(--hdr) + var(--fh)*.08)!important;transform:rotate(30deg) scaleX(-1)!important}
+ .decor.tool,#h-ml,#h-mr,#h-mf,#h-pl{display:block}
+ /* tools only in the free space between the giant word and the copy/card, never over text */
+ #h-ds{left:calc(50% + var(--fh)*.37);top:calc(var(--gy) + var(--gfs)*.86)}
+ #h-tc{right:calc(var(--gutter) + 40px);top:calc(var(--gy) + var(--gfs)*.9)}
+ #h-tn{left:calc(var(--gutter) + 330px);top:calc(var(--gy) + var(--gfs)*.86)}
+ #h-ta{left:calc(var(--gutter) + 6px);bottom:8%}
 }
-@media (min-width:1024px) and (max-height:780px){.copy{top:40%}.hero{--fh:86svh}}
+@media (min-width:1024px) and (max-height:780px){.copy{top:40%}.hero{--fh:86svh}#h-tn,#h-tc{display:none}}
 /* small desktops and landscape tablets: Fabio narrower so he never touches the copy; stamp under the card */
-@media (min-width:1024px) and (max-width:1279px){.hero{--fh:min(80svh,46vw)}.copy{width:min(32vw,400px)}.card{top:auto;bottom:24%;right:var(--gutter)}.stamp{display:none}#h-dm2{display:none}}
+@media (min-width:1024px) and (max-width:1279px){.hero{--fh:min(80svh,46vw)}.copy{width:min(32vw,400px)}.card{top:auto;bottom:24%;right:var(--gutter)}.stamp{display:none}#h-mf,#h-tn{display:none}}
 }
+@keyframes heroFloat{from{translate:0 -8px}to{translate:0 8px}}
+@media (prefers-reduced-motion:reduce){.decor.tool{animation:none}}
 </style>
 
 <script>
@@ -198,15 +222,16 @@ if (!reduced) {
 }
 // ---- giant word fitted to 96% of the viewport width ----
 const giant = $('giant');
-const fit = () => { giant.style.setProperty('--gfs', '100px'); giant.style.setProperty('--gfs', (100 * innerWidth * 0.96) / giant.scrollWidth + 'px'); };
+const heroEl = $('home');
+const fit = () => { heroEl.style.setProperty('--gfs', '100px'); heroEl.style.setProperty('--gfs', (100 * innerWidth * 0.96) / giant.scrollWidth + 'px'); }; // on the hero, so the tools can sit just under the word
 document.fonts.ready.then(fit); fit(); addEventListener('resize', fit);
 
 // ---- parallax on pointer and scroll (exit: word slides left, Fabio scales down a little) ----
-const ds: [HTMLElement, number][] = [[$('h-dm'), 1.3], [$('h-dm2'), 1.6], [$('h-dk'), 0.5], [$('h-ds'), 1]];
+const ds: [HTMLElement, number][] = [[$('h-pl'), 0.4], [$('h-pr'), 0.4], [$('h-ml'), 0.7], [$('h-mr'), 0.7], [$('h-mf'), 1.6], [$('h-ds'), 1], [$('h-tc'), 1.1], [$('h-tn'), 1.2], [$('h-ta'), 1.3]];
 let px = 0, py = 0, raf = 0;
 function par() { raf = 0; if (reduced) return; const y = Math.min(1, scrollY / innerHeight); if (y >= 1 && scrollY > innerHeight * 1.2) return;
   giant.style.transform = `translateX(${-y * 10}%)`; fig.style.transform = `scale(${1 - y * 0.06})`; fig.style.transformOrigin = '50% 100%';
-  ds.forEach(([d, k]) => { d.style.translate = `${px * 26 * k}px ${py * 18 * k - y * 120 * k}px`; }); }
+  ds.forEach(([d, k]) => { d.style.transform = `translate(${px * 26 * k}px,${py * 18 * k - y * 120 * k}px) rotate(${(px * 4 + y * 6) * k}deg)`; }); }
 const req = () => { if (!raf) raf = requestAnimationFrame(par); };
 if (!touch) addEventListener('pointermove', (e) => { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; req(); }, { passive: true });
 addEventListener('scroll', req, { passive: true });

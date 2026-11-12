@@ -102,7 +102,7 @@ try {
  check(!(await navVisible()),'Mobile navbar must start hidden at the top');
  check(await page.locator('#barra').evaluate(el=>getComputedStyle(el).pointerEvents==='none'),'Hidden navbar must not intercept taps');
  check(await page.locator('#h-ds').count()===1,'Non-foliage scissor decoration remains in source; its existing mobile visibility rule stays unchanged');
- check(await page.evaluate(()=>[...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].length===6 && [...document.querySelectorAll('#h-dm,#h-dm2,#h-dk,.manifesto img.leaf,#foot img.leaf-frame')].every(el=>getComputedStyle(el).display==='none')),'Only decorative foliage is disabled on home and footer');
+ check(await page.evaluate(()=>{const off=[...document.querySelectorAll('#h-pl,#h-ml,#h-mr,#h-mf,#h-tc,#h-tn,#h-ta,.manifesto img.leaf,#foot img.leaf-frame')];const on=[...document.querySelectorAll('#h-pr,#h-ds')];return off.length===10&&off.every(el=>getComputedStyle(el).display==='none')&&on.every(el=>getComputedStyle(el).display!=='none');}),'Phone hero keeps one plant and one tool; the other decorations are off');
  // Five mobile tabs: Salone lives inside the Home, so neither phone menu repeats it.
  await page.evaluate(() => { window.lenis?.scrollTo(160,{immediate:true}); window.scrollTo(0,160); });
  await page.waitForTimeout(850);
