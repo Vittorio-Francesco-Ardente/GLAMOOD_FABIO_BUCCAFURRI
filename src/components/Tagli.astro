@@ -51,6 +51,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .lb{position:absolute;display:grid;place-items:center;overflow:hidden;font-family:var(--f-display);font-weight:900;text-transform:uppercase;color:#0F6870;line-height:.95;white-space:pre;text-align:center;letter-spacing:.01em;z-index:1}
 .lb>span{display:block;font-size:calc(var(--H)*var(--k,.03))}
 .lb.s>span{writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.03em}
+.lb.n>span{font-size:calc(var(--H)*.05);letter-spacing:0}
 .lb.q img{position:absolute;left:8%;top:12%;width:84%;height:76%;object-fit:contain}
 .ledge{position:absolute;left:0;right:0;bottom:0;height:var(--ledge);background:linear-gradient(var(--petrol-light),var(--petrol) 30%,var(--petrol-darker));box-shadow:0 -2px 0 rgb(255 255 255 / .25) inset,0 30px 40px -20px rgb(10 74 80 / .6)}
 .ledge::after{display:none;content:"";position:absolute;left:0;right:0;top:100%;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
@@ -130,7 +131,7 @@ const { CUTS, LAB, wa: WA } = JSON.parse(document.getElementById('tagli-data')!.
 // which point to the wrong root when the site is published under a repository name.
 const BASE = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 const T = `${BASE}img/tagli/`;
-const urlFor = (key: string, kind: string) => `${T}${key}-${kind}.webp`;
+const urlFor = (key: string, kind: string) => (kind === 'spine' || kind === 'front' ? `${BASE}img/v2/tagli/split/${key}-${kind}.webp` : `${T}${key}-${kind}.webp`);
 const brandUrl = (name: string) => `${BASE}img/brand/${name}`;
 const pos_ = (r: number[]) => `left:${r[0] * 100}%;top:${r[1] * 100}%;width:${r[2] * 100}%;height:${r[3] * 100}%`;
 const RM = reduced, EASE = 'cubic-bezier(.2,.8,.2,1)';
@@ -151,7 +152,7 @@ const frag = document.createDocumentFragment();
 for (let v = 0; v < N; v++) {
   const c = CUTS[v % NC], L = LAB[c[1]]; const el = document.createElement('div'); el.className = 'tape'; el.dataset.v = String(v);
   el.style.setProperty('--ar', L.ar); el.style.setProperty('--sar', L.sar);
-  el.innerHTML = `<div class="face sp" style="--tex:url(${urlFor(c[1], 'spine')})"><div class="lb q" style="${pos_(L.sq)}"><img src="${brandUrl('G-rasoio-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="${brandUrl('faccia-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${urlFor(c[1], 'front')})"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="Glamood" data-r="bot" style="${pos_(L.bot)}"><span>Glamood</span></div></div><div class="face lt" style="--tex:url(${urlFor(c[1], 'lato')})"></div>`;
+  el.innerHTML = `<div class="face sp" style="--tex:url(${urlFor(c[1], 'spine')})"><div class="lb n" style="${pos_(L.sq)}"><span>${String(v % NC + 1).padStart(2, '0')}</span></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="${brandUrl('faccia-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${urlFor(c[1], 'front')})"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="${c[2]}" data-r="bot" style="${pos_(L.bot)}"><span>${c[2]}</span></div></div><div class="face lt" style="--tex:url(${urlFor(c[1], 'lato')})"></div>`;
   frag.append(el); tapes.push({ el, sp: el.children[0] as HTMLElement, cv: el.children[1] as HTMLElement, lt: el.children[2] as HTMLElement, lift: 0, hid: false });
 }
 stage.append(frag);
