@@ -306,6 +306,7 @@ export function createGame(root, opts = {}) {
     Object.assign(p, { h: 0, vy: 0, phase: 0, duck: false, dead: false, was: 0 });
   }
   const curL = () => LEVELS[lv];
+  const tier = () => Math.floor(score / LVLEN);          // 0 first level, +1 each 1000 points (keeps growing after the loop)
 
   /* ---------- warm-up run: jump, slide, drops, then the real run starts from zero ---------- */
   let tut = null;                       // { step, t, k, wait, o, done }
@@ -360,10 +361,10 @@ export function createGame(root, opts = {}) {
 
   function spawn() {
     const L = curL(), sc = score, v = speed;
-    const gmin = Math.max(.9, 1.25 - sc / 2600), gap = v * rnd(gmin, gmin + .8);
+    const T = tier(), gmin = Math.max(.62, 1.25 - T * .09 - (sc % LVLEN) / 4000), gap = v * rnd(gmin, gmin + Math.max(.35, .8 - T * .07));
     const x = VW + 50; let o;
     const roll = Math.random();
-    if (roll < (sc > 150 ? .32 : 0)) {
+    if (roll < (sc > 150 ? Math.min(.55, .3 + tier() * .04) : 0)) {
       const pool = sc % LVLEN > 380 || sc > LVLEN ? L.en : L.en.slice(0, 2), E = pool[Math.floor(Math.random() * pool.length)], which = E.i, im = sp(`${L.id}_e${which}_0`);
       const w = im ? im.width * E.h / im.height : 40;
       o = { type: 'fly', kind: E.kind, E, which, L: L.id, x, w, h: E.h, y: 0, vx: 0, anim: rnd(0, 3), ph: 0, falling: false };
@@ -463,7 +464,7 @@ export function createGame(root, opts = {}) {
     if (lvFade < 1) lvFade = Math.min(1, lvFade + dt / .7);
 
     const slowK = buff.slow > 0 ? .7 : 1;
-    const target = state === 'idle' ? 200 : state === 'play' ? (tut ? 230 : Math.min(520, 235 + score * .22) * slowK) : 0;
+    const target = state === 'idle' ? 200 : state === 'play' ? (tut ? 230 : Math.min(520 + tier() * 30, 235 + tier() * 28 + (score % LVLEN) * .12) * slowK) : 0;
     speed += (target - speed) * (1 - Math.exp(-dt * (state === 'dead' ? 7 : 3)));
     scroll += speed * dt;
     if (mon) mon.x -= speed * dt * (LEVELS.find(l => l.id === mon.L) || L).mon.par;
