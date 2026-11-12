@@ -22,7 +22,7 @@
 /* Page controls give an immediate, predictable alternative to scrolling. */
 .storia-nav{position:fixed;right:var(--gutter);bottom:max(18px,env(safe-area-inset-bottom));z-index:21;display:flex;gap:10px;align-items:center}
 .storia-nav button{min-height:46px;padding:0 18px;border-radius:999px;border:1px solid rgb(15 104 112 / .28);background:var(--cream);color:var(--petrol);font:800 13px/1 var(--f-body);box-shadow:0 8px 24px -14px rgb(0 0 0 / .5);cursor:pointer}
-.storia-nav button:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+.storia-nav button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 .storia-nav button:disabled{opacity:.45;cursor:default}
 @media(max-width:767px){.storia-nav{right:50%;transform:translateX(50%);bottom:max(12px,env(safe-area-inset-bottom))}.storia-nav button{min-height:44px;padding:0 14px}.hint{bottom:74px}}
 @keyframes bob{50%{transform:translateY(5px)}}

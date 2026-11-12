@@ -115,7 +115,7 @@ try {
   return {width:rect.width,height:rect.height,opacity:parseFloat(css.opacity),links};
  });
  check(bar.width>=340 && bar.height>=60 && bar.height<=72,'Phone navbar is compact without losing tap targets');
- check(bar.links.length===5 && bar.links.every(v=>v.height>=50 && v.height<=56 && v.svg>=19 && v.svg<=21 && Number(v.label)>=.9),'All five compact phone tabs are visible and legible, without Salone');
+ check(bar.links.length===5 && bar.links.every(v=>v.height>=50 && v.height<=56 && v.svg>=19 && v.svg<=23 && Number(v.label)>=.9),'All five compact phone tabs are visible and legible, without Salone');
  // Verify the full label fits within its own link across phone widths.
  for(const width of [320,360,390,428]){
    await page.setViewportSize({width,height:844});
@@ -219,12 +219,12 @@ try {
      const remaining=[...document.querySelectorAll('#barra a.voce')].filter(a=>a.getClientRects().length>0).map(a=>a.dataset.voce);
      return {visible:getComputedStyle(el).display!=='none'&&before.width>0&&before.height>0,
        afterHero:before.top>=above.bottom-2,
-       photos:images.length===6,swipe:getComputedStyle(track).flexDirection==='column'&&images.every(i=>{const r=i.closest('.ph').getBoundingClientRect();return r.width>=innerWidth*0.8&&Math.abs(r.height/r.width-1.25)<0.03}),
+       photos:images.length===6,swipe:getComputedStyle(track).flexDirection==='row'&&track.scrollWidth>track.clientWidth&&getComputedStyle(track).scrollSnapType.startsWith('x')&&images.every(i=>{const r=i.closest('.ph').getBoundingClientRect();return r.width>=innerWidth*0.72&&Math.abs(r.height/r.width-1.25)<0.03}),
        links:getComputedStyle(dock).display==='none'&&getComputedStyle(menu.closest('li')).display==='none'&&remaining.join(',')===',tagli,listino,prodotti,dove',
        noOverflow:document.documentElement.scrollWidth-innerWidth<=2};
    });
    check(integrated.visible&&integrated.afterHero&&integrated.photos&&integrated.swipe&&integrated.links&&integrated.noOverflow,
-     'Mobile Home embeds full Salone gallery as full-width 4:5 photos, without duplicate phone navigation at '+width+'px');
+     'Mobile Home embeds full Salone gallery as a swipeable strip of large 4:5 photos, without duplicate phone navigation at '+width+'px');
  }
  await page.setViewportSize({width:390,height:844});
  const salonPhoto=page.locator('.sx-salone[data-home-mobile="true"] #track figure img').first();

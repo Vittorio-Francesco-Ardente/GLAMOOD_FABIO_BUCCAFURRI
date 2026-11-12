@@ -76,7 +76,7 @@ a{color:inherit}
 /* ---------- interaction layer (all buttons, links, tappable cards) ---------- */
 html{-webkit-tap-highlight-color:transparent}
 a,button,[role=button],.btn,.btn-pop,summary,label[for]{touch-action:manipulation;cursor:pointer}
-:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 ::selection{background:var(--petrol);color:#F4EFE8}
 .btn,.btn-pop{transition:transform .22s var(--ease-out),box-shadow .22s var(--ease-out),background .2s,color .2s}
 .btn-pop svg,.btn svg{transition:transform .3s var(--ease-out)}

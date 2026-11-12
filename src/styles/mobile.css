@@ -34,13 +34,15 @@
  html .sx-hero .copy{width:auto!important;right:0}
  html .sx-hero .ctas .btn-ghost{border:0;min-height:44px;justify-content:center;text-decoration:underline;text-underline-offset:4px}
 
- /* ---------- salone: one 4:5 photo per screen, caption below ---------- */
- html .sx-salone .track{flex-direction:column;align-items:stretch;overflow:visible;scroll-snap-type:none;gap:48px;padding:24px var(--gutter) 64px}
- html .sx-salone .card{width:100%}
- html .sx-salone .card .fr{width:100%;border-radius:24px!important}
- html .sx-salone .card .ph{width:100%!important;height:auto!important;aspect-ratio:4/5!important;border-radius:16px!important}
+ /* ---------- salone: a swipeable strip of large 4:5 photos, the next one peeking ---------- */
+ html .sx-salone .track{flex-direction:row;align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:20px var(--gutter) 48px;scroll-padding-inline:var(--gutter)}
+ html .sx-salone .card{flex:0 0 calc(100vw - 2*var(--gutter) - 28px);width:calc(100vw - 2*var(--gutter) - 28px);scroll-snap-align:start}
+ html .sx-salone .card .fr{width:100%;padding:8px;border-radius:26px!important}
+ html .sx-salone .card .ph{width:100%!important;height:auto!important;aspect-ratio:4/5!important;border-radius:19px!important}
  html .sx-salone .card .ph img{transform:none!important}
- html .sx-salone .head .giant-title{font-size:clamp(40px,13vw,64px)}
+ html .sx-salone .card figcaption{font-size:13.5px!important}
+ html .sx-salone .head .giant-title{font-size:clamp(48px,14vw,68px)}
+ html .sx-salone .head p{font-size:17px;line-height:1.5}
 
  /* ---------- word band: a single slow row ---------- */
  html .sx-fasce .build{height:auto}
@@ -90,6 +92,43 @@
  html .sx-footer .fcol[open] summary i::after{transform:rotate(0)}
  html .sx-footer .fbody{padding-bottom:16px}
  html .sx-footer .fbody a,html .sx-footer .fbody p{font-size:18px;line-height:2.2}
+
+ /* ---------- type floor: nothing below 12px, body copy at 16px+ ---------- */
+ html .sx-header .barra .voce{font-size:clamp(9.5px,2.7vw,10.5px)!important;letter-spacing:0;gap:4px}
+ html .sx-header .barra .voce svg{width:22px;height:22px}
+ html .marker,html .kicker,html .sx-hero .kick{font-size:12.5px!important}
+ html .sx-gioco .steps{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+ html .sx-gioco .steps li{display:grid!important;grid-template-columns:40px 1fr;align-items:center;text-align:left!important;gap:12px}
+ html .sx-gioco .steps li svg{width:28px;height:28px;margin:0!important}
+ html .sx-gioco .steps li span{font-size:15px!important;line-height:1.4}
+ html .sx-gioco .steps li b{display:block;font-size:16px!important}
+ html .sx-gioco p.note,html .sx-gioco p.pw{font-size:14.5px!important;line-height:1.5}
+ html .sx-listino .marker,html .sx-listino p.k,html .sx-listino .total,html .sx-listino .more{font-size:12.5px!important}
+ html .sx-listino .intro{font-size:17px!important}
+ html .sx-prodotti .band-k{font-size:12px!important;letter-spacing:.12em}
+ html .sx-prodotti .top3 .t3-k,html .sx-prodotti .cat-hint{font-size:13px!important}
+ html .sx-prodotti .how .cards p,html .sx-prodotti .ci span{font-size:15px!important}
+ html .sx-prodotti .split .tx p{font-size:15px!important;text-transform:none;letter-spacing:0;font-weight:500;line-height:1.6}
+ html .sx-merch .card .k{font-size:12.5px!important}
+ html .sx-merch .card .s{font-size:15px!important}
+ html .sx-dove .row span{font-size:16px!important}
+ html .sx-dove .pin-l small{font-size:13px!important}
+ html .sx-tagli .cap span{font-size:13px!important}
+
+ /* ---------- wider cards: less frame, more content ---------- */
+ html .sx-prodotti .band{margin:8px}
+ html .sx-dove .dove{padding-inline:16px}
+ html .sx-dove .rows{border-left:0;padding-left:0}
+ html .sx-merch .block{margin-inline:0;border-radius:24px}
+
+ /* footer: one column of accordions, readable small print */
+ html .sx-footer .foot .cols{grid-template-columns:1fr!important;gap:0!important;padding:28px 20px 12px}
+ html .sx-footer .foot .cols>*{grid-column:auto!important}
+ html .sx-footer .kick{font-size:12px;letter-spacing:.08em}
+ html .sx-footer .legal,html .sx-footer .legal *{font-size:13px}
+
+ /* listino: the intro sits on paper, never across the moving waves */
+ html .sx-listino .top{background:#F4EFE8;border-radius:24px;padding:24px 20px 26px;box-shadow:0 18px 40px -24px rgb(3 38 42 / .55)}
 
  /* ---------- motion: short and light ---------- */
  html .bgref{animation:none}

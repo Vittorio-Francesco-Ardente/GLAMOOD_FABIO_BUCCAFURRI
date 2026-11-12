@@ -37,7 +37,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .tagli{--H:min(46vh,31vw);--ws:calc(var(--H)*.1355);--d:calc(var(--H)*.52);--ledge:clamp(20px,2.4vw,30px)}
 @media (max-width:767px){.tagli{--H:min(92vw,50svh)}}
 .shelf{position:relative;height:calc(70px + var(--H) + var(--ledge));margin-top:clamp(20px,4vh,50px);perspective:2200px;perspective-origin:50% 50%;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline:none}
-.shelf:focus-visible{outline:3px solid var(--brass);outline-offset:-6px}
+.shelf:focus-visible{outline:2px solid currentColor;outline-offset:-6px}
 @media (pointer:fine){.shelf{cursor:none}}
 .stage{position:absolute;left:50%;top:calc(70px + var(--H)/2);width:0;height:0;-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
 .tape{position:absolute;left:0;top:0;width:0;height:0;-webkit-transform-style:preserve-3d;transform-style:preserve-3d;will-change:transform}

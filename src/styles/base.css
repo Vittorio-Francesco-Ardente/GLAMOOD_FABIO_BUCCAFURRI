@@ -43,3 +43,6 @@ html{scrollbar-color:#F4EFE8 #0A4A50;scrollbar-width:thin}
 
 /* while Glamood Run is being played the bottom bar steps aside */
 html.game-on .barra{opacity:0!important;pointer-events:none!important;transform:translate(-50%,calc(100% + 40px))!important}
+/* focus ring: only for keyboard, in the element's own ink (no gold halo after a tap or click) */
+:focus:not(:focus-visible){outline:none}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid currentColor;outline-offset:3px}
