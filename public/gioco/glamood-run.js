@@ -151,7 +151,7 @@ export function createGame(root, opts = {}) {
   let t = 0, scroll = 0, speed = 190, score = 0, drops = 0, nightSeen = false;
   let lv = 0, prevLv = -1, lvFade = 1, maxLv = 0, startLv = 0, night = 0;
   let obstacles = [], pickups = [], powers = [], parts = [], texts = [], fx = [];
-  let gapLeft = 0, grace = 0, shake = 0, flash = 0, deadAt = 0, duckHold = false, jumpHeld = false, landT = 0, powerLeft = 14;
+  let jumpBuf = 0, gapLeft = 0, grace = 0, shake = 0, flash = 0, deadAt = 0, duckHold = false, jumpHeld = false, landT = 0, powerLeft = 14;
   let entryId = 0, lastScore = -1;
   const buff = { shield: false, slow: 0, magnet: 0, double: 0 };
   const p = { h: 0, vy: 0, phase: 0, duck: false, dead: false, was: 0 };
@@ -199,16 +199,35 @@ export function createGame(root, opts = {}) {
   }
 
   /* ---------------- sprites ---------------- */
-  let haloOn = false; const haloCache = new Map();
-  function halo(name, im) {             // cream glow + soft dark rim, rendered once per sprite
+  let haloOn = false, glowOn = 0; const haloCache = new Map();
+  const GLOW = { bad: [232, 70, 52], good: [255, 206, 92] };
+  function glowLayer(name, im, kind) {    // the sprite's glow only (sprite cut out), rendered once
+    const key = name + '|' + kind; let gc = haloCache.get(key); if (gc) return gc;
+    const k = Math.min(1, 160 / im.height), w = Math.round(im.width * k), h = Math.round(im.height * k), pad = 46;
+    gc = document.createElement('canvas'); gc.width = w + pad * 2; gc.height = h + pad * 2; const g = gc.getContext('2d');
+    const [r, gg, b] = GLOW[kind];
+    g.shadowColor = `rgba(${r},${gg},${b},1)`; g.shadowBlur = 36; g.drawImage(im, pad, pad, w, h); g.drawImage(im, pad, pad, w, h); g.shadowBlur = 16; g.drawImage(im, pad, pad, w, h);
+    g.shadowBlur = 0; g.globalCompositeOperation = 'destination-out'; g.drawImage(im, pad, pad, w, h);
+    gc._k = k; gc._pad = pad; haloCache.set(key, gc); return gc;
+  }
+  const spot = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const g = cv.getContext('2d'); const rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    rg.addColorStop(0, 'rgba(255,226,140,.95)'); rg.addColorStop(.45, 'rgba(255,200,90,.45)'); rg.addColorStop(1, 'rgba(255,200,90,0)'); g.fillStyle = rg; g.fillRect(0, 0, 64, 64); return cv; })();
+  function shine(c, x, y, r, a) { c.save(); c.globalAlpha = a; c.globalCompositeOperation = 'lighter'; c.drawImage(spot, x - r, y - r, r * 2, r * 2); c.restore(); }
+  function glow(c, name, kind, x, yBottom, h, a) {
+    const im = sp(name); if (!im || !im.width) return;
+    const gc = glowLayer(name, im, kind), sc = h / (im.height * gc._k);
+    c.save(); c.globalAlpha = a; c.drawImage(gc, x - gc.width * sc / 2, yBottom - h - gc._pad * sc, gc.width * sc, gc.height * sc); c.restore();
+  }
+  function halo(name, im) {             // red danger rim + soft dark rim, rendered once per sprite
     let hc = haloCache.get(name); if (hc) return hc;
-    const k = Math.min(1, 220 / im.height), w = Math.round(im.width * k), h = Math.round(im.height * k), pad = 18;
+    const k = Math.min(1, 160 / im.height), w = Math.round(im.width * k), h = Math.round(im.height * k), pad = 40;
     hc = document.createElement('canvas'); hc.width = w + pad * 2; hc.height = h + pad * 2; const g = hc.getContext('2d');
-    g.shadowColor = 'rgba(255,246,222,1)'; g.shadowBlur = 14; g.drawImage(im, pad, pad, w, h); g.shadowBlur = 6; g.drawImage(im, pad, pad, w, h);
-    g.shadowColor = 'rgba(4,30,34,.55)'; g.shadowBlur = 3; g.shadowOffsetY = 2; g.drawImage(im, pad, pad, w, h);
+    g.shadowColor = 'rgba(226,58,44,1)'; g.shadowBlur = 26; g.drawImage(im, pad, pad, w, h); g.drawImage(im, pad, pad, w, h); g.shadowColor = 'rgba(255,110,90,1)'; g.shadowBlur = 9; g.drawImage(im, pad, pad, w, h);
+    g.shadowColor = 'rgba(4,30,34,.55)'; g.shadowBlur = 5; g.shadowOffsetY = 3; g.drawImage(im, pad, pad, w, h);
     hc._k = k; hc._pad = pad; haloCache.set(name, hc); return hc;
   }
   function spr(c, name, x, yBottom, h, flip = false, rot = 0, alpha = 1) {
+    if (glowOn) { if (!rot) glow(c, name, 'bad', x, yBottom, h, glowOn * alpha); else { c.save(); c.translate(x, yBottom - h / 2); c.rotate(rot); glow(c, name, 'bad', 0, h / 2, h, glowOn * alpha); c.restore(); } return; }
     if (haloOn) { const im0 = sp(name); if (im0 && im0.complete !== false && im0.width) { const hc = halo(name, im0), sc = h / (im0.height * hc._k), pw = hc._pad * sc;
       c.save(); c.globalAlpha = alpha; c.translate(x, yBottom - h / 2); if (rot) c.rotate(rot); if (flip) c.scale(-1, 1);
       c.drawImage(hc, -hc.width * sc / 2, -h / 2 - pw, hc.width * sc, hc.height * sc); c.restore(); return; } }
@@ -240,6 +259,8 @@ export function createGame(root, opts = {}) {
   /* obstacle sprites */
   function obSprite(o) { return o.spr; }
   function drawObstacle(c, o) {   // obstacles get a cream halo + soft dark rim so they read over any background
+    const pulse = .7 + .3 * Math.sin(t * 6 + (o.x * .01));
+    glowOn = pulse; drawObstacle0(c, o); glowOn = 0;
     haloOn = true; drawObstacle0(c, o); haloOn = false;
   }
   function drawObstacle0(c, o) {
@@ -439,6 +460,7 @@ export function createGame(root, opts = {}) {
         if (was > 6) { landT = .12; addFx('fx_dust_', 6, PX, GY - 6, 70, 16); addFx('fx_dust_', 6, PX - 14, GY - 10, 36, 14); }
         p.h = 0; p.vy = 0;
       }
+      if (jumpBuf > 0) { jumpBuf -= dt; if (p.h <= .5) { jumpBuf = 0; p.vy = JUMP; p.duck = false; addFx('fx_dust_', 6, PX - 6, GY - 8, 30, 16); } }
       landT = Math.max(0, landT - dt);
       p.phase += dt * (9 + speed * .012);
       if (!tut) {
@@ -555,8 +577,10 @@ export function createGame(root, opts = {}) {
       octx.setTransform(S * DPR, 0, 0, S * DPR, 0, 0); scene(octx, L, nk);
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = smooth(lvFade); ctx.drawImage(oc, 0, 0); ctx.restore();
     } else scene(ctx, L, nk);
-    for (const k of pickups) { const bob = Math.sin(t * 4 + k.ph) * 2.5; spr(ctx, 'drop_' + (Math.floor(t * 10 + k.ph * 3) % 6), k.x, GY - k.y + bob + 9, 18); }
-    for (const k of powers) { const bob = Math.sin(t * 3 + k.ph) * 3; spr(ctx, POWER[k.kind].img, k.x, GY - k.y + bob + 14, 28); }
+    for (const k of pickups) { const bob = Math.sin(t * 4 + k.ph) * 2.5, n = 'drop_' + (Math.floor(t * 10 + k.ph * 3) % 6); shine(ctx, k.x, GY - k.y + bob, 19, .55 + .25 * Math.sin(t * 5 + k.ph)); glow(ctx, n, 'good', k.x, GY - k.y + bob + 10, 20, 1); spr(ctx, n, k.x, GY - k.y + bob + 10, 20); }
+    for (const k of powers) { const bob = Math.sin(t * 3 + k.ph) * 3, sc = 1 + .06 * Math.sin(t * 5 + k.ph), n = POWER[k.kind].img;
+      ctx.save(); ctx.globalAlpha = .35 + .15 * Math.sin(t * 4 + k.ph); ctx.fillStyle = '#FFE7A0'; ctx.beginPath(); ctx.arc(k.x, GY - k.y + bob - 2, 24 * sc, 0, TAU); ctx.fill(); ctx.restore();
+      glow(ctx, n, 'good', k.x, GY - k.y + bob + 16, 32 * sc, 1); spr(ctx, n, k.x, GY - k.y + bob + 16, 32 * sc); }
     for (const o of obstacles) drawObstacle(ctx, o);
     drawHero(ctx);
     drawFx(ctx);
@@ -644,7 +668,8 @@ export function createGame(root, opts = {}) {
     if (state === 'pause') return resume();
     if (state !== 'play') return;
     jumpHeld = true;
-    if (p.h <= .5) { p.vy = JUMP; p.duck = false; addFx('fx_dust_', 6, PX - 6, GY - 8, 30, 16); }
+    if (p.h <= .5) { p.vy = JUMP; p.duck = false; jumpBuf = 0; addFx('fx_dust_', 6, PX - 6, GY - 8, 30, 16); }
+    else jumpBuf = .16;                    // tapped just before landing: jump as soon as the feet touch the floor
   }
 
   /* ---------------- input ---------------- */
@@ -672,11 +697,16 @@ export function createGame(root, opts = {}) {
     if (state === 'play') {
       const r = canvas.getBoundingClientRect();
       // touch: right half = jump (hold for higher), left half = slide while held
-      if (e.pointerType !== 'mouse') { e.preventDefault(); if ((e.clientX - r.left) / r.width < .5) { duckHold = true; return; } jump(); return; }
-      e.preventDefault(); jump();
+      e.preventDefault();
+      if (e.pointerType !== 'mouse' && (e.clientX - r.left) / r.width < .5) { fingers.set(e.pointerId, 'duck'); duckHold = true; return; }
+      fingers.set(e.pointerId, 'jump'); jump();
     } else if (state === 'idle' || state === 'pause') jump();
   });
-  const release = () => { jumpHeld = false; duckHold = false; };
+  const fingers = new Map();               // each finger keeps its own role, lifting one never cancels the other
+  const release = e => {
+    fingers.delete(e.pointerId);
+    const roles = [...fingers.values()]; jumpHeld = roles.includes('jump'); duckHold = roles.includes('duck');
+  };
   window.addEventListener('pointerup', release); window.addEventListener('pointercancel', release);
   $$('[data-start]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (state === 'pause') resume(); else start(); }));
   $$('[data-train]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (state === 'pause') { tut = null; } setState('idle'); start(true); }));
