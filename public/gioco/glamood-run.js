@@ -17,12 +17,12 @@ const FH = 80;                                  // ground strip height
 const LEVELS = [
   { id: 'L1', name: 'Il Salone', sub: 'Dove tutto comincia', sky: 'L1_01',
     layers: [{ n: 'L1_02', par: .12, h: 230, b: 0, cover: true }, { n: 'L1_03', par: .36, h: 190, b: 4, hang: true }],
-    ground: 'L1_04', fg: { n: 'L1_05', par: 1.3, h: 120, b: 6, gap: 2.2 }, light: 'L1_06', mon: { h: 175, par: .36, b: 2 },
+    ground: 'L1_04', fg: null, light: 'L1_06', mon: { h: 175, par: .36, b: 2 },
     ob: [34, 38, 50, 46, 64, 60, 22, 62],
     en: [{ i: 0, kind: 'fly', h: 24, fps: 12 }, { i: 1, kind: 'fly', h: 30, fps: 10 }, { i: 2, kind: 'fly', h: 30, fps: 10 }, { i: 3, kind: 'hang', h: 70, fps: 5 }] },
   { id: 'L2', name: 'Lungomare Falcomatà', sub: 'Il chilometro più bello d’Italia', sky: 'L2_01',
     layers: [{ n: 'L2_03', par: .16, h: 190, b: -26 }, { n: 'L2_04', par: .42, h: 150, b: 3 }],
-    ground: 'L2_05', fg: { n: 'L2_06', par: 1.3, h: 120, b: 6, gap: 2.2 }, mon: { h: 160, par: .3, b: 0 },
+    ground: 'L2_05', fg: null, mon: { h: 160, par: .3, b: 0 },
     ob: [36, 46, 30, 62, 24, 48],
     en: [{ i: 0, kind: 'fly', h: 30, fps: 9 }, { i: 1, kind: 'roll', h: 28, fps: 12 }, { i: 2, kind: 'fly', h: 26, fps: 10 }] },
   { id: 'L3', name: 'Centro e Castello', sub: 'Corso Garibaldi e il Castello Aragonese', sky: 'L3_01', skyNight: 'L3_01n', night: [.35, .65],
@@ -166,6 +166,7 @@ export function createGame(root, opts = {}) {
     });
     if (nl === 2) { /* salon & seafront: monument after the first strip */ }
     if (nightK > .01) { c.fillStyle = `rgba(6,22,40,${.38 * nightK})`; c.fillRect(0, 0, VW, floorTop + 2); }
+    c.fillStyle = 'rgba(6,34,38,.22)'; c.fillRect(0, 0, VW, floorTop + 2); // backdrop steps back so the run lane reads
     const gr = sp(L.ground); if (gr) tile(c, gr, 1, floorTop, FH + 1);
     if (nightK > .01) { c.fillStyle = `rgba(6,22,40,${.3 * nightK})`; c.fillRect(0, floorTop, VW, FH + 2); }
     if (L.light && sp(L.light)) { c.globalAlpha = .55; tile(c, sp(L.light), .2, 0, floorTop); c.globalAlpha = 1; }
@@ -211,7 +212,11 @@ export function createGame(root, opts = {}) {
 
   /* obstacle sprites */
   function obSprite(o) { return o.spr; }
-  function drawObstacle(c, o) {
+  function drawObstacle(c, o) {   // obstacles get a cream halo + soft dark rim so they read over any background
+    c.save(); c.shadowColor = 'rgba(255,246,222,1)'; c.shadowBlur = 14; drawObstacle0(c, o); c.shadowBlur = 6; drawObstacle0(c, o);
+    c.shadowColor = 'rgba(4,30,34,.55)'; c.shadowBlur = 3; c.shadowOffsetY = 2; drawObstacle0(c, o); c.restore();
+  }
+  function drawObstacle0(c, o) {
     if (o.type === 'ground') { spr(c, o.name, o.x + o.w / 2, GY - o.y, o.h); return; }
     const E = o.E;
     const fr = o.kind === 'fall' ? 0 : Math.floor(o.anim * E.fps) % 4;

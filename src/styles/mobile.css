@@ -17,22 +17,23 @@
  /* ---------- hero: Fabio full screen, text over the bottom gradient ---------- */
  html .sx-hero .hero{display:block;min-height:100svh;padding:0}
  html .sx-hero .stage{position:absolute;inset:0}
- html .sx-hero .giant{top:calc(var(--hdr) + 1svh)}
- html .sx-hero .fig{height:min(100svh,185vw);bottom:0}
- @media (max-height:700px){html .sx-hero .kick{display:none}html .sx-hero .copy h1{font-size:clamp(34px,10.5vw,44px)}html .sx-hero .ctas{margin-top:12px;gap:4px}}
+ html .sx-hero .giant{top:calc(var(--hdr) + 3.5svh)}
+ html .sx-hero .fig{height:min(94svh,178vw);bottom:0}
  html .sx-hero .card,html .sx-hero .stamp,html .sx-hero #h-dk,html .sx-hero #h-dm2{display:none}
  html .sx-hero #h-dm{width:150px!important;right:-40px!important;bottom:30%!important}
  html .sx-hero .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;z-index:6;pointer-events:none;background:linear-gradient(transparent,rgb(10 74 80 / .78) 38%,#0A4A50 78%)}
  html .sx-hero .band{display:none}
- html .sx-hero .copy{position:absolute;left:0;right:0;bottom:0;z-index:7;margin:0;padding:0 var(--gutter) calc(96px + env(safe-area-inset-bottom));background:none}
- html .sx-hero .copy h1{font-size:clamp(40px,12vw,56px);max-width:none}
+ html .sx-hero .copy{position:absolute;left:0;right:0;bottom:0;z-index:7;margin:0;padding:0 var(--gutter) calc(30px + env(safe-area-inset-bottom));background:none}
+ html .sx-hero .copy h1{font-size:clamp(38px,11.4vw,52px)!important;max-width:none;line-height:.95!important}
  html .sx-hero .copy p{display:none}
- html .sx-hero .kick{display:inline-flex;align-items:center;gap:8px;background:rgb(8 57 62 / .7);border:1px solid rgb(244 239 232 / .25);border-radius:999px;padding:7px 12px;font-size:11px;letter-spacing:.1em}
+ html .sx-hero .kick{display:inline-flex;align-items:center;gap:8px;background:rgb(8 57 62 / .7);border:1px solid rgb(244 239 232 / .25);border-radius:999px;padding:9px 15px;font-size:13.5px!important;letter-spacing:.08em}
  html .sx-hero .kick::before{display:none}
  html .sx-hero .ctas{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px;margin-top:18px;width:100%}
- html .sx-hero .ctas .btn-cream{width:100%!important;max-width:none!important;justify-content:center;min-height:56px;font-size:17px}
+ html .sx-hero .ctas .btn-cream{width:100%!important;max-width:none!important;justify-content:center;min-height:58px!important;font-size:18px!important;font-weight:700}
  html .sx-hero .copy{width:auto!important;right:0}
- html .sx-hero .ctas .btn-ghost{border:0;min-height:44px;justify-content:center;text-decoration:underline;text-underline-offset:4px}
+ html .sx-hero .ctas .btn-ghost{border:0;min-height:52px;font-size:18px!important;justify-content:center;text-decoration:underline;text-underline-offset:4px}
+ /* short screens: keep the face visible above the headline (must follow the rules above) */
+ @media (max-height:700px){html .sx-hero .kick{display:none!important}html .sx-hero .fig{height:84svh}html .sx-hero .giant{top:calc(var(--hdr) + 1.5svh)}html .sx-hero .copy h1{font-size:clamp(34px,10.5vw,44px)!important}html .sx-hero .ctas{margin-top:12px;gap:0}html .sx-hero .ctas .btn-cream{min-height:52px!important;font-size:17px!important}html .sx-hero .ctas .btn-ghost{min-height:44px!important;font-size:16px!important}html .sx-hero .copy{padding-bottom:16px}}
 
  /* ---------- salone: a swipeable strip of large 4:5 photos, the next one peeking ---------- */
  html .sx-salone .track{flex-direction:row;align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:20px var(--gutter) 48px;scroll-padding-inline:var(--gutter)}
@@ -63,6 +64,7 @@
  html .sx-esplora .grid{display:grid;grid-template-columns:1fr;gap:10px}
  html .sx-esplora .c,html .sx-esplora .c0,html .sx-esplora .c1{grid-column:auto;display:flex;align-items:center;gap:14px;min-height:68px;padding:10px 12px 10px 14px;border-radius:18px}
  html .sx-esplora .c:hover{transform:none}
+ html .sx-esplora .c0{display:none!important} /* the Salone already lives in the phone Home */
  html .sx-esplora .c .ph,html .sx-esplora .c .k{display:none!important}
  html .sx-esplora .ico{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--petrol);color:var(--cream);flex:none}
  html .sx-esplora .ico svg{width:22px;height:22px}
