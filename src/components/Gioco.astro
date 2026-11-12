@@ -46,7 +46,10 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
      </div>
     </div>
     <div class="load">Carico il salone…</div>
-    <div class="rot" data-rot hidden><div><svg class="rot-ph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" aria-hidden="true"><rect x="20" y="6" width="24" height="52" rx="5"/><path d="M29 51h6"/></svg><b>Ruota il telefono</b><span>Si gioca in orizzontale: la corsa parte appena lo giri.</span></div></div>
+    <div class="rot" data-rot hidden><div class="rot-in">
+      <div class="rot-stage" aria-hidden="true"><i class="rot-phone"><i class="rot-spk"></i></i></div>
+      <b>Ruota il telefono</b><span>Si gioca in orizzontale: la corsa parte appena lo giri.</span>
+    </div></div>
     <button class="fs-x" type="button" data-fs-x aria-label="Esci dallo schermo intero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
    </div>
     </div>
@@ -138,9 +141,16 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 #run-wrap .rot[hidden]{display:none}
 #run-wrap .rot b{display:block;margin-top:14px;font:400 30px/1 "Glamood Bubble",var(--f-display);text-transform:uppercase}
 #run-wrap .rot span{display:block;margin-top:10px;max-width:26ch;font-size:16px;line-height:1.4;color:#d9ebe8}
-#run-wrap .rot-ph{width:72px;height:72px;color:#ECC46C;animation:rotph 2.2s var(--ease-out) infinite}
-@keyframes rotph{0%,20%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
-@media (prefers-reduced-motion:reduce){#run-wrap .rot-ph{animation:none;transform:rotate(-90deg)}}
+#run-wrap .rot{background:radial-gradient(120% 90% at 50% 38%,#0F5A60 0%,#08393E 62%,#062C30 100%)}
+#run-wrap .rot-in{display:grid;justify-items:center;animation:rotIn .6s cubic-bezier(.2,.9,.25,1) both}
+#run-wrap .rot-stage{display:grid;place-items:center;width:150px;height:150px}
+#run-wrap .rot-phone{position:relative;display:block;width:56px;height:100px;border-radius:15px;border:3px solid #F4EFE8;background:linear-gradient(160deg,rgb(244 239 232 / .14),rgb(244 239 232 / .02) 60%);box-shadow:0 18px 30px -14px rgb(0 0 0 / .55),inset 0 0 0 4px rgb(8 57 62 / .6);animation:rotPhone 3s infinite}
+#run-wrap .rot-spk{position:absolute;left:50%;top:7px;width:16px;height:3px;margin-left:-8px;border-radius:2px;background:#F4EFE8;opacity:.6}
+#run-wrap .rot b{margin-top:4px}
+
+/* rest, a quarter turn with a soft overshoot, hold, ease back */
+
+@media (prefers-reduced-motion:reduce){#run-wrap .rot-phone{animation:none;transform:rotate(-90deg)}}
 html.run-fs,html.run-fs body{overflow:hidden!important;overscroll-behavior:none}
 /* phones: the level name sits under the counters, the postcard stacks so long names never clip */
 @media (max-width:760px){
@@ -160,6 +170,12 @@ html.run-fs,html.run-fs body{overflow:hidden!important;overscroll-behavior:none}
  .board:not([open]) ol,.board:not([open]) .note{display:none}
 }
 }
+@keyframes rotIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
+@keyframes rotPhone{
+ 0%,18%{transform:rotate(0);animation-timing-function:cubic-bezier(.55,0,.25,1)}
+ 44%{transform:rotate(-98deg);animation-timing-function:cubic-bezier(.3,0,.4,1)}
+ 54%,80%{transform:rotate(-90deg);animation-timing-function:cubic-bezier(.6,0,.35,1)}
+ 100%{transform:rotate(0)}}
 </style>
 
 <script>
