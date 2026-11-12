@@ -11,49 +11,6 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 ---
 <div class="sx-prodotti">
 <div class="page-frame">
-<section class="panel panel-cream panel-outline" id="prodotti" aria-labelledby="prodotti-t">
-  <div class="band"><div class="bgref r-rilievo-swirl"></div>
-    <p class="band-k">La linea Glamood · lo stile si porta a casa</p>
-    <h2 class="band-t" id="prodotti-t" aria-label="La linea Glamood">Fatti tuoi</h2>
-    <div class="jars"><img class="j1" {...img('prodotti/barattolo-cera', 960)} alt="Barattolo Glamood cera" loading="lazy" /><img class="j2" {...img('prodotti/barattolo-pomata', 960)} alt="Barattolo Glamood pomata" loading="lazy" /></div>
-    <img class="peel" {...img('sticker/top', 480)} alt="Adesivo TOP" loading="lazy" style="right:clamp(16px,8vw,140px);bottom:22%" />
-    <a class="btn-pop" href={wa(waText.info('i prodotti Glamood'))} target="_blank" rel="noopener">Chiedili in salone!</a>
-  </div>
-  <div class="top3" id="top3" style="--bg:#0F6870" tabindex="0" aria-roledescription="carosello" aria-label="I tre prodotti più usati, scorri in orizzontale">
-    <div class="t3-head"><p class="t3-k">I tre che Fabio usa di più</p><div class="t3-dots" role="tablist" aria-label="Prodotti">{top3.map((p, i) => <button role="tab" aria-label={`0${i + 1} ${p.n}`} data-i={i}>0{i + 1}</button>)}</div></div>
-    {top3.map((p, i) => (
-      <article class="t3" data-i={i} data-bg={p.bg} style={`--tc:${p.tc};--ink:${p.ink}`} aria-label={p.n}>
-        <p class="t3-num">0{i + 1}</p>
-        <h3 class="t3-title" aria-hidden="true">{p.n}</h3>
-        <div class="t3-parts"><img class="pt p1" {...img(p.parts[0], 480)} alt="" loading="lazy" /><img class="pt p2" {...img(p.parts[1], 480)} alt="" loading="lazy" /></div>
-        <div class="t3-jw"><img class="t3-jar" {...img(p.img, 960)} alt={`Barattolo Glamood ${p.n}`} loading="lazy" /></div>
-        <div class="t3-desc"><span class="dash"></span><h4>{p.n} Glamood</h4><p>{p.desc}</p></div>
-        <div class="t3-acc">
-          <details><summary>Come si usa<i></i></summary><p>Una noce tra le mani, su capello asciutto, poi dai la forma.</p></details>
-          <details><summary>Per chi<i></i></summary><p>Fabio ti dice se è giusta per il tuo taglio, sulla poltrona.</p></details>
-          <details><summary>Dove trovarla<i></i></summary><p>In salone, {business.address}.</p></details>
-        </div>
-      </article>
-    ))}
-    <div class="t3-nav"><button class="t3-prev" aria-label="Prodotto precedente" set:html={arrow('M15 5l-7 7 7 7')} /><button class="t3-next" aria-label="Prodotto successivo" set:html={arrow('M9 5l7 7-7 7')} /></div>
-  </div>
-  <div class="cat" id="cat">
-    <div class="cat-line" aria-hidden="true"><i id="catLine"></i></div>
-    <div class="cat-grid" id="catGrid">
-      <div class="cat-head"><p class="t3-k">Tutta la linea</p><h3>Scegli il tuo barattolo</h3></div>
-      <div class="cat-row">{Object.entries(catalog).map(([k, v]) => <button class="ci" data-k={k} aria-label={`Apri la scheda: ${v.n}`}><img {...img(v.img, 480)} alt="" loading="lazy" /><span>{v.n}</span></button>)}</div>
-      <p class="cat-hint">Tocca un barattolo per la scheda</p>
-    </div>
-    <div class="cat-detail" id="catDetail" hidden>
-      <div class="cd-panel">
-        <button class="cd-back" id="cdBack" aria-label="Torna a tutti i prodotti" set:html={arrow('M19 12H5M11 6l-6 6 6 6')} />
-        <h3 id="cdName"></h3><p id="cdDesc"></p>
-        <a class="btn-pop" id="cdWa" href={wa()} target="_blank" rel="noopener">Chiedi info su WhatsApp</a>
-      </div>
-      <div class="cd-jar"><img id="cdJar" alt="" width="960" height="960" /></div>
-    </div>
-  </div>
-</section>
 <section class="panel panel-cream panel-outline" aria-labelledby="uso-t">
   <div class="checker"></div>
   <div class="split">
@@ -74,7 +31,6 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 </section>
 </div>
 </div>
-<script type="application/json" id="cat-data" set:html={JSON.stringify(catData)}></script>
 
 <style is:global>
 .sx-prodotti{display:contents;
@@ -234,77 +190,4 @@ const catData = Object.fromEntries(Object.entries(catalog).map(([k, v]) => [k, {
 }
 </style>
 
-<script>
-import { reduced } from '../scripts/core.js';
-import { gsap, ScrollTrigger, Flip } from '../scripts/motion.js';
-// TOP 3: pinned, the scroll moves through the three products; dots, arrows, keys jump to one
-(() => {
-  const box = document.getElementById('top3')!, sl = [...box.querySelectorAll<HTMLElement>('.t3')], dots = [...box.querySelectorAll<HTMLButtonElement>('.t3-dots button')];
-  let cur = -1;
-  function show(i: number, dir = 1) {
-    if (i === cur) return; const prev = sl[cur]; cur = i; const s = sl[i];
-    box.style.setProperty('--bg', s.dataset.bg!); const light = s.dataset.bg!.toUpperCase() === '#F4EFE8'; box.style.setProperty('--hk', light ? '#0F6870' : '#F4EFE8');
-    dots.forEach((d, k) => d.setAttribute('aria-selected', String(k === i)));
-    box.querySelector<HTMLElement>('.t3-prev')!.hidden = i === 0; box.querySelector<HTMLElement>('.t3-next')!.hidden = i === sl.length - 1;
-    if (prev) {
-      gsap.to(prev.querySelector('.t3-title'), { yPercent: -60 * dir, opacity: 0, duration: 0.6, ease: 'power3.in' });
-      gsap.to(prev.querySelector('.t3-jar'), { xPercent: -90 * dir, rotate: -14 * dir, opacity: 0, duration: 0.6, ease: 'power3.in' });
-      gsap.to(prev.querySelectorAll('.pt'), { y: -120 * dir, opacity: 0, duration: 0.5, stagger: 0.04, ease: 'power2.in' });
-      gsap.to(prev.querySelectorAll('.t3-num,.t3-desc,.t3-acc'), { opacity: 0, duration: 0.35, onComplete: () => prev.classList.remove('on') });
-    }
-    s.classList.add('on');
-    gsap.fromTo(s.querySelector('.t3-title'), { yPercent: 60 * dir, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1, delay: 0.25, ease: 'expo.out' });
-    gsap.fromTo(s.querySelector('.t3-jar'), { xPercent: 90 * dir, rotate: 14 * dir, opacity: 0 }, { xPercent: 0, rotate: 0, opacity: 1, duration: 1.2, delay: 0.3, ease: 'expo.out' });
-    gsap.fromTo(s.querySelectorAll('.pt'), { y: 140 * dir, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, delay: 0.45, stagger: 0.08, ease: 'expo.out' });
-    gsap.fromTo(s.querySelectorAll('.t3-num,.t3-desc,.t3-acc'), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.5, stagger: 0.06, ease: 'expo.out' });
-  }
-  // fit each giant name to the width so it is never cut
-  const fit = () => sl.forEach((s) => { const t = s.querySelector<HTMLElement>('.t3-title')!; t.style.fontSize = ''; const max = box.clientWidth * 0.94; const w = t.scrollWidth; if (w > max) t.style.fontSize = (parseFloat(getComputedStyle(t).fontSize) * max) / w + 'px'; });
-  fit(); addEventListener('resize', fit); document.fonts.ready.then(fit);
-  if (reduced) { sl.forEach((s) => s.classList.add('on')); box.querySelector<HTMLElement>('.t3-nav')!.hidden = true; box.querySelector<HTMLElement>('.t3-dots')!.hidden = true; return; }
-  sl.forEach((s) => s.querySelectorAll('.pt').forEach((p, k) => gsap.to(p, { yPercent: k % 2 ? 12 : -12, rotation: '+=8', duration: 2.6 + k * 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut' })));
-  show(0);
-  // horizontal carousel: arrows, dots, keys and swipe change the product (no scroll hijack)
-  const go = (i: number) => { i = Math.max(0, Math.min(sl.length - 1, i)); if (i !== cur) show(i, i > cur ? 1 : -1); };
-  let sx = 0, sy = 0, sw = false;
-  box.addEventListener('pointerdown', (e) => { if ((e.target as Element).closest('button,a,summary')) return; sx = e.clientX; sy = e.clientY; sw = true; });
-  box.addEventListener('pointerup', (e) => { if (!sw) return; sw = false; const dx = e.clientX - sx, dy = e.clientY - sy; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1)); });
-  box.addEventListener('pointercancel', () => (sw = false));
-  box.style.touchAction = 'pan-y';
-  dots.forEach((d, k) => d.addEventListener('click', () => go(k)));
-  box.querySelector('.t3-prev')!.addEventListener('click', () => go(cur - 1)); box.querySelector('.t3-next')!.addEventListener('click', () => go(cur + 1));
-  box.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); });
-})();
 
-// ALL PRODUCTS: FLIP from grid to detail and back
-(() => {
-  const D = JSON.parse(document.getElementById('cat-data')!.textContent!);
-  const cat = document.getElementById('cat')!, grid = document.getElementById('catGrid')!, det = document.getElementById('catDetail')!, jar = document.getElementById('cdJar') as HTMLImageElement, line = document.getElementById('catLine')!;
-  let open: { k: string; btn: HTMLElement } | null = null;
-  function openP(k: string, btn: HTMLElement) {
-    const d = D[k]; open = { k, btn }; const src = btn.querySelector('img')!;
-    document.getElementById('cdName')!.textContent = d.n; document.getElementById('cdDesc')!.textContent = d.d;
-    (document.getElementById('cdWa') as HTMLAnchorElement).href = d.wa;
-    jar.src = d.img; jar.alt = 'Barattolo Glamood ' + d.n;
-    const state = Flip.getState(src); det.hidden = false; src.style.visibility = 'hidden';
-    Flip.from(state, { targets: jar, duration: reduced ? 0 : 1, ease: 'expo.inOut', scale: true });
-    cat.style.setProperty('--cbg', d.bg); line.style.top = Object.keys(D).indexOf(k) * 25 + '%';
-    gsap.to(grid, { opacity: 0, duration: 0.4, onComplete: () => { grid.style.visibility = 'hidden'; } });
-    gsap.fromTo(cat.querySelectorAll('.cd-panel>*'), { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: reduced ? 0 : 0.8, delay: reduced ? 0 : 0.35, stagger: 0.05, ease: 'expo.out' });
-    document.getElementById('cdBack')!.focus({ preventScroll: true });
-  }
-  function closeP() {
-    if (!open) return; const src = open.btn.querySelector('img')!; grid.style.visibility = 'visible';
-    const state = Flip.getState(jar); src.style.visibility = 'visible';
-    Flip.from(state, { targets: src, duration: reduced ? 0 : 0.9, ease: 'expo.inOut', scale: true });
-    gsap.to(grid, { opacity: 1, duration: 0.5, delay: 0.2 }); det.hidden = true; cat.style.removeProperty('--cbg'); open.btn.focus({ preventScroll: true }); open = null;
-  }
-  cat.querySelectorAll<HTMLElement>('.ci').forEach((b) => b.addEventListener('click', () => openP(b.dataset.k!, b)));
-  document.getElementById('cdBack')!.addEventListener('click', closeP);
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') closeP(); });
-})();
-
-if (!reduced) {
-  gsap.to('#prodotti .jars', { scrollTrigger: { trigger: '#prodotti .band', start: 'top bottom', end: 'bottom top', scrub: true }, yPercent: -8 });
-}
-</script>

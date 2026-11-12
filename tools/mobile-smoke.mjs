@@ -288,36 +288,22 @@ await page.evaluate(()=>window.__glamoodFs?.exit());await page.waitForTimeout(20
  await page.locator('#lzX').click();
  await page.locator('#lz').waitFor({state:'hidden'});
  await open(page,'/prodotti');
- const separation=await page.evaluate(()=>{
-  const item=document.querySelector('.t3.on');
-  if(!item)return null;
-  const p=item.querySelector('.pt.p2').getBoundingClientRect(),d=item.querySelector('.t3-desc').getBoundingClientRect();
-  return p.bottom<=d.top || p.top>=d.bottom || p.right<=d.left || p.left>=d.right;
- });
- check(separation===true,'Product decoration must not cover its caption on phone');
- // Regression: opening "COME SI USA" must never collide with the product name,
- // jar or previous/next controls (the actual iPhone bug).
- await page.locator('#top3').scrollIntoViewIfNeeded();
- for(const viewport of [{width:390,height:844},{width:360,height:667},{width:320,height:568}]){
+ // New products (3D jars): on phones one card per product, the jar drawn on its canvas,
+ // the copy and the buttons below it (never over the jar), tap targets of 44px or more.
+ for(const viewport of [{width:390,height:844},{width:360,height:740},{width:320,height:568}]){
    await page.setViewportSize(viewport);
-   await page.locator('#top3 .t3-dots button[data-i="1"]').click();
-   await page.waitForTimeout(1450);
-   const details=page.locator('#top3 .t3.on .t3-acc details').first();
-   if(!(await details.evaluate(el=>el.open))) await details.locator('summary').click();
-   await page.waitForTimeout(200);
-   const geometry=await page.locator('#top3').evaluate(el=>{
-     const active=el.querySelector('.t3.on');
-     const desc=active.querySelector('.t3-desc').getBoundingClientRect();
-     const acc=active.querySelector('.t3-acc').getBoundingClientRect();
-     const jar=active.querySelector('.t3-jar').getBoundingClientRect();
-     const nav=el.querySelector('.t3-nav').getBoundingClientRect();
-     return {descToAcc:acc.top-desc.bottom,accToNav:nav.top-acc.bottom,
-       jarToDesc:desc.top-jar.bottom,opened:active.querySelector('.t3-acc details').open,
-       within:desc.left>=-1&&acc.right<=innerWidth+1};
-   });
-   check(geometry.opened && geometry.descToAcc>=10 && geometry.accToNav>=10 &&
-     geometry.jarToDesc>=8 && geometry.within,
-     'Expanded Pomata instructions must not overlap its title, jar or navigation at '+viewport.width+'x'+viewport.height);
+   for(let k=0;k<4;k++){
+     await page.evaluate(k=>{const c=document.querySelectorAll('.p3c[data-i]')[k];const y=c.getBoundingClientRect().top+scrollY;window.lenis?.scrollTo(y,{immediate:true});scrollTo(0,y);},k);
+     await page.waitForTimeout(900);
+     const card=await page.evaluate(k=>{
+       const c=document.querySelectorAll('.p3c[data-i]')[k],cv=c.querySelector('.p3c-cv'),tx=c.querySelector('.p3c-in');
+       const a=cv.getBoundingClientRect(),t=tx.querySelector('h3').getBoundingClientRect();
+       const d=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;let ink=0;for(let i=3;i<d.length;i+=64)if(d[i]>200)ink++;
+       const btns=[...c.querySelectorAll('.p3c-turn,.p3-more,.p3c-cta')].map(b=>b.getBoundingClientRect().height);
+       return {drawn:ink>200,clear:t.top>=a.bottom-2,btns:btns.every(h=>h>=44),inside:t.left>=0&&t.right<=innerWidth+1};
+     },k);
+     check(card.drawn&&card.clear&&card.btns&&card.inside,'Product card '+(k+1)+' shows its jar above the copy at '+viewport.width+'x'+viewport.height);
+   }
  }
  await page.setViewportSize({width:390,height:844});
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
