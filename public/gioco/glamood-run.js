@@ -16,7 +16,7 @@ const LVLEN = 1000;                      // points per level
 const FH = 80;                                  // ground strip height
 const LEVELS = [
   { id: 'L1', name: 'Il Salone', sub: 'Dove tutto comincia', sky: 'L1_01',
-    layers: [{ n: 'L1_02', par: .12, h: 230, b: 0, cover: true }, { n: 'L1_03', par: .36, h: 190, b: 4 }],
+    layers: [{ n: 'L1_02', par: .12, h: 230, b: 0, cover: true }, { n: 'L1_03', par: .36, h: 190, b: 4, hang: true }],
     ground: 'L1_04', fg: { n: 'L1_05', par: 1.3, h: 120, b: 6, gap: 2.2 }, light: 'L1_06', mon: { h: 175, par: .36, b: 2 },
     ob: [34, 38, 50, 46, 64, 60, 22, 62],
     en: [{ i: 0, kind: 'fly', h: 24, fps: 12 }, { i: 1, kind: 'fly', h: 30, fps: 10 }, { i: 2, kind: 'fly', h: 30, fps: 10 }, { i: 3, kind: 'hang', h: 70, fps: 5 }] },
@@ -143,9 +143,12 @@ export function createGame(root, opts = {}) {
   
 
   /* ---------------- scenery ---------------- */
-  const tile = (c, im, par, y, h, gapK = 1) => {
+  const tile = (c, im, par, y, h, gapK = 1, hang = false) => {
     const w = im.width * h / im.height, step = w * gapK, off = -((scroll * par) % step);
-    for (let x = off - step; x < VW; x += step) if (x + w > 0) c.drawImage(im, x, y, w + (gapK === 1 ? 1 : 0), h);
+    for (let x = off - step; x < VW; x += step) if (x + w > 0) {
+      c.drawImage(im, x, y, w + (gapK === 1 ? 1 : 0), h);
+      if (hang && y > 0) c.drawImage(im, 0, 0, im.width, 1, x, 0, w + 1, y + 1); // pendant cords reach the ceiling
+    }
   };
   let mon = null;                                 // set piece of the current level
   function scene(c, L, nightK) {
@@ -157,8 +160,8 @@ export function createGame(root, opts = {}) {
     const nl = L.layers.length;
     L.layers.forEach((ly, i) => {
       const im = sp(ly.n); if (!im) return;
-      let h = ly.h; if (ly.cover) h = Math.min(floorTop + 2, Math.max(ly.h, floorTop * .9));
-      tile(c, im, ly.par, floorTop + ly.b - h, h, 1);
+      let h = ly.h; if (ly.cover) h = floorTop + 2;
+      tile(c, im, ly.par, floorTop + ly.b - h, h, 1, ly.hang);
       if (i === nl - 2 || nl === 1 || (nl === 2 && i === 0 && false)) drawMon(c, L, floorTop);
     });
     if (nl === 2) { /* salon & seafront: monument after the first strip */ }
