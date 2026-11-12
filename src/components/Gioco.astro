@@ -1,77 +1,145 @@
 ---
-// Kit 14: Play Strong layout: lettered marker, giant headline left, copy right, wide game preview in a
-// cream-bordered frame with glass chips, 3D figurine and a giant stat. Geometric chevron texture (ref).
-// "Coming soon": no fake play button.
-import Img from './Img.astro';
+// Glamood Run: the playable game (engine and art from the GIOCO-E-MOBILE kit, public/gioco/).
+// Lazy: nothing of the game is downloaded until the section is 300 px from the viewport.
 import { wa, waText } from '../data/business';
-const notify = wa(waText.info('il gioco Glamood, avvisami quando esce'));
+const ico = {
+  tap: '<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5V9a1.5 1.5 0 0 1 3 0v2"/><path d="M15 10.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 15a1.5 1.5 0 0 1 2.5-1.7L9 16"/>',
+  down: '<path d="M12 4v14"/><path d="M6 13l6 6 6-6"/>',
+  drop: '<path d="M12 3c1.6 5 7 8 7 13a7 7 0 0 1-14 0c0-5 5.4-8 7-13Z"/>',
+};
+const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falcomatà'], ['03', 'Centro e Castello'], ['04', 'Museo Archeologico']];
 ---
 <div class="sx-gioco">
 <section class="gioco has-bgref" id="gioco" aria-labelledby="gioco-t"><div class="bgref r-geometrico"></div>
   <div class="in">
     <p class="marker">Il gioco</p>
     <div class="top">
-      <h2 id="gioco-t">Corri sul bancone<span class="gb" data-bubble="presto!" data-style="bounce" data-seed="4" style="--bc:#B8935A"></span></h2>
-      <div><p>Prossimamente: corri sul bancone del salone mentre aspetti il tuo turno. Un piccolo gioco 2D, la mascotte salta gli spuntoni e schiva le forbici volanti. Si gioca dal telefono, in pausa caffè.</p><a class="btn-pop" href={notify} target="_blank" rel="noopener" style="margin-top:20px">Avvisami quando esce</a></div>
+      <h2 id="gioco-t">Glamood <span>Run</span></h2>
+      <p>Gioca adesso, anche dal telefono mentre aspetti il tuo turno: dal salone al Lungomare, fino al Castello e al Museo dei Bronzi.</p>
     </div>
-    <div class="media">
-      <div class="preview">
-        <div class="screen"><Img src="post-social/gioco-anteprima" alt="Anteprima del gioco: la mascotte corre sul bancone del salone" sizes="(min-width:900px) 60vw, 92vw" /></div>
-        <div class="ui"><span>Prossimamente<small>anteprima grafica</small></span><span>Tocca per saltare<small>un dito, tutto qui</small></span><a href={notify} target="_blank" rel="noopener" aria-label="Avvisami quando esce"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+    <div id="run-wrap">
+<div class="run" id="run" tabindex="0" role="application" aria-label="Glamood Run, gioco. Spazio o tocco per saltare, freccia in giù o tocco prolungato in basso per abbassarsi.">
+    <div class="run-stage"><canvas aria-hidden="true"></canvas></div>
+    <div class="hud" aria-hidden="true">
+     <div class="hud-l"><svg viewBox="0 0 20 28" fill="none"><path d="M10 1c1.6 5.2 8.6 9.2 8.6 15.4a8.6 8.6 0 0 1-17.2 0C1.4 10.2 8.4 6.2 10 1Z" fill="#ECC46C" stroke="#051B1E" stroke-width="1.6"/></svg><b data-drops>0</b></div>
+     <div class="hud-c" data-level></div>
+     <div class="hud-r"><b class="sc" data-score>00000</b><small>Record <b data-best>00000</b></small></div>
+    </div>
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+    <div class="pop" data-pop><img data-pop-img alt=""><div><b data-pop-t></b><span data-pop-s></span></div></div>
+    <div class="zone" aria-hidden="true">Tieni premuto qui: abbassati</div>
+    <div class="ov ov-start" data-ov="start">
+     <div class="ov-card">
+      <p class="kick">Glamood · Reggio Calabria</p>
+      <h3 class="title">Glamood<span>Run</span></h3>
+      <button class="go" type="button" data-start><span class="when-idle">Corri</span><span class="when-pause">Riprendi</span></button>
+      <p class="how"><span class="k-desk">Spazio o clic: salta · freccia in giù: abbassati</span><span class="k-touch">Tocca: salta · tieni premuto in basso: abbassati</span></p>
+     </div>
+    </div>
+    <div class="ov ov-end" data-ov="end" hidden>
+     <div class="panel">
+      <p class="kick" data-end-kicker>Fine corsa</p>
+      <p class="big" data-end-score>00000</p>
+      <p class="line"><span data-end-level></span><br><b data-end-drops>0</b> <span data-end-dl>gocce d'oro</span> · record <b data-end-best>00000</b></p>
+      <label data-name-wrap hidden><span>Sei sul podio: il tuo nome</span><input type="text" maxlength="12" autocomplete="nickname" placeholder="Il tuo nome" aria-label="Il tuo nome in classifica"></label>
+      <div class="acts"><button class="again" type="button" data-again>Rigioca</button><a class="book" data-book href={wa(waText.generic)} target="_blank" rel="noopener">Prenota un taglio</a></div>
+     </div>
+    </div>
+    <div class="load">Carico il salone…</div>
+   </div>
+    </div>
+    <div class="info">
+      <div class="blk how2">
+        <h3>Come si gioca</h3>
+        <ul class="steps">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ico.tap} /><span><b>Salta</b>Tocca o Spazio, tieni premuto per saltare più in alto</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ico.down} /><span><b>Scivola</b>Tieni premuto in basso o freccia giù</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ico.drop} /><span><b>+10</b>ogni goccia d'oro</span></li>
+        </ul>
+        <p class="pw">Potenziamenti: cornetto, profumo, asciugamano, forbici d'oro, moneta, pettine d'oro.</p>
       </div>
-      <div class="side">
-        <div class="fig"><Img src="mascotte/mascotte-figurina-3D" alt="Figurina 3D della mascotte" sizes="(min-width:900px) 30vw, 46vw" /></div>
-        <div class="num"><span class="stat">1</span><div><p>Un solo comando:<br />salta.</p><ul><li>Spuntoni a onde</li><li>Forbici volanti</li><li>Punteggio sul bancone</li></ul></div></div>
+      <details class="blk board" open>
+        <summary><h3>Classifica</h3><i aria-hidden="true"></i></summary>
+        <ol id="run-board"><li class="empty">Ancora nessuna corsa: inizia tu.</li></ol>
+        <p class="note">Per ora su questo dispositivo.</p>
+      </details>
+      <div class="blk places">
+        <h3>I 4 luoghi</h3>
+        <ol>{luoghi.map(([n, t]) => <li><b>{n}</b>{t}</li>)}</ol>
+        <p class="note">Si cambia luogo ogni 1000 punti.</p>
       </div>
     </div>
   </div>
 </section>
 </div>
+
 <style is:global>
 .sx-gioco{display:contents;
 .gioco{padding:clamp(56px,7vw,110px) var(--gutter);background:var(--petrol);color:var(--cream)}
 .in{max-width:1320px;margin:0 auto}
 .marker{color:#cfe3e1}
-.top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,4vw,60px);align-items:end;margin-top:clamp(26px,3vw,40px)}
-.top h2{font:900 clamp(48px,7vw,120px)/.86 var(--f-display);text-transform:uppercase;letter-spacing:-.035em;color:var(--cream);text-shadow:0 .05em 0 #08393E}
-.top h2 .gb{display:inline-grid;font-size:.55em;margin-left:.25em;vertical-align:middle;text-shadow:none;letter-spacing:-.04em}
-.top p{color:#d9ebe8;max-width:44ch}
-.media{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(14px,2vw,28px);margin-top:clamp(30px,4vw,56px);align-items:start}
-.preview{min-width:0;display:grid;grid-template-rows:auto auto;gap:12px;align-content:start}
-.screen{position:relative;border-radius:22px;overflow:hidden;background:#08393E;border:5px solid var(--cream);aspect-ratio:16/9;box-shadow:0 40px 70px -40px rgb(10 74 80 / .8)}
-.screen img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
-.preview .ui{position:relative;min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-start}
-.preview .ui span{min-width:0;background:rgb(8 57 62 / .76);color:var(--cream);border:1px solid rgb(244 239 232 / .2);border-radius:12px;padding:11px 15px;font:800 clamp(13px,1.2vw,17px)/1.15 var(--f-display);text-transform:uppercase}
-.preview .ui span small{display:block;font:500 11px/1.25 var(--f-body);text-transform:none;opacity:.85;margin-top:4px}
-.preview .ui a{margin-left:auto;width:48px;height:48px;flex:none;border-radius:12px;background:var(--cream);display:grid;place-items:center;color:var(--petrol)}
-.side{display:grid;grid-template-rows:auto 1fr;gap:clamp(14px,2vw,24px)}
-.side .fig{position:relative;border-radius:22px;overflow:hidden;background:var(--petrol);border:5px solid var(--cream);aspect-ratio:4/5}
-.side .fig img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;aspect-ratio:auto}
-.side .num{display:flex;align-items:center;gap:16px;padding:6px 4px}
-.side .num .stat{font-size:clamp(70px,7vw,120px)}
-.side .num p{font:600 15px/1.3 var(--f-body);color:var(--cream)}
-.side ul{list-style:none;margin-top:8px;font-size:14px;color:#cfe3e1}
-.side ul li::before{content:"• ";color:var(--brass)}
-@media (max-width:900px){.top,.media{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr;grid-template-rows:none;align-items:center}}
-@media (max-width:560px){
- .top h2{font-size:clamp(42px,12vw,66px);line-height:.98}
- .top h2 .gb{font-size:.38em;margin-left:.1em}
- .side{grid-template-columns:1fr;justify-items:center}
- .side .fig{width:min(82vw,360px)}
- .side .num{width:min(100%,360px)}
- .preview .ui span{flex:1 1 145px;padding:10px 12px;font-size:clamp(11px,3vw,13px)}
- .preview .ui a{width:44px;height:44px;margin-left:0}
+.top{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,4vw,60px);align-items:end;margin:clamp(20px,3vw,34px) 0 clamp(26px,3vw,40px)}
+.top h2{font:900 clamp(48px,7vw,120px)/.86 var(--f-display);text-transform:uppercase;letter-spacing:-.035em;color:var(--cream);text-shadow:0 .05em 0 #08393E;margin:0}
+.top h2 span{color:#ECC46C}
+.top p{color:#d9ebe8;max-width:46ch;margin:0}
+#run-wrap{position:relative}
+.info{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:clamp(14px,2vw,24px);margin-top:clamp(20px,2.4vw,32px)}
+.blk{background:rgb(8 57 62 / .55);border:1.5px solid rgb(244 239 232 / .18);border-radius:20px;padding:clamp(18px,2vw,26px)}
+.blk h3{font:900 clamp(18px,1.5vw,22px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;margin:0 0 14px;color:var(--cream)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.steps li{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;color:#d9ebe8}
+.steps svg{width:26px;height:26px;flex:none;color:#ECC46C}
+.steps b{display:block;color:var(--cream);font:800 14px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.pw{font-size:13.5px;color:#cfe3e1;margin:14px 0 0}
+.board summary{list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer;min-height:44px}
+.board summary::-webkit-details-marker{display:none}
+.board summary h3{margin:0}
+.board summary i{position:relative;width:14px;height:14px}
+.board summary i::before,.board summary i::after{content:"";position:absolute;left:0;top:6px;width:14px;height:2px;background:currentColor;transition:transform .3s}
+.board summary i::after{transform:rotate(90deg)}
+.board[open] summary i::after{transform:rotate(0)}
+.board ol{margin:10px 0 0;padding:0;list-style:none;counter-reset:r;display:grid;gap:6px}
+.board li{counter-increment:r;display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:12px;background:rgb(244 239 232 / .08);font:700 15px/1.2 var(--f-display);font-variant-numeric:tabular-nums}
+.board li::before{content:counter(r);color:#ECC46C;width:1.4em}
+.board li span{flex:1}
+.board li.empty{background:none;padding:0;font:500 14px var(--f-body);color:#cfe3e1}
+.board li.empty::before{display:none}
+.note{font-size:12.5px;color:#a9c9c6;margin:10px 0 0}
+.places ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.places li{display:flex;gap:12px;align-items:center;font:700 15px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.places li b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--cream);color:var(--petrol);font:900 12px/1 var(--f-display);flex:none}
+@media (max-width:1023px){.info{grid-template-columns:1fr 1fr}.how2{grid-column:1/-1}}
+@media (max-width:760px){
+ .top{grid-template-columns:1fr;gap:12px}
+ .top h2{font-size:clamp(44px,13vw,64px)}
+ .info{grid-template-columns:1fr}
+ .steps{grid-template-columns:repeat(3,1fr);gap:10px}
+ .steps li{flex-direction:column;align-items:center;text-align:center;font-size:12px}
+ .steps li span{display:block}
+ .board:not([open]) ol,.board:not([open]) .note{display:none}
 }
 }
 </style>
+
 <script>
-import { reduced } from '../scripts/core.js';
-import { gsap } from '../scripts/motion.js';
-import { bubbles } from '../scripts/bubble.js';
-bubbles(document.getElementById('gioco')!);
-if (!reduced) {
-  gsap.from('#gioco .top h2', { scrollTrigger: { trigger: '#gioco', start: 'top 75%' }, yPercent: 40, opacity: 0, duration: 1.2, ease: 'expo.out' });
-  gsap.from('#gioco .screen', { scrollTrigger: { trigger: '#gioco .media', start: 'top 85%' }, clipPath: 'inset(20% 20% 20% 20% round 22px)', duration: 1.4, ease: 'expo.out' });
-  gsap.from('#gioco .side>*', { scrollTrigger: { trigger: '#gioco .media', start: 'top 80%' }, y: 60, opacity: 0, stagger: 0.12, duration: 1, ease: 'expo.out' });
+const wrap = document.getElementById('run-wrap')!, root = document.getElementById('run')!, boardEl = document.getElementById('run-board')!;
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+const esc = (s: string) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+function renderBoard(list: any[]) {
+  if (!Array.isArray(list) || !list.length) { boardEl.innerHTML = '<li class="empty">Ancora nessuna corsa: inizia tu.</li>'; return; }
+  boardEl.innerHTML = list.slice(0, 5).map((e) => `<li><span>${esc(e.n || 'Tu')}</span><b>${String(e.s ?? e.score ?? 0).padStart(5, '0')}</b></li>`).join('');
 }
+let booted = false;
+new IntersectionObserver(async (es, o) => {
+  if (!es[0].isIntersecting || booted) return; booted = true; o.disconnect();
+  const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = BASE + '/gioco/glamood-run.css'; document.head.append(link);
+  const [{ createGame }, { ASSETS, HAIR }] = await Promise.all([
+    import(/* @vite-ignore */ BASE + '/gioco/glamood-run.js'),
+    import(/* @vite-ignore */ BASE + '/gioco/glamood-run-assets.js'),
+  ]);
+  createGame(root, { assets: ASSETS, hair: HAIR, onEvent: (type: string, data: any) => {
+    if (type === 'board') renderBoard(data);
+    if (type === 'start' && matchMedia('(max-width:760px)').matches) root.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  } });
+}, { rootMargin: '300px' }).observe(wrap);
 </script>
