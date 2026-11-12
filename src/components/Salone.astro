@@ -1,4 +1,5 @@
 ---
+import Personaggio from './Personaggio.astro';
 // Kit 08: deep petrol with the coral texture (tone on tone). Desktop pins and pans horizontally through
 // salon photos in pattern frames (arch, wide pill, circle, tall, blob);
 // tablet and phone use native swipe with snap.
@@ -20,6 +21,7 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 <div class="sx-salone" data-home-mobile={homeMobile ? "true" : undefined}>
 <section class="salone" id="salone" aria-labelledby="salone-t"><div class="bgref r-corallo-tono"></div>
   <img class="hang" {...img('piante/13_pothos_variegato')} alt="" loading="lazy" style="width:clamp(90px,9vw,160px);right:1.5%" />
+  {!homeMobile && <Personaggio pose="braccia-conserte" id="pg-braccia" />}
   <div class="head"><p class="kicker" style="color:#cfe3e1">{business.address}</p><h2 class="giant-title" id="salone-t">Benvenuto</h2><p>Pareti petrolio, rovere, ottone e poltrone vintage. Siediti, il resto lo facciamo noi.</p></div>
   <div class="track-wrap" id="tw"><div class="track" id="track" tabindex="0" aria-label="Foto del salone, scorri in orizzontale">
     {cards.map(([shape, src, alt, cap, pos]) => (

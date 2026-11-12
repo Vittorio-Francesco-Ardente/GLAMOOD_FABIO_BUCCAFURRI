@@ -60,3 +60,12 @@ html.run-fs .barra,html.run-fs .testa{opacity:0!important;pointer-events:none!im
 .ticket .seal{position:absolute;z-index:3;right:7%;top:20px;width:clamp(72px,6vw,104px);height:auto;transform:rotate(-12deg);filter:drop-shadow(0 6px 8px rgb(0 0 0 / .28));pointer-events:none}
 @media (max-width:1023px){#es-st,#so-po{display:none}}
 @media (max-width:767px){.ticket .seal{width:58px;top:14px}}
+/* aggiornamento 20: where the character stands (desktop, side of the section; never on text or buttons) */
+#pg-saluto{right:15%;bottom:9%}
+.tagli{position:relative}#pg-forbici{right:2.5%;top:clamp(56px,7vw,96px)}
+/* game cover: the barber runs beside the start card */
+#run-wrap #pg-corre{position:absolute;right:9%;bottom:14%;height:46%;z-index:1}
+#run-wrap .ov-start[data-mode="pause"] #pg-corre{display:none}
+.dove .in{position:relative}#pg-telefono{right:4%;top:0}
+#pg-braccia{z-index:3;right:calc(1.5% + clamp(100px,11vw,190px));top:calc(84px + 1vh);height:clamp(190px,26vh,280px)}
+@media (max-width:1199px){#pg-braccia{display:none}}

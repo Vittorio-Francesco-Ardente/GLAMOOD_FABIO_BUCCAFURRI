@@ -1,0 +1,32 @@
+---
+// The barber character (aggiornamento 20): one pose per screen, at the side of a section on desktop
+// (22–30vh), centred above or below the text on phones (18–22vh). Contact shadow under standing poses,
+// tiny idle bob and a short pop-in when it enters the screen.
+import { img } from '../data/img';
+type Pose = 'saluto' | 'braccia-conserte' | 'forbici' | 'indica-sx' | 'indica-dx' | 'telefono' | 'pollice-su' | 'pensieroso' | 'corre' | 'sbuca';
+interface Props { pose: Pose; id?: string; class?: string; mobile?: boolean; alt?: string }
+const { pose, id, class: cls = '', mobile = false, alt = '' } = Astro.props;
+const im = img(`v2/personaggio/posa-${pose}`, 960);
+const shadow = pose !== 'sbuca' && pose !== 'corre';
+---
+<figure class={`pg pg-${pose} ${mobile ? 'pg-mob' : ''} ${cls}`} id={id} aria-hidden={alt ? undefined : 'true'}>
+  {shadow && <img class="pg-sh" {...img('v2/personaggio/ombra-contatto-personaggio', 960)} alt="" loading="lazy" decoding="async" />}
+  <img class="pg-im" {...im} alt={alt} loading="lazy" decoding="async" />
+</figure>
+
+<style is:global>
+/* the files are square with the figure centred; its feet sit ~1% above the bottom edge */
+.pg{position:absolute;z-index:2;margin:0;height:clamp(200px,28vh,300px);aspect-ratio:1;pointer-events:none;opacity:0;transform:translateY(16px) scale(.94);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
+.pg.pg-on{opacity:1;transform:none}
+.pg-im{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:contain;animation:pgBob 2.6s ease-in-out infinite alternate}
+.pg-sh{position:absolute;left:0;bottom:-46%;width:100%;height:auto;opacity:.75}
+@keyframes pgBob{to{translate:0 -3px}}
+@media (max-width:1023px){.pg:not(.pg-mob){display:none}}
+@media (max-width:767px){.pg.pg-mob{position:relative;display:block;height:clamp(140px,20vh,190px);margin:18px auto 0;inset:auto}}
+@media (prefers-reduced-motion:reduce){.pg{opacity:1;transform:none;transition:none}.pg-im{animation:none}}
+</style>
+
+<script>
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('pg-on'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+document.querySelectorAll('.pg').forEach((el) => io.observe(el));
+</script>

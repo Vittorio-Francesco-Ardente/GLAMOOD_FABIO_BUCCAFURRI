@@ -23,12 +23,12 @@ const hd = ((desk.height / desk.width) * (1 - td) * 100).toFixed(2), hm = ((mob.
 <style is:global>
 .fascia{position:relative;z-index:1;height:var(--hd);background:var(--bg);overflow:hidden;isolation:isolate;pointer-events:none}
 .fascia img{position:absolute;left:0;bottom:0;width:100%;height:auto;transform:translateY(30px);opacity:0;transition:transform 1s var(--ease-out),opacity .8s var(--ease-out)}
-.fascia.in img{transform:none;opacity:1}
+.fascia.fa-on img{transform:none;opacity:1}
 @media (max-width:767px){.fascia{height:var(--hm)}}
 @media (prefers-reduced-motion:reduce){.fascia img{transform:none;opacity:1;transition:none}}
 </style>
 
 <script>
-const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('fa-on'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
 document.querySelectorAll('.fascia').forEach((f) => io.observe(f));
 </script>

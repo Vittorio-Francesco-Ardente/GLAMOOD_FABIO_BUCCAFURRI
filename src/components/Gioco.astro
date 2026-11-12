@@ -1,4 +1,5 @@
 ---
+import Personaggio from './Personaggio.astro';
 // Glamood Run: the playable game (engine and art from the GIOCO-E-MOBILE kit, public/gioco/).
 // Lazy: nothing of the game is downloaded until the section is 300 px from the viewport.
 import { wa, waText } from '../data/business';
@@ -31,6 +32,7 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
     <button class="tut-skip" type="button" data-tut-skip>Vai alla partita</button>
     <div class="zone" aria-hidden="true"><span>Tieni premuto: scivola</span><span>Tocca: salta</span></div>
     <div class="ov ov-start" data-ov="start">
+     <Personaggio pose="corre" id="pg-corre" />
      <div class="ov-card">
       <p class="kick">Glamood · Reggio Calabria</p>
       <h3 class="title">Glamood<span>Run</span></h3>
