@@ -17,7 +17,13 @@ const cards: [href: string, k: string, t: string, src: string, alt: string][] = 
     <h2 class="type-pop on-petrol" id="esplora-t">Accomodati</h2>
     <div class="grid">
       {cards.map(([href, k, t, src, alt], i) => (
-        <a class={`c c${i}`} href={href}><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[i]} /></span><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1024px) 30vw, 90vw" /></div><span class="k">{k}</span><b>{t}</b><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class={`c c${i}`} href={href}><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[i]} /></span><div class="ph">{i === 1 ? (
+          <div class="fan" role="img" aria-label="Tre cassette dei tagli Glamood: side part, pompadour, buzz cut">
+            {[['side-part', 'Side part'], ['pompadour', 'Pompadour'], ['buzz-cut', 'Buzz cut']].map(([n, l]) => (
+              <span class="cas"><Img src={`tagli/${n}-front`} alt="" sizes="(min-width:1024px) 12vw, 32vw" /><b>{l}</b></span>
+            ))}
+          </div>
+        ) : <Img src={src} alt={alt} sizes="(min-width:1024px) 30vw, 90vw" />}</div><span class="k">{k}</span><b>{t}</b><span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       ))}
     </div>
   </div>
@@ -35,7 +41,15 @@ h2{font-size:clamp(48px,8vw,130px)}
 .c:hover{transform:translateY(-6px) rotate(-.6deg)}
 .ph{border-radius:14px;overflow:hidden;aspect-ratio:4/3;margin-bottom:10px;background:var(--petrol-pale)}
 .c0 .ph,.c1 .ph{aspect-ratio:5/4}
-.c1 .ph img{object-position:50% 30%}
+.c1 .ph{background:var(--petrol) url("/img/pattern/organico-tono-su-tono.webp") center/420px;display:grid;place-items:center}
+.fan{position:relative;width:100%;height:100%}
+.cas{position:absolute;top:50%;left:50%;width:27%;aspect-ratio:.557;transform:translate(-50%,-50%) rotate(var(--r)) translateX(var(--x));border-radius:10px;overflow:hidden;box-shadow:0 22px 34px -16px rgb(0 0 0 / .65);transition:transform .6s var(--ease-out)}
+.cas:nth-child(1){--r:-8deg;--x:-104%}.cas:nth-child(2){--r:0deg;--x:0%;z-index:2;width:30%}.cas:nth-child(3){--r:8deg;--x:104%}
+.cas:nth-child(2) b{top:5.4%;height:11%}.cas:nth-child(3){aspect-ratio:.44;width:22%}.cas:nth-child(3) b{top:5.9%;height:9.5%}
+.cas img{width:100%;height:100%;object-fit:cover;display:block}
+.cas b{position:absolute;left:7%;right:7%;top:3.6%;height:12%;display:grid;place-items:center;font:900 clamp(9px,1vw,15px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.01em;color:var(--petrol);white-space:nowrap}
+.c:hover .cas:nth-child(1){transform:translate(-50%,-50%) rotate(-11deg) translateX(-110%)}.c:hover .cas:nth-child(3){transform:translate(-50%,-50%) rotate(11deg) translateX(110%)}
+.c:hover .c1 .ph img,.c1:hover .ph img{transform:none}
 .ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
 .c3 .ph img{object-fit:contain;padding:10px}
 .c:hover .ph img{transform:scale(1.06)}
