@@ -5,6 +5,7 @@ import '../styles/lenis.css';
 import '../styles/base.css';
 import '../styles/mobile.css';
 import { business } from '../data/business';
+import Deco from '../components/Deco.astro';
 interface Props { title?: string; description?: string; path?: string; noindex?: boolean; jsonld?: boolean; bodyClass?: string }
 const {
   title = 'Glamood, barber shop a Reggio Calabria | Fabio Buccafurri',
@@ -58,5 +59,6 @@ if (business.geo) ld.geo = { '@type': 'GeoCoordinates', latitude: business.geo.l
 </head>
 <body class={bodyClass}>
   <slot />
+  <Deco />
 </body>
 </html>

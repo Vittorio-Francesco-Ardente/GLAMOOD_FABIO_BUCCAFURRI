@@ -3,6 +3,7 @@
 // salon photos in pattern frames (arch, wide pill, circle, tall, blob);
 // tablet and phone use native swipe with snap.
 import Img from './Img.astro';
+import Fascia from './Fascia.astro';
 import { img } from '../data/img';
 import { business } from '../data/business';
 interface Props { homeMobile?: boolean }
@@ -26,8 +27,9 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
     ))}
   </div></div>
   <p class="credit">{business.architect ? `Progetto degli interni: ${business.architect}.` : "Progetto degli interni: nome dell'architetto da confermare."}</p>
-  <div class="bottom-edge"></div>
 </section>
+<Fascia name="salone" bg="var(--petrol-darker)" pattern="r-corallo-tono" />
+<div class="bottom-edge salone-edge"></div>
 </div>
 
 <style is:global>
@@ -57,7 +59,7 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .credit{position:relative;z-index:2;padding:0 var(--gutter) 40px;font-size:14px;color:#cfe3e1}
 .hang{position:absolute;z-index:3;pointer-events:none;top:72px;height:auto}
 @media (max-width:1199px){.hang{display:none}}
-.bottom-edge{position:relative;z-index:2;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover}
+.bottom-edge{position:relative;z-index:2;background-color:var(--petrol-darker)!important;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover}
 @media (min-width:1200px){
  .salone{height:100svh;display:flex;flex-direction:column}
  .head{padding:clamp(40px,6vh,80px) var(--gutter) 0;display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:40px;padding-right:calc(var(--gutter) + clamp(110px,10vw,180px))}

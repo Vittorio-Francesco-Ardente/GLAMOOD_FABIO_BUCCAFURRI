@@ -50,3 +50,13 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid cur
 /* while the game runs, stop decorative motion behind the canvas so every frame only repaints the game */
 html.game-on .gioco .bgref{animation-play-state:paused!important;will-change:auto}
 html.run-fs .barra,html.run-fs .testa{opacity:0!important;pointer-events:none!important;visibility:hidden!important}
+/* aggiornamento 07/02: overlays and framing plants (content stays above, decorations never on text) */
+.esplora>.in,.social>.head,.social>.row,.manifesto>.wrap{position:relative;z-index:1}
+/* strelitzia stands behind the first row of cards: its pot base is hidden by them, never cut in the air */
+.esplora .st-wrap{position:relative;height:0}
+#es-st{right:2%;bottom:-70px;width:clamp(150px,13vw,230px);z-index:0}
+.esplora .grid{position:relative;z-index:1}
+#so-po{z-index:0;top:0;right:5%;width:clamp(120px,10vw,190px)}
+.ticket .seal{position:absolute;z-index:3;right:7%;top:20px;width:clamp(72px,6vw,104px);height:auto;transform:rotate(-12deg);filter:drop-shadow(0 6px 8px rgb(0 0 0 / .28));pointer-events:none}
+@media (max-width:1023px){#es-st,#so-po{display:none}}
+@media (max-width:767px){.ticket .seal{width:58px;top:14px}}

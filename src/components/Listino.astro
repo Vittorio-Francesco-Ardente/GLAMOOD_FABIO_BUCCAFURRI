@@ -5,6 +5,7 @@
 import { listino } from '../data/prices';
 import { wa } from '../data/business';
 import { img } from '../data/img';
+import Fascia from './Fascia.astro';
 ---
 <div class="sx-listino">
 <div class="page-frame">
@@ -26,6 +27,7 @@ import { img } from '../data/img';
       {listino.map((g) => (
         <article class="ticket" data-k={g.k} tabindex="0" role="button" aria-haspopup="dialog" aria-label={`Apri i dettagli del listino ${g.title}`}>
           <span class="curl" aria-hidden="true"></span><span class="shine" aria-hidden="true"></span>
+          {g === listino[0] && <img class="seal" {...img('v2/fasce-decorazioni/sticker/ceralacca-g', 480)} alt="" loading="lazy" decoding="async" />}
           <h3>{g.title}</h3><p class="k">{g.kicker}</p>
           <ul>{g.rows.map(([n, p]) => <li><span>{n}</span><b>{p}</b></li>)}</ul>
           {g.wave && <div class="wave" aria-hidden="true"></div>}
@@ -35,6 +37,7 @@ import { img } from '../data/img';
       ))}
     </div>
   </div>
+  <Fascia name="listino" />
   <div class="checker" style="margin:0 calc(-1*var(--gutter))"></div>
 </section>
 </div>

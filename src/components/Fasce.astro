@@ -15,7 +15,7 @@ const run = Array(4).fill(txt.map((t) => `<span>${t} <i class="sep" aria-hidden=
     ))}
   </div>
 </section>
-<section class="manifesto grainy" id="man">
+<section class="manifesto grainy" id="man"><picture><source media="(max-width:767px)" srcset={img('v2/sfondi/luci-ombre/luce-finestra-mob', 960).src} /><img class="deco-ov light" {...img('v2/sfondi/luci-ombre/luce-finestra-desk', 1600)} alt="" loading="lazy" decoding="async" /></picture>
   <div class="top-edge"></div>
   <img class="leaf" {...img("piante/13_pothos_variegato")} alt="" loading="lazy" style="width:clamp(100px,13vw,210px);right:3%;bottom:-20px;z-index:0" />
   <div class="wrap"><p class="kicker" style="color:var(--ink-soft)">Il nostro modo</p>
