@@ -7,15 +7,15 @@ const ico = {
   down: '<path d="M12 4v14"/><path d="M6 13l6 6 6-6"/>',
   drop: '<path d="M12 3c1.6 5 7 8 7 13a7 7 0 0 1-14 0c0-5 5.4-8 7-13Z"/>',
 };
-const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falcomatà'], ['03', 'Centro e Castello'], ['04', 'Museo Archeologico']];
+const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falcomatà'], ['03', 'Centro e Castello'], ['04', 'Museo Archeologico'], ['05', 'Scilla'], ['06', 'Pentedattilo'], ['07', 'Bergamotteto']];
 ---
 <div class="sx-gioco">
-<section class="gioco has-bgref" id="gioco" data-lv="0" aria-labelledby="gioco-t"><div class="bgref lvbg lv0 r-macchie-tono"></div><div class="bgref lvbg lv1 r-liquido-tono"></div><div class="bgref lvbg lv2 r-geometrico"></div><div class="bgref lvbg lv3 r-swirl-teal"></div>
+<section class="gioco has-bgref" id="gioco" data-lv="0" aria-labelledby="gioco-t"><div class="bgref lvbg lv0 r-macchie-tono"></div><div class="bgref lvbg lv1 r-liquido-tono"></div><div class="bgref lvbg lv2 r-geometrico"></div><div class="bgref lvbg lv3 r-swirl-teal"></div><div class="bgref lvbg lv4 r-strati"></div><div class="bgref lvbg lv5 r-rilievo"></div><div class="bgref lvbg lv6 r-agrumi-tono"></div>
   <div class="in">
     <p class="marker">Il gioco</p>
     <div class="top">
       <h2 id="gioco-t">Glamood <span>Run</span></h2>
-      <p>Gioca adesso, anche dal telefono mentre aspetti il tuo turno: dal salone al Lungomare, fino al Castello e al Museo dei Bronzi.</p>
+      <p>Gioca adesso, anche dal telefono mentre aspetti il tuo turno: dal salone al Lungomare, fino a Scilla, Pentedattilo e al bergamotteto.</p>
     </div>
     <div id="run-wrap">
 <div class="run" id="run" tabindex="0" role="application" aria-label="Glamood Run, gioco. Spazio o tocco per saltare, freccia in giù o tocco prolungato in basso per abbassarsi.">
@@ -63,7 +63,7 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
         <p class="note">Per ora su questo dispositivo.</p>
       </details>
       <div class="blk places">
-        <h3>I 4 luoghi</h3>
+        <h3>I 7 luoghi</h3>
         <ol>{luoghi.map(([n, t]) => <li><b>{n}</b>{t}</li>)}</ol>
         <p class="note">Si cambia luogo ogni 1000 punti.</p>
       </div>
@@ -76,7 +76,7 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 .sx-gioco{display:contents;
 .gioco{padding:clamp(56px,7vw,110px) var(--gutter);background:var(--petrol);color:var(--cream)}
 .lvbg{opacity:0;transition:opacity 1.2s var(--ease-out)}
-.gioco[data-lv="0"] .lv0,.gioco[data-lv="1"] .lv1,.gioco[data-lv="2"] .lv2,.gioco[data-lv="3"] .lv3{opacity:1}
+.gioco[data-lv="0"] .lv0,.gioco[data-lv="1"] .lv1,.gioco[data-lv="2"] .lv2,.gioco[data-lv="3"] .lv3,.gioco[data-lv="4"] .lv4,.gioco[data-lv="5"] .lv5,.gioco[data-lv="6"] .lv6{opacity:1}
 .lv3{opacity:0}.gioco[data-lv="3"] .lv3{opacity:.55}
 .in{max-width:1320px;margin:0 auto}
 .marker{color:#cfe3e1}
@@ -121,6 +121,13 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 #run-wrap .pop{background:rgb(8 57 62 / .82)!important;border:2px solid rgb(244 239 232 / .35)}
 #run-wrap .pop b{font:400 clamp(24px,3.6vw,44px)/.95 "Glamood Bubble",var(--f-display)!important;text-transform:uppercase!important;letter-spacing:0;color:#F4EFE8;-webkit-text-stroke:.12em #08393E;paint-order:stroke fill;text-shadow:0 .1em 0 #08393E}
 #run-wrap .pop span{color:#ECC46C!important;opacity:1!important;font-weight:700!important}
+/* phones: the level name sits under the counters, the postcard stacks so long names never clip */
+@media (max-width:760px){
+ #run-wrap .hud-c{top:56px!important;font-size:19px!important}
+ #run-wrap .pop{top:50%!important;flex-direction:column;align-items:center;text-align:center;width:max-content;max-width:86%;padding:12px 16px 14px!important;gap:10px}
+ #run-wrap .pop img{height:min(92px,13svh)}
+ #run-wrap .pop b{font-size:26px!important}
+}
 #run-wrap .ov-end .again{width:100%!important}
 @media (max-width:760px){
  .top{grid-template-columns:1fr;gap:12px}
