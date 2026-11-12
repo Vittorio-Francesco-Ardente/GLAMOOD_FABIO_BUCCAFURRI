@@ -33,6 +33,7 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
       <p class="kick">Glamood · Reggio Calabria</p>
       <h3 class="title">Glamood<span>Run</span></h3>
       <button class="go" type="button" data-start><span class="when-idle">Corri</span><span class="when-pause">Riprendi</span></button>
+      <button class="fs-go" type="button" data-fs><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Gioca a schermo intero</button>
       <p class="how"><span class="k-desk">Spazio o clic: salta · freccia in giù: abbassati</span><span class="k-touch">Tocca: salta · tieni premuto in basso: abbassati</span></p>
      </div>
     </div>
@@ -45,6 +46,8 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
      </div>
     </div>
     <div class="load">Carico il salone…</div>
+    <div class="rot" data-rot hidden><div><svg class="rot-ph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" aria-hidden="true"><rect x="20" y="6" width="24" height="52" rx="5"/><path d="M29 51h6"/></svg><b>Ruota il telefono</b><span>Si gioca in orizzontale: la corsa parte appena lo giri.</span></div></div>
+    <button class="fs-x" type="button" data-fs-x aria-label="Esci dallo schermo intero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
    </div>
     </div>
     <div class="info">
@@ -121,6 +124,24 @@ const luoghi: [string, string][] = [['01', 'Il salone'], ['02', 'Lungomare Falco
 #run-wrap .pop{background:rgb(8 57 62 / .82)!important;border:2px solid rgb(244 239 232 / .35)}
 #run-wrap .pop b{font:400 clamp(24px,3.6vw,44px)/.95 "Glamood Bubble",var(--f-display)!important;text-transform:uppercase!important;letter-spacing:0;color:#F4EFE8;-webkit-text-stroke:.12em #08393E;paint-order:stroke fill;text-shadow:0 .1em 0 #08393E}
 #run-wrap .pop span{color:#ECC46C!important;opacity:1!important;font-weight:700!important}
+/* full-screen landscape mode (phones) */
+#run-wrap .fs-go{display:none;margin-top:10px;align-items:center;gap:8px;min-height:46px;padding:0 18px;border-radius:999px;border:2px solid rgb(244 239 232 / .6);background:transparent;color:#F4EFE8;font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+#run-wrap .fs-go svg{width:18px;height:18px}
+@media (pointer:coarse){#run-wrap .fs-go{display:inline-flex}}
+#run-wrap .fs-x{display:none}
+#run-wrap .run.fs{position:fixed!important;inset:0!important;z-index:10000;width:100vw!important;height:100vh!important;height:100dvh!important;max-height:none!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+#run-wrap .run.fs .fs-go{display:none!important}
+#run-wrap .run.fs .fs-x{display:grid;place-items:center;position:absolute;z-index:8;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;border:0;background:rgb(8 57 62 / .82);color:#F4EFE8}
+#run-wrap .run.fs .fs-x svg{width:20px;height:20px}
+#run-wrap .run.fs .hud{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+#run-wrap .rot{position:absolute;inset:0;z-index:7;display:grid;place-items:center;text-align:center;padding:24px;background:#08393E;color:#F4EFE8}
+#run-wrap .rot[hidden]{display:none}
+#run-wrap .rot b{display:block;margin-top:14px;font:400 30px/1 "Glamood Bubble",var(--f-display);text-transform:uppercase}
+#run-wrap .rot span{display:block;margin-top:10px;max-width:26ch;font-size:16px;line-height:1.4;color:#d9ebe8}
+#run-wrap .rot-ph{width:72px;height:72px;color:#ECC46C;animation:rotph 2.2s var(--ease-out) infinite}
+@keyframes rotph{0%,20%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+@media (prefers-reduced-motion:reduce){#run-wrap .rot-ph{animation:none;transform:rotate(-90deg)}}
+html.run-fs,html.run-fs body{overflow:hidden!important;overscroll-behavior:none}
 /* phones: the level name sits under the counters, the postcard stacks so long names never clip */
 @media (max-width:760px){
  #run-wrap .hud-c{top:56px!important;font-size:19px!important}
@@ -160,9 +181,49 @@ new IntersectionObserver(async (es, o) => {
   (window as any).__glamoodRun = createGame(root, { assets: ASSETS, hair: HAIR, onEvent: (type: string, data: any) => {
     if (type === 'state') document.documentElement.classList.toggle('game-on', data === 'play');
     if (type === 'board') renderBoard(data);
-    if (type === 'level' && data) (document.getElementById('gioco') as HTMLElement).dataset.lv = String(Math.max(0, Math.min(3, Number(data.index) || 0)));
+    if (type === 'level' && data) (document.getElementById('gioco') as HTMLElement).dataset.lv = String(Math.max(0, Math.min(6, Number(data.index) || 0)));
     if (type === 'start') (document.getElementById('gioco') as HTMLElement).dataset.lv = '0';
     if (type === 'start' && matchMedia('(max-width:760px)').matches) root.scrollIntoView({ block: 'center', behavior: 'smooth' });
   } });
+  setupFullscreen((window as any).__glamoodRun);
 }, { rootMargin: '300px' }).observe(wrap);
+
+/* Full-screen landscape play on phones: start only once the phone is sideways, pause if it is turned back. */
+function setupFullscreen(game: any) {
+  const run = (document.getElementById('run') as HTMLElement), rot = root.querySelector<HTMLElement>('[data-rot]')!;
+  const land = matchMedia('(orientation: landscape)');
+  let fs = false, pending = false, autoPaused = false;
+  const state = () => game?.debug?.state ?? run.dataset.state;
+  const check = () => {
+    if (!fs) return;
+    if (land.matches) {
+      rot.hidden = true;
+      if (pending) { pending = false; setTimeout(() => game.start(), 250); }
+      else if (autoPaused && state() === 'pause') { autoPaused = false; game.resume(); }
+    } else {
+      rot.hidden = false;
+      if (state() === 'play') { game.pause(); autoPaused = true; }
+    }
+  };
+  const enter = async () => {
+    fs = true; pending = true; autoPaused = false;
+    run.classList.add('fs'); document.documentElement.classList.add('run-fs'); (window as any).lenis?.stop?.();
+    try { await (run.requestFullscreen?.({ navigationUI: 'hide' }) ?? (run as any).webkitRequestFullscreen?.()); } catch { /* iOS: stays as a fixed full-viewport layer */ }
+    try { await (screen.orientation as any)?.lock?.('landscape'); } catch { /* not supported: we wait for the user to turn the phone */ }
+    check();
+  };
+  const exit = () => {
+    if (!fs) return; fs = false; pending = false; autoPaused = false; rot.hidden = true;
+    if (state() === 'play') game.pause();
+    run.classList.remove('fs'); document.documentElement.classList.remove('run-fs'); (window as any).lenis?.start?.();
+    try { (screen.orientation as any)?.unlock?.(); } catch { /* ignore */ }
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  };
+  root.querySelector('[data-fs]')!.addEventListener('click', (e) => { e.stopPropagation(); enter(); });
+  root.querySelector('[data-fs-x]')!.addEventListener('click', (e) => { e.stopPropagation(); exit(); });
+  ['pointerdown', 'touchstart', 'click'].forEach((t) => root.querySelector('[data-fs-x]')!.addEventListener(t, (e) => e.stopPropagation()));
+  land.addEventListener('change', check); addEventListener('resize', check);
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && fs && run.requestFullscreen) exit(); });
+  (window as any).__glamoodFs = { enter, exit };
+}
 </script>
