@@ -136,7 +136,7 @@ export function createGame(root, opts = {}) {
     const r = canvas.getBoundingClientRect();
     if (!r.width || !r.height) return;
     cssW = r.width; cssH = r.height;
-    DPR = Math.min(2, window.devicePixelRatio || 1);
+    DPR = Math.min(cssW < 700 ? 1.5 : 2, window.devicePixelRatio || 1); // phones: 1.5x is sharp enough and ~45% fewer pixels to paint
     canvas.width = Math.round(cssW * DPR); canvas.height = Math.round(cssH * DPR);
     VWMIN = cssW / cssH < 1.5 ? 380 : 560;
     S = Math.min(cssW / VWMIN, cssH / VHMIN);
@@ -199,7 +199,19 @@ export function createGame(root, opts = {}) {
   }
 
   /* ---------------- sprites ---------------- */
+  let haloOn = false; const haloCache = new Map();
+  function halo(name, im) {             // cream glow + soft dark rim, rendered once per sprite
+    let hc = haloCache.get(name); if (hc) return hc;
+    const k = Math.min(1, 220 / im.height), w = Math.round(im.width * k), h = Math.round(im.height * k), pad = 18;
+    hc = document.createElement('canvas'); hc.width = w + pad * 2; hc.height = h + pad * 2; const g = hc.getContext('2d');
+    g.shadowColor = 'rgba(255,246,222,1)'; g.shadowBlur = 14; g.drawImage(im, pad, pad, w, h); g.shadowBlur = 6; g.drawImage(im, pad, pad, w, h);
+    g.shadowColor = 'rgba(4,30,34,.55)'; g.shadowBlur = 3; g.shadowOffsetY = 2; g.drawImage(im, pad, pad, w, h);
+    hc._k = k; hc._pad = pad; haloCache.set(name, hc); return hc;
+  }
   function spr(c, name, x, yBottom, h, flip = false, rot = 0, alpha = 1) {
+    if (haloOn) { const im0 = sp(name); if (im0 && im0.complete !== false && im0.width) { const hc = halo(name, im0), sc = h / (im0.height * hc._k), pw = hc._pad * sc;
+      c.save(); c.globalAlpha = alpha; c.translate(x, yBottom - h / 2); if (rot) c.rotate(rot); if (flip) c.scale(-1, 1);
+      c.drawImage(hc, -hc.width * sc / 2, -h / 2 - pw, hc.width * sc, hc.height * sc); c.restore(); return; } }
     const im = sp(name); if (!im) return;
     const w = im.width * h / im.height;
     c.save(); if (alpha < 1) c.globalAlpha = alpha;
@@ -228,8 +240,7 @@ export function createGame(root, opts = {}) {
   /* obstacle sprites */
   function obSprite(o) { return o.spr; }
   function drawObstacle(c, o) {   // obstacles get a cream halo + soft dark rim so they read over any background
-    c.save(); c.shadowColor = 'rgba(255,246,222,1)'; c.shadowBlur = 14; drawObstacle0(c, o); c.shadowBlur = 6; drawObstacle0(c, o);
-    c.shadowColor = 'rgba(4,30,34,.55)'; c.shadowBlur = 3; c.shadowOffsetY = 2; drawObstacle0(c, o); c.restore();
+    haloOn = true; drawObstacle0(c, o); haloOn = false;
   }
   function drawObstacle0(c, o) {
     if (o.type === 'ground') { spr(c, o.name, o.x + o.w / 2, GY - o.y, o.h); return; }
@@ -333,14 +344,14 @@ export function createGame(root, opts = {}) {
     prevLv = lv; lv = n; lvFade = first ? 1 : 0; if (n > maxLv) maxLv = n;
     mon = { L: LEVELS[n].id, x: VW + 80 };
     if (first) return;
-    grace = Math.max(grace, 1.6); gapLeft = Math.max(gapLeft, 420);
+    grace = Math.max(grace, .9); gapLeft = Math.max(gapLeft, 300);
     const L = curL();
     if (popEl) {
       const im = $('[data-pop-img]'); const tt = $('[data-pop-t]'); const ss = $('[data-pop-s]');
       if (im && URLS[L.id + '_card']) im.src = URLS[L.id + '_card'];
       if (tt) tt.textContent = L.name; if (ss) ss.textContent = L.sub;
       popEl.classList.remove('on'); void popEl.offsetWidth; popEl.classList.add('on');
-      clearTimeout(popEl._t); popEl._t = setTimeout(() => popEl.classList.remove('on'), 3600);
+      clearTimeout(popEl._t); popEl._t = setTimeout(() => popEl.classList.remove('on'), 1700);
     }
     emit('level', { index: n, name: L.name });
     if (hud.lv) hud.lv.textContent = L.name;
@@ -357,7 +368,7 @@ export function createGame(root, opts = {}) {
     if (L.night && state !== 'idle') { const pr = (score % LVLEN) / LVLEN; nTarget = smooth((pr - L.night[0]) / (L.night[1] - L.night[0])); }
     night = nTarget;
     if (L.night && night > .6) nightSeen = true;
-    if (lvFade < 1) lvFade = Math.min(1, lvFade + dt / 1.5);
+    if (lvFade < 1) lvFade = Math.min(1, lvFade + dt / .7);
 
     const slowK = buff.slow > 0 ? .7 : 1;
     const target = state === 'idle' ? 200 : state === 'play' ? Math.min(520, 235 + score * .22) * slowK : 0;
@@ -444,7 +455,7 @@ export function createGame(root, opts = {}) {
 
     for (const q of parts) { q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 240 * dt; }
     parts = parts.filter(q => q.life > 0);
-    for (const q of fx) { q.t += dt; if (q.vx) q.x += q.vx * dt; if (q.vy) q.y += q.vy * dt; if (q.follow) q.x -= speed * dt * .6; }
+    for (const q of fx) { q.t += dt; if (q.vx) q.x += q.vx * dt; if (q.vy) q.y += q.vy * dt; if (q.pre === 'fx_dust_') q.x -= speed * dt; }
     fx = fx.filter(q => q.t * q.fps < q.n);
     for (const q of texts) { q.life -= dt; q.y -= 34 * dt; }
     texts = texts.filter(q => q.life > 0);
@@ -475,7 +486,8 @@ export function createGame(root, opts = {}) {
     for (const q of fx) {
       const f = sp(q.pre + Math.min(q.n - 1, Math.floor(q.t * q.fps))); if (!f) continue;
       const w = q.size, h = w * f.height / f.width;
-      c.drawImage(f, q.x - w / 2, q.y - h * (q.pre === 'fx_dust_' ? 1 : .5), w, h);
+      if (q.pre === 'fx_dust_') { c.drawImage(f, q.x - w / 2, GY + 1 - h * .95, w, h); continue; } // sprite has ~5% empty margin below: sit on the floor
+      c.drawImage(f, q.x - w / 2, q.y - h * .5, w, h);
     }
   }
   function render() {
@@ -527,10 +539,10 @@ export function createGame(root, opts = {}) {
   const toastEl = $('[data-toast]');
   let toastT = 0;
   function toast(msg) { if (!toastEl) return; toastEl.textContent = msg; toastEl.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('on'), 2400); }
+  const hudLast = {};
+  const put = (el, k, v) => { if (el && hudLast[k] !== v) { hudLast[k] = v; el.textContent = v; } }; // touch the DOM only when a value changes
   function setHud() {
-    if (hud.score) hud.score.textContent = pad(score);
-    if (hud.best) hud.best.textContent = pad(store.best);
-    if (hud.drops) hud.drops.textContent = drops;
+    put(hud.score, 's', pad(score)); put(hud.best, 'b', pad(store.best)); put(hud.drops, 'd', String(drops));
   }
   function show(el, on) { if (!el) return; el.hidden = !on; }
   function setState(s) { state = s; root.dataset.state = s; emit('state', s); }
