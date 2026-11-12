@@ -99,10 +99,10 @@ const foot = document.getElementById('foot')!;
 if (matchMedia('(max-width:760px)').matches) foot.querySelectorAll('details.fcol').forEach((d) => d.removeAttribute('open'));
 bubbles(foot); wireMaps(foot);
 if (!reduced) {
-  gsap.from('#foot .big', { scrollTrigger: { trigger: '#foot', start: 'top 70%' }, yPercent: 30, opacity: 0, duration: 1.3, ease: 'expo.out' });
-  gsap.from('#foot .peekwrap img', { scrollTrigger: { trigger: '#foot .peekwrap', start: 'top 95%' }, yPercent: 18, opacity: 0, duration: 1, ease: "back.out(1.6)" });
-  gsap.from('#foot .leaf-frame.l', { scrollTrigger: { trigger: '#foot', start: 'top 80%', end: 'bottom bottom', scrub: 1 }, xPercent: -40, rotate: -10 });
-  gsap.from('#foot .leaf-frame.r', { scrollTrigger: { trigger: '#foot', start: 'top 80%', end: 'bottom bottom', scrub: 1 }, xPercent: 40, rotate: 10 });
+  gsap.from('#foot .big', { scrollTrigger: { trigger: '#foot', start: 'top 90%' }, yPercent: 30, opacity: 0, duration: 0.7, ease: 'expo.out' });
+  gsap.from('#foot .peekwrap img', { scrollTrigger: { trigger: '#foot .peekwrap', start: 'top 95%' }, yPercent: 18, opacity: 0, duration: 0.7, ease: "back.out(1.6)" });
+  gsap.from('#foot .leaf-frame.l', { scrollTrigger: { trigger: '#foot', start: 'top 90%', end: 'bottom bottom', scrub: 0.25 }, xPercent: -40, rotate: -10 });
+  gsap.from('#foot .leaf-frame.r', { scrollTrigger: { trigger: '#foot', start: 'top 90%', end: 'bottom bottom', scrub: 0.25 }, xPercent: 40, rotate: 10 });
 }
 // easter egg: 3 taps on the G (within 1.5 s), the Konami code, or typing "fabio"
 const g = document.getElementById('egg-g')!; let taps = 0, tt = 0;

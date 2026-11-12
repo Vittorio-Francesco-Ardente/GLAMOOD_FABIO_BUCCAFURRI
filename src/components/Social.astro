@@ -71,8 +71,8 @@ import { bubbles } from '../scripts/bubble.js';
 const root = document.getElementById('social')!, row = document.getElementById('social-row')!;
 bubbles(root);
 if (!reduced) {
-  gsap.from('#social .head>*', { scrollTrigger: { trigger: '#social', start: 'top 75%' }, y: 40, opacity: 0, stagger: 0.1, duration: 1, ease: 'expo.out' });
-  gsap.from('#social-row .post', { scrollTrigger: { trigger: '#social-row', start: 'top 85%' }, y: 90, rotate: (i: number) => [-3, 0, 3][i % 3], opacity: 0, stagger: 0.12, duration: 1.1, ease: 'expo.out', clearProps: 'transform' });
+  gsap.from('#social .head>*', { scrollTrigger: { trigger: '#social', start: 'top 90%' }, y: 40, opacity: 0, stagger: 0.1, duration: 0.7, ease: 'expo.out' });
+  gsap.from('#social-row .post', { scrollTrigger: { trigger: '#social-row', start: 'top 85%' }, y: 90, rotate: (i: number) => [-3, 0, 3][i % 3], opacity: 0, stagger: 0.12, duration: 0.7, ease: 'expo.out', clearProps: 'transform' });
 }
 // live feed from our own Pages Function, loaded when the section gets close
 type Post = { id: string; image: string; permalink: string; date: string; caption?: string; type?: string; source?: string };

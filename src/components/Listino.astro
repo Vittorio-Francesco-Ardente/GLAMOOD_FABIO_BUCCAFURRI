@@ -205,7 +205,7 @@ const { listino, wa: WA } = JSON.parse(document.getElementById('listino-data')!.
 const D: Record<string, any> = {}; listino.forEach((g: any, i: number) => (D[g.k] = { ...g, label: `Listino ${i + 1} di ${listino.length}` }));
 const order = listino.map((g: any) => g.k);
 if (!reduced) {
-  gsap.from(root.querySelector('.title'), { scrollTrigger: { trigger: root, start: 'top 75%' }, yPercent: 30, opacity: 0, duration: 1.2, ease: 'expo.out' });
+  gsap.from(root.querySelector('.title'), { scrollTrigger: { trigger: root, start: 'top 90%' }, yPercent: 30, opacity: 0, duration: 0.7, ease: 'expo.out' });
   const compactTickets = matchMedia('(max-width:767px)').matches;
   gsap.utils.toArray<HTMLElement>('#tk .ticket').forEach((t, i) => gsap.from(t, { scrollTrigger: { trigger: t, start: 'top 92%' }, y: compactTickets ? 24 : 120, rotate: compactTickets ? 0 : (i % 2 ? 8 : -8), opacity: 0, duration: compactTickets ? 0.6 : 1.1, delay: compactTickets ? 0 : i * 0.12, ease: 'expo.out', clearProps: 'transform' }));
 }

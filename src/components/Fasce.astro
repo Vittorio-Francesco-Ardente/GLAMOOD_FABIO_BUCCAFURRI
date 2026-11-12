@@ -52,8 +52,8 @@ import { gsap, ScrollTrigger } from '../scripts/motion.js';
 import { img } from '../data/img';
 const planks = [...document.querySelectorAll<HTMLElement>('#build .plank')];
 if (!reduced) {
-  const tl = gsap.timeline({ scrollTrigger: { trigger: '#build', start: 'top 90%', end: '+=95%', scrub: 0.8 } });
-  planks.forEach((p, i) => tl.fromTo(p, { xPercent: 110 * +p.dataset.d! }, { xPercent: 0, ease: 'power3.out', duration: 1 }, i * 0.1));
+  const tl = gsap.timeline({ scrollTrigger: { trigger: '#build', start: 'top 90%', end: '+=95%', scrub: 0.25 } });
+  planks.forEach((p, i) => tl.fromTo(p, { xPercent: 110 * +p.dataset.d! }, { xPercent: 0, ease: 'power3.out', duration: 0.7 }, i * 0.1));
   // marquee speed reacts to scroll velocity and reverses on scroll up; runs only while the band is on screen
   const mqs = [...document.querySelectorAll<HTMLElement>('#build [data-mq]')];
   let x = 0, dir = 1, on = false;
@@ -67,6 +67,6 @@ if (!reduced) {
   const mf = document.getElementById('mf')!; const words = mf.textContent!.split(' ');
   mf.setAttribute('aria-label', mf.textContent!); mf.innerHTML = words.map((w) => `<span class="w" aria-hidden="true">${w}</span>`).join(' ');
   const ws = [...mf.querySelectorAll('.w')];
-  ScrollTrigger.create({ trigger: '#man', start: 'top 75%', end: 'bottom 70%', scrub: true, onUpdate: (s) => { const n = Math.round(s.progress * ws.length * 1.15); ws.forEach((w, i) => w.classList.toggle('on', i < n)); } });
+  ScrollTrigger.create({ trigger: '#man', start: 'top 90%', end: 'bottom 70%', scrub: true, onUpdate: (s) => { const n = Math.round(s.progress * ws.length * 1.15); ws.forEach((w, i) => w.classList.toggle('on', i < n)); } });
 }
 </script>

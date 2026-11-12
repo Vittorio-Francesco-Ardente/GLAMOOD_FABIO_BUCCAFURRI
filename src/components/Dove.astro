@@ -48,12 +48,12 @@ import { business, wa, hoursLabel } from '../data/business';
 .row .t{grid-column:2;grid-row:1/span 2;font:800 15px var(--f-display);color:var(--petrol-light);text-transform:uppercase;text-align:right}
 .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
-.photo-map{aspect-ratio:4/5;display:block;position:relative;border-radius:30px;text-decoration:none}
-.pm-fr{position:absolute;inset:0;border-radius:30px;padding:clamp(12px,1.2vw,18px);background:#12757E;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);box-shadow:0 0 0 5px #F4EFE8,0 40px 70px -34px rgb(0 0 0 / .6)}
+.photo-map{aspect-ratio:4/5;display:block;position:relative;border-radius:30px;text-decoration:none;box-shadow:0 0 0 5px #F4EFE8,0 40px 70px -34px rgb(0 0 0 / .6)}
+.pm-fr{position:absolute;inset:0;border-radius:30px;padding:clamp(12px,1.2vw,18px);background:#12757E;overflow:hidden;isolation:isolate;clip-path:inset(0 round 30px)}
 .pm-fr::before{content:"";position:absolute;z-index:-1;left:-240px;top:0;width:calc(100% + 480px);height:calc(100% + 480px);background:url("/img/svg/pattern-agrumi.svg") 0 0/240px;animation:frpan 30s linear infinite;will-change:transform}
 @keyframes frpan{to{transform:translate3d(240px,-240px,0)}}
 @media (prefers-reduced-motion:reduce){.pm-fr::before{animation:none}}
-.pm-fr img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:18px;box-shadow:0 0 0 4px #F4EFE8;transition:transform 1s var(--ease-out)}
+.pm-fr img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:calc(30px - clamp(12px,1.2vw,18px));box-shadow:0 0 0 4px #F4EFE8;transition:transform 1s var(--ease-out)}
 .photo-map:hover .pm-fr img{transform:scale(1.03)}
 .photo-map .pin-l{position:absolute;left:clamp(20px,2.4vw,34px);top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center}
 .photo-map .pin-l svg{grid-row:1/span 2;width:28px;height:28px}
@@ -66,8 +66,8 @@ import { reduced, wireMaps } from '../scripts/core.js';
 import { gsap } from '../scripts/motion.js';
 wireMaps(document.getElementById('dove')!);
 if (!reduced) {
-  gsap.from('#dove h2', { scrollTrigger: { trigger: '#dove', start: 'top 75%' }, yPercent: 30, opacity: 0, duration: 1.2, ease: 'expo.out' });
-  gsap.from('#dove .pin-l', { scrollTrigger: { trigger: '#dove-map', start: 'top 70%' }, scale: 0.6, opacity: 0, delay: 0.8, duration: 0.6, ease: 'back.out(2)' });
-  gsap.from('#dove .row', { scrollTrigger: { trigger: '#dove .rows', start: 'top 80%' }, x: 40, opacity: 0, stagger: 0.1, duration: 0.9, ease: 'expo.out' });
+  gsap.from('#dove h2', { scrollTrigger: { trigger: '#dove', start: 'top 90%' }, yPercent: 30, opacity: 0, duration: 0.7, ease: 'expo.out' });
+  gsap.from('#dove .pin-l', { scrollTrigger: { trigger: '#dove-map', start: 'top 90%' }, scale: 0.6, opacity: 0, delay: 0.8, duration: 0.6, ease: 'back.out(2)' });
+  gsap.from('#dove .row', { scrollTrigger: { trigger: '#dove .rows', start: 'top 90%' }, x: 40, opacity: 0, stagger: 0.1, duration: 0.9, ease: 'expo.out' });
 }
 </script>

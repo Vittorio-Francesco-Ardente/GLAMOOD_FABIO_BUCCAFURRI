@@ -100,11 +100,11 @@ const homeMobile = section.dataset.homeMobile === 'true';
 const mm = gsap.matchMedia();
 if (!homeMobile) mm.add('(min-width:1200px) and (prefers-reduced-motion:no-preference)', () => {
   const dist = () => track.scrollWidth - innerWidth;
-  const tween = gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '#salone', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
+  const tween = gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '#salone', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.25, invalidateOnRefresh: true } });
   track.querySelectorAll<HTMLElement>('.card .ph img').forEach((im) => gsap.fromTo(im, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: im.closest('.card')!, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } }));
   return () => { gsap.set(track, { clearProps: 'all' }); };
 });
 mm.add(homeMobile ? '(max-width:767px) and (prefers-reduced-motion:no-preference)' : '(prefers-reduced-motion:no-preference)', () => {
-  gsap.from('#salone .head .giant-title', { scrollTrigger: { trigger: '#salone', start: 'top 80%' }, yPercent: 40, opacity: 0, duration: 1.2, ease: 'expo.out' });
+  gsap.from('#salone .head .giant-title', { scrollTrigger: { trigger: '#salone', start: 'top 90%' }, yPercent: 40, opacity: 0, duration: 0.7, ease: 'expo.out' });
 });
 </script>
