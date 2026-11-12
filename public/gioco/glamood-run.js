@@ -612,7 +612,8 @@ export function createGame(root, opts = {}) {
     if (e.target.closest('a,button,input,label')) return;
     if (state === 'play') {
       const r = canvas.getBoundingClientRect();
-      if (e.pointerType !== 'mouse' && (e.clientY - r.top) / r.height > .68) { duckHold = true; return; }
+      // touch: right half = jump (hold for higher), left half = slide while held
+      if (e.pointerType !== 'mouse') { e.preventDefault(); if ((e.clientX - r.left) / r.width < .5) { duckHold = true; return; } jump(); return; }
       e.preventDefault(); jump();
     } else if (state === 'idle' || state === 'pause') jump();
   });
