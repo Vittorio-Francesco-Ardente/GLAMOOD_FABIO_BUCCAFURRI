@@ -203,7 +203,8 @@ try {
  }
  await page.locator('#run [data-start]').click();
  await page.waitForTimeout(400);
- check(await page.locator('#run').evaluate(el=>el.dataset.state==='play'),'Game starts from the Corri button');
+ check(await page.locator('#run').evaluate(el=>el.classList.contains('fs')&&el.dataset.state!=='play'),'On phones Corri opens full screen and waits for landscape before starting');
+await page.evaluate(()=>window.__glamoodFs?.exit());await page.waitForTimeout(200);
  await page.setViewportSize({width:390,height:844});
  // On phones, Salone exists only inside the Home; standalone visits must redirect.
  await open(page,'/');

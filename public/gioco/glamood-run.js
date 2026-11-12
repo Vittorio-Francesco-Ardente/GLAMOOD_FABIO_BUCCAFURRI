@@ -574,6 +574,10 @@ export function createGame(root, opts = {}) {
     if (hud.lv) hud.lv.textContent = curL().name;
     if (store.runs >= 3) root.classList.add('zone-off');
   }
+  function menu() {                       // back to the start screen from the end screen
+    show(ov.end, false); resetRun(); setState('idle'); root.classList.remove('run-playing');
+    if (ov.start) { ov.start.dataset.mode = ''; show(ov.start, true); } setHud();
+  }
   function pause() { if (state !== 'play') return; setState('pause'); root.classList.remove('run-playing'); const s = ov.start; if (s) { s.dataset.mode = 'pause'; show(s, true); } }
   function resume() { if (state !== 'pause') return; show(ov.start, false); ov.start.dataset.mode = ''; setState('play'); root.classList.add('run-playing'); last = performance.now(); }
   function jump() {
@@ -615,6 +619,7 @@ export function createGame(root, opts = {}) {
   const release = () => { jumpHeld = false; duckHold = false; };
   window.addEventListener('pointerup', release); window.addEventListener('pointercancel', release);
   $$('[data-start]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); if (state === 'pause') resume(); else start(); }));
+  $$('[data-menu]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); menu(); }));
   $$('[data-again]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); start(); }));
   const nameInput = $('[data-name-wrap] input');
   if (nameInput) { nameInput.addEventListener('change', saveName); nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveName(); start(); } }); }
@@ -634,7 +639,7 @@ export function createGame(root, opts = {}) {
   });
 
   return {
-    start, pause, resume, board, badges: () => ({ ...store.badges }), labels: BADGES, badgeImg: BADGE_IMG, levels: LEVELS,
+    start, pause, resume, menu, board, badges: () => ({ ...store.badges }), labels: BADGES, badgeImg: BADGE_IMG, levels: LEVELS,
     debug: {
       get state() { return state; }, get score() { return score; }, get night() { return night; }, get drops() { return drops; }, get speed() { return speed; }, get level() { return lv; }, get ready() { return ready; },
       player: () => ({ ...p, x: PX }), obstacles: () => obstacles.map(o => ({ type: o.type, kind: o.kind, x: o.x, y: o.y, w: o.w, h: o.h })),
