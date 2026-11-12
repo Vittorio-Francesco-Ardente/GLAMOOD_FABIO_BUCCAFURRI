@@ -1,22 +1,24 @@
 ---
-// Page-to-page transition (link tree feel): a petrol curtain with the G rises, the next page loads underneath,
+// Page-to-page transition (link tree feel): a petrol curtain with the mascot face rises, the next page loads underneath,
 // then the curtain lifts. Clicking the logo (or Home) while already on the home page eases back to the top:
 // it accelerates, then slows down just before arriving.
-import { img } from '../data/img';
 ---
 <script is:inline>
   (function(){try{if(sessionStorage.getItem('glamood-pt')==='1'){document.documentElement.classList.add('pt-arrive');sessionStorage.removeItem('glamood-pt');}}catch(e){}})();
 </script>
-<div class="pt-cover" id="pt-cover" aria-hidden="true"><img {...img('brand/G-rasoio-crema-trasparente', 480)} alt="" /></div>
+<div class="pt-cover" id="pt-cover" aria-hidden="true"><span class="pt-face"><img src="/img/svg/faccia-petrolio.svg" width="2118" height="2550" alt="" decoding="async" /></span></div>
 <style is:global>
 .pt-cover{position:fixed;inset:0;z-index:calc(var(--z-loader) - 1);display:grid;place-items:center;pointer-events:none;background:var(--petrol-darker) url("/img/svg/pattern-liquido-tono.svg") center/cover;clip-path:inset(100% 0 0 0)}
-.pt-cover img{width:clamp(72px,9vw,120px);height:auto;opacity:0;transform:translateY(20px) scale(.9);transition:opacity .35s,transform .5s cubic-bezier(.16,1,.3,1)}
+.pt-face{display:grid;place-items:center;width:clamp(124px,13vw,176px);aspect-ratio:1;border-radius:50%;background:#F4EFE8;box-shadow:0 22px 40px -18px rgb(0 0 0 / .6),inset 0 0 0 5px rgb(15 104 112 / .12)}
+.pt-cover img{width:68%;height:auto;margin-top:6%;animation:ptNod 1.1s ease-in-out infinite alternate}
+.pt-cover .pt-face{opacity:0;transform:translateY(20px) scale(.9);transition:opacity .35s,transform .5s cubic-bezier(.16,1,.3,1)}
 .pt-cover.in{clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.76,0,.24,1);pointer-events:auto}
-.pt-cover.in img{opacity:1;transform:none;transition-delay:.25s}
+.pt-cover.in .pt-face{opacity:1;transform:none;transition-delay:.25s}
 .pt-arrive .pt-cover{clip-path:inset(0 0 0 0)}
-.pt-arrive .pt-cover img{opacity:1;transform:none}
+.pt-arrive .pt-cover .pt-face{opacity:1;transform:none}
 .pt-cover.out{clip-path:inset(0 0 100% 0)!important;transition:clip-path .75s cubic-bezier(.76,0,.24,1) .05s}
-.pt-cover.out img{opacity:0;transform:translateY(-20px);transition:opacity .3s,transform .5s}
+.pt-cover.out .pt-face{opacity:0;transform:translateY(-20px);transition:opacity .3s,transform .5s}
+@keyframes ptNod{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
 @media (prefers-reduced-motion:reduce){.pt-cover{display:none}}
 </style>
 <script>
