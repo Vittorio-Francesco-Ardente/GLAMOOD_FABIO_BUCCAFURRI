@@ -357,7 +357,7 @@ await page.evaluate(()=>window.__glamoodFs?.exit());await page.waitForTimeout(20
  });
  check(result.keys===8 && result.unique===8,'Every VHS must represent one distinct haircut');
  check(result.images.length===32 && result.images.every(x=>x.valid),'All 8 haircut photographs, sleeves, sides and spines must load');
- check(result.cover.includes(result.prefix),'Cassette cover must resolve inside the GitHub Pages project subpath');
+ check(result.cover.includes(result.prefix.replace('/img/tagli/','/img/v2/tagli/split/')),'Cassette cover (new VHS sleeves) must resolve inside the GitHub Pages project subpath');
  // Open a centered VHS by keyboard, then close by real tap on X.
  await page.locator('#shelf').focus();
  await page.keyboard.press('Enter');
