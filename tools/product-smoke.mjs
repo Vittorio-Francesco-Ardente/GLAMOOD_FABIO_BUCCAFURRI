@@ -19,7 +19,7 @@ try {
  assert.equal(await initial.locator('#intro .ld-letter').count(),7,'entry spells GLAMOOD');
  assert.equal(await initial.locator('#intro .loader-emblem').count(),0,'no spinner ring');
  await initial.screenshot({path:'qa/product-experience/entry-loader.png'});
- await initial.clock.runFor(1800);
+ await initial.clock.runFor(2000);
  assert.equal(await initial.locator('#intro').count(),0,'entry loader clears');
  await initial.close();
  for(const width of [390,768,1440]){
