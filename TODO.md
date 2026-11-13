@@ -32,4 +32,4 @@ Tutti i valori si cambiano in un solo posto: `src/data/business.ts` (e listino/t
 ## Prodotti 3D (aggiornamento 11)
 - [ ] Prezzi di Pomata, Cera, Balsamo barba e Crema styling (oggi: "Prezzo da confermare").
 - [ ] Elenco completo degli ingredienti: le etichette dicono "in arrivo"; il sito mostra solo l'ingrediente principale (cedro, miele di zagara e cera d'api, bergamotto e argan, fico d'India con aloe e menta).
-- [ ] Etichette in alta risoluzione (oggi 2172x724, consigliato 6000x2000) per barattoli più nitidi sugli schermi retina.
+- [x] Etichette in alta risoluzione: il sito ora usa le etichette fino a 4800 px (sorgenti 6516x2172).

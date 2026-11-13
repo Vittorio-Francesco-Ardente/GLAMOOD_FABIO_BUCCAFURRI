@@ -50,7 +50,8 @@ for (const file of files) {
   // capped webp (same name as the source, used by CSS url() and by <img src>)
   const capped = join(OUT, base + '.webp');
   if (!(await fresh(file, capped))) {
-    const max = rel.startsWith('pattern/') ? 3200 : BG_MAX;
+    // jar labels: a third of the strip is on screen at once, so keep them sharp on Retina (TODO.md)
+    const max = rel.startsWith('pattern/') ? 3200 : rel.includes('prodotti-3d/etichette/') ? 4800 : BG_MAX;
     if (w <= max && extname(file).toLowerCase() === '.webp') await copyFile(file, capped);
     else await sharp(file).resize({ width: Math.min(w, max), withoutEnlargement: true }).webp({ quality: 88, effort: 5 }).toFile(capped);
     made++;
