@@ -276,6 +276,101 @@ const slots = [
 .p3s-o[hidden]{display:none}
 @media (min-width:1024px){.p3s-in{grid-template-columns:1fr 1fr}.p3s-pg{display:block;position:fixed;right:2%;bottom:0;z-index:2;width:clamp(150px,13vw,220px);height:auto;pointer-events:none}}
 @media (max-width:767px){.p3s-tx dl div{grid-template-columns:1fr;gap:4px}}
+
+/* Mobile portrait: reserve distinct zones for header, jar gallery, dots and CTA.
+   The old centred line grid overflows a short Safari visual viewport and
+   lets the lower product labels crash into navigation. Desktop is untouched. */
+@media (max-width:767px) and (prefers-reduced-motion:no-preference){
+ .p3{height:100svh;min-height:0}
+ .p3-pin{height:100svh;min-height:0}
+ /* Both the individual product heading and final slide must clear the fixed brand header. */
+ .p3-titles{padding:calc(110px + env(safe-area-inset-top)) 16px 0}
+ .p3-title{
+   font-size:clamp(34px,9vw,46px);line-height:.94;
+   letter-spacing:-.035em;max-width:calc(100vw - 32px);
+ }
+ /* Keep the product information in its card, not over the pagination. */
+ .p3-copy{height:220px;--card-h:220px}
+ .p3-txt{max-height:220px;overflow:hidden}
+ .p3-txt h3{font-size:clamp(24px,7.2vw,30px)!important}
+ .p3-txt .p3-note{font-size:13px}
+ .p3-txt .p3-desc{font-size:13px;line-height:1.35}
+ .p3-btns{margin-top:9px}
+ .p3-btns .btn-pop,.p3-more{min-height:44px}
+ .p3-dots{bottom:calc(220px + max(14px,env(safe-area-inset-bottom)) + 16px)}
+ /* Final slide: fit three products as a proper two-row responsive gallery. */
+ .p3-line{
+   inset:0;display:flex;flex-direction:column;justify-content:flex-start;
+   align-items:center;align-content:normal;
+   gap:clamp(8px,1.6svh,14px);
+   padding:calc(110px + env(safe-area-inset-top)) 18px
+     calc(142px + env(safe-area-inset-bottom));
+   min-width:0;overflow:hidden;
+ }
+ .p3-line-k{
+   flex:none;margin:0;padding:0;
+   font-size:clamp(24px,7.1vw,33px);line-height:1.05;
+   letter-spacing:-.035em;white-space:nowrap;
+   max-width:100%;text-align:center;
+ }
+ .p3-line-row{
+   flex:1 1 auto;min-height:0;width:min(100%,420px);
+   max-width:100%;margin:0;
+   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+   grid-template-rows:max-content max-content;
+   justify-items:center;align-items:center;align-content:space-evenly;
+   gap:clamp(4px,1svh,10px) clamp(8px,3vw,14px);
+ }
+ .p3-lj,.p3-lj:nth-child(odd),.p3-lj:nth-child(2){
+   --y:0px;--s:1;margin:0;
+   width:100%;min-width:0;min-height:0;
+   flex-basis:auto;order:0;
+   display:flex;flex-direction:column;align-items:center;
+   justify-content:center;gap:clamp(4px,.7svh,7px);
+ }
+ .p3-lj:nth-child(2){grid-column:1/-1;grid-row:1}
+ .p3-lj:nth-child(1){grid-column:1;grid-row:2}
+ .p3-lj:nth-child(3){grid-column:2;grid-row:2}
+ .p3-lj canvas,.p3-lj:nth-child(2) canvas{
+   display:block;flex:none;
+   width:min(43vw,16svh);height:auto;
+   max-width:100%;aspect-ratio:1.16;
+ }
+ .p3-lj:nth-child(2) canvas{width:min(62vw,24svh)}
+ .p3-lj span{width:100%;max-width:100%;gap:0;text-align:center}
+ .p3-lj b{
+   max-width:100%;font-size:clamp(12px,3.4vw,15px);
+   line-height:1.1;letter-spacing:0;
+   overflow-wrap:break-word;
+ }
+ .p3.p3-at-line .p3-dots{
+   bottom:calc(94px + env(safe-area-inset-bottom));
+   z-index:8;
+ }
+ .p3-nb.is-exit{
+   top:auto;bottom:calc(16px + env(safe-area-inset-bottom));
+   width:min(312px,calc(100vw - 66px));
+   min-height:60px;max-width:100%;
+   justify-content:center;line-height:1.1;
+   font-size:clamp(18px,5.5vw,24px);
+ }
+ .p3.p3-at-line .p3-nb[data-dir="-1"]{
+   top:54%;left:12px;width:44px;height:44px;
+   border-width:2px;
+ }
+}
+/* A short phone viewport needs the same separation with tighter vertical spacing. */
+@media (max-width:767px) and (max-height:620px) and (prefers-reduced-motion:no-preference){
+ .p3-titles{padding-top:calc(94px + env(safe-area-inset-top))}
+ .p3-title{font-size:clamp(30px,8vw,39px)}
+ .p3-line{padding-top:calc(96px + env(safe-area-inset-top));padding-bottom:calc(128px + env(safe-area-inset-bottom));gap:6px}
+ .p3-line-k{font-size:clamp(22px,6.8vw,29px)}
+ .p3-lj canvas,.p3-lj:nth-child(2) canvas{width:min(42vw,14svh)}
+ .p3-lj:nth-child(2) canvas{width:min(59vw,21svh)}
+ .p3.p3-at-line .p3-dots{bottom:calc(86px + env(safe-area-inset-bottom))}
+ .p3-nb.is-exit{min-height:54px;bottom:calc(14px + env(safe-area-inset-bottom))}
+}
+
 }
 </style>
 
