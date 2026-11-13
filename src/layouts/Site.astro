@@ -7,13 +7,17 @@ import Footer from '../components/Footer.astro';
 import PageTransition from '../components/PageTransition.astro';
 interface Props { title?: string; description?: string; path?: string; jsonld?: boolean; top?: string; tone?: 'light' | 'dark' }
 const { title, description, path = '/', jsonld = false, top, tone = 'dark' } = Astro.props;
+// first paint already uses the right header palette for the surface under it (no petrol → cream flash)
+const light = tone === 'light' || (top ?? '').includes('cream') || (top ?? '').startsWith('#F4');
+const hdr = path === '/prodotti' ? 'honey' : light ? 'cream' : 'petrol';
+const hdrTone = hdr === 'petrol' ? 'dark' : 'light';
 ---
 <Base title={title} description={description} path={path} jsonld={jsonld}>
   <slot name="head" slot="head" />
   <a class="skip-link" href="#main">Salta al contenuto</a>
   <PageTransition />
   <Loader />
-  <div class:list={["site-header", path === "/prodotti" && "site-header-products"]} style={top ? `--hdr-top:${top}` : undefined}><Header tone={tone} /></div>
+  <div class:list={["site-header", path === "/prodotti" && "site-header-products"]} style={top ? `--hdr-top:${top}` : undefined}><Header tone={hdrTone} hdr={hdr} /></div>
   <main id="main" class:list={[top && 'page-top']} style={top ? `--top-bg:${top}` : undefined}>
     <slot />
   </main>

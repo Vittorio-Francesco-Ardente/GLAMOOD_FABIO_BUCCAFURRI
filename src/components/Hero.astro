@@ -177,27 +177,8 @@ function draw() {
   puffs(mx, 0); puffs(rx, 6 * dpr);
   if (full > 0) { mx.globalAlpha = full; mx.fillRect(W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)); mx.globalAlpha = 1; }
   const R: [number, number, number, number] = [W * PAD, H * PAD, W * (1 - 2 * PAD), H * (1 - 2 * PAD)];
-  // The photo and cartoon do not have exactly the same right-arm silhouette.
-  // A small cloud crossing the elbow can bisect its shape. When a puff reaches
-  // the raised arm, enlarge the SAME cloud matte around the WHOLE elbow/brush
-  // area. The photo is erased throughout this enlarged region before the toon
-  // is drawn: realistic pixels cannot leak through transparent cartoon gaps.
-  // It is drawn as a real cloud (puffs on an ellipse), not a smooth oval, and it grows and fades with the
-  // puffs that triggered it, so its outline reads like the rest of the cloud instead of a stray oval line.
-  let armK = 0;
-  for (const p of pts) {
-    const x = (p.x - R[0]) / R[2], y = (p.y - R[1]) / R[3];
-    if (x >= .57 && x <= 1.08 && y >= .01 && y <= .66) armK = Math.max(armK, Math.max(0, Math.min(1, ease((now - p.t) / LIFE))));
-  }
-  if (armK > 0) {
-    const x = R[0] + R[2] * .86, y = R[1] + R[3] * .32;
-    const a = R[2] * .27 * armK, b = R[3] * .33 * armK, pr = Math.min(a, b) * .52, n = 11;
-    const blob = (c: CanvasRenderingContext2D, grow: number) => {
-      c.beginPath(); c.ellipse(x, y, Math.max(1, a * .82 + grow), Math.max(1, b * .82 + grow), 0, 0, Math.PI * 2); c.fill();
-      for (let i = 0; i < n; i++) { const t = (i / n) * Math.PI * 2 + .35, rr = pr * (i % 2 ? .82 : 1.06) + grow; c.beginPath(); c.arc(x + Math.cos(t) * a * .86, y + Math.sin(t) * b * .86, Math.max(1, rr), 0, Math.PI * 2); c.fill(); }
-    };
-    blob(mx, 0); blob(rx, 6 * dpr);
-  }
+  // Only the cloud drawn by the pointer reveals the cartoon: no forced shapes around the arm.
+
   ctx.clearRect(0, 0, W, H);
   if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
   ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.drawImage(mask, 0, 0); ctx.restore();

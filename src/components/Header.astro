@@ -2,8 +2,8 @@
 // Navigation modelled on Vittorio's site: top header (logo, social, Prenota, menu) that fades up after 70 px,
 // then a bottom bar slides in with a sliding highlight. Full-screen menu (link-tree style on phones).
 import { business, wa, tel, instagramUrl } from '../data/business';
-interface Props { tone?: 'light' | 'dark' }
-const { tone = 'dark' } = Astro.props;
+interface Props { tone?: 'light' | 'dark'; hdr?: string }
+const { tone = 'dark', hdr = tone === 'light' ? 'cream' : 'petrol' } = Astro.props;
 const items: [string, string][] = [['salone', 'Salone'], ['tagli', 'Tagli'], ['listino', 'Listino'], ['prodotti', 'Prodotti'], ['dove', 'Dove siamo']];
 const baseLen = import.meta.env.BASE_URL.replace(/\/$/, '').length;
 const here = Astro.url.pathname.slice(baseLen).replace(/\.html$/, '').replace(/^\/|\/$/g, '');
@@ -21,7 +21,7 @@ const phone = tel();
 const ig = business.instagram ? instagramUrl() : null;
 const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M8.2 16 20 4M8.2 8 20 20"/></svg>';
 ---
-<div class="sx-header" data-tone={tone}>
+<div class="sx-header" data-tone={tone} data-hdr={hdr}>
 <header class="testa" id="testa">
   <a class="mark" href="/" aria-label="Glamood, home"><img src="/img/brand/wordmark-petrolio-trasparente-480.webp" alt="GLAMOOD" width="480" height="81" /></a>
   <nav class="links" aria-label="Pagine">{items.map(([id, t]) => <a href={`/${id}`} data-mobile-target={id === "salone" ? "salone" : undefined} aria-current={cur(id)}>{t}</a>)}</nav>
