@@ -480,8 +480,10 @@ function startDesk() {
     const jarYv = `${Math.round(tall ? tBottom + 14 + (cTop - tBottom - 64) / 2 : h * .55)}px`; if (pin.style.getPropertyValue('--jar-y') !== jarYv) pin.style.setProperty('--jar-y', jarYv);
     // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
     const avail = cTop - tBottom - 64;   /* room for the page dots between jar and card */
-    const jw = tall ? Math.max(120, Math.min(w < 768 ? w * .6 : w * .62, 620, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
-    jarBox = [w / 2 - jw * .55, w / 2 + jw * .55, base - jh * 1.05, base + 6];
+    const jw = tall ? Math.max(120, Math.min(w < 768 ? w * .6 : w * .62, 620, avail * 1.21)) : Math.max(120, Math.min(w * .4, h * .6 * 1.21, (h - 114 - tBottom) / 1.15 * 1.21)), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h - 104 - jh * .1;   // desktop: the jar sits between the name and the bottom arrows
+    // desktop: the jar moves right just enough to clear the card on the left
+    const cx = tall ? w / 2 : Math.min(w - jw * .55 - 12, Math.max(w / 2, copyEl.getBoundingClientRect().right - cv.getBoundingClientRect().left + jw * .55 + 24));
+    jarBox = [cx - jw * .55, cx + jw * .55, base - jh * 1.05, base + 6];
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
@@ -489,9 +491,9 @@ function startDesk() {
       const lift = Math.sin(Math.PI * Math.min(1, t / .6)) * jh * .04;
       if (i < N - 1 && sw > 0) {
         const travel = tall ? w / 2 + jw * .6 : w * .62;   // on phones the outgoing jar leaves before the next one arrives: no overlap
-        drawJar(c, arts[i], w / 2 - sw * travel, base, jw, jh, rotOf(t), lift);
-        drawJar(c, arts[nx], w / 2 + (1 - sw) * travel, base, jw, jh, rotOf(0), 0);
-      } else drawJar(c, arts[i], w / 2, base, jw, jh, rotOf(Math.min(1, t / .6)), lift);
+        drawJar(c, arts[i], cx - sw * travel, base, jw, jh, rotOf(t), lift);
+        drawJar(c, arts[nx], cx + (1 - sw) * travel, base, jw, jh, rotOf(0), 0);
+      } else drawJar(c, arts[i], cx, base, jw, jh, rotOf(Math.min(1, t / .6)), lift);
       c.globalAlpha = 1;
     }
   }
