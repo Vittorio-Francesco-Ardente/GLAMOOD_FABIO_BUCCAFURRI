@@ -2,22 +2,17 @@
 // Page-to-page transition (link tree feel): a petrol curtain with the mascot face rises, the next page loads underneath,
 // then the curtain lifts. Clicking the logo (or Home) while already on the home page eases back to the top:
 // it accelerates, then slows down just before arriving.
-import { img } from '../data/img';
+import LoaderFace from './LoaderFace.astro';
 ---
 <script is:inline>
   (function(){try{if(sessionStorage.getItem('glamood-pt')==='1'){document.documentElement.classList.add('pt-arrive');sessionStorage.removeItem('glamood-pt');}}catch(e){}})();
 </script>
-<div class="pt-cover" id="pt-cover" aria-hidden="true"><span class="pt-word">GLAMOOD<span>Un attimo, cambiamo taglio.</span></span><img class="pt-run" {...img("v2/personaggio/posa-corre", 480)} alt="" decoding="async" /></div>
+<div class="pt-cover" id="pt-cover" aria-hidden="true"><LoaderFace /></div>
 <style is:global>
-.pt-cover{position:fixed;inset:0;z-index:calc(var(--z-loader) + 10);display:grid;place-items:center;pointer-events:none;background:var(--petrol-darker) url("/img/svg/pattern-liquido-tono.svg") center/cover;clip-path:inset(100% 0 0 0)}
+.pt-cover{position:fixed;inset:0;z-index:calc(var(--z-loader) + 10);display:grid;place-items:center;pointer-events:none;background:var(--cream);clip-path:inset(100% 0 0 0)}
 .pt-cover.in{clip-path:inset(0 0 0 0);transition:clip-path .32s cubic-bezier(.76,0,.24,1);pointer-events:auto}
 .pt-arrive .pt-cover{clip-path:inset(0 0 0 0)}
 .pt-cover.out{clip-path:inset(0 0 100% 0)!important;transition:clip-path .36s cubic-bezier(.76,0,.24,1)}
-/* A visible transition on every page change, including repeated navigation. */
-.pt-word{color:#F4EFE8;text-align:center;font:900 clamp(40px,8vw,100px)/1 var(--f-display);letter-spacing:-.04em}.pt-word span{display:block;margin-top:20px;font:500 16px/1.4 var(--f-body);letter-spacing:0}
-.pt-run{position:absolute;left:0;top:75%;width:clamp(120px,13vw,190px);height:auto;translate:-120% -50%;opacity:0}
-.pt-cover.runs .pt-run{opacity:1;animation:ptRun .7s cubic-bezier(.45,.05,.4,1) forwards}
-@keyframes ptRun{from{translate:-120% -50%}to{translate:calc(100vw + 20%) -50%}}
 @media (prefers-reduced-motion:reduce){.pt-cover{display:none}}
 </style>
 <script>
@@ -60,7 +55,6 @@ document.addEventListener('click', (e) => {
   cover.classList.remove('out'); cover.classList.add('in');
   if (navigating) return;
   navigating = true;
-  cover.classList.add('runs');
   try { sessionStorage.setItem('glamood-pt', '1'); sessionStorage.setItem('glamood-intro', '1'); } catch (err) {}
   setTimeout(() => { location.assign(url.href); }, 420);
 

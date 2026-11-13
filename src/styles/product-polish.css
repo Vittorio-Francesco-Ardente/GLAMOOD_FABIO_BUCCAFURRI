@@ -65,3 +65,14 @@ html.product-immersive .p3-skip{display:inline-flex}
 .sx-p3 .p3-bg[data-i="3"]{background-blend-mode:screen}
 .sx-p3 .p3-skip{z-index:75}
 html.product-sheet-open .p3-skip{display:none!important}
+
+/* Restore the rounded mobile masthead while keeping it in the page flow. */
+@media(max-width:767px){
+ .site-header{padding:10px 12px;background:var(--cream)}
+ .site-header .sx-header .testa{gap:12px;padding:8px 12px;border-radius:22px;background:#fff;border:1px solid rgb(15 104 112 / .14);box-shadow:0 6px 16px rgb(8 57 62 / .08);min-height:60px}
+ .site-header .sx-header .mark img{height:21px;width:auto;max-width:44vw;object-fit:contain}
+ .site-header .sx-header .burger{background:#e6efec;color:#0f6870}
+}
+/* Secondary copy must stay legible over every product palette. */
+.sx-p3 .p3-txt .p3-sub,.sx-p3 .p3-txt .p3-desc{color:#315459;opacity:1}
+.sx-cat .ct-head .k,.sx-cat .ct-head .marker{color:#0F6870}

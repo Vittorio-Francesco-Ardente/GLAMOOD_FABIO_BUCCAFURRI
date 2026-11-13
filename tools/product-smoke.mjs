@@ -12,6 +12,13 @@ await mkdir('qa/product-experience',{recursive:true});
 const browser=await pw.chromium.launch({executablePath:process.env.CHROME_PATH||'/usr/bin/google-chrome',args:['--no-sandbox']});
 const report=[];let failure;
 try {
+ const initial=await browser.newPage({viewport:{width:390,height:844}});
+ await initial.goto(`http://127.0.0.1:4329${prefix}/`,{waitUntil:'domcontentloaded'});
+ assert(await initial.locator('#intro .loader-emblem img').count(),'entry uses the face emblem');
+ await initial.screenshot({path:'qa/product-experience/entry-loader.png'});
+ await initial.waitForTimeout(1250);
+ assert.equal(await initial.locator('#intro').count(),0,'entry loader clears');
+ await initial.close();
  for(const width of [390,768,1440]){
  const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:width<1024?3:2,hasTouch:width<768,isMobile:width<768});
  await context.addInitScript(()=>sessionStorage.setItem('glamood-intro','1'));
@@ -49,6 +56,14 @@ try {
  const overlap=await page.evaluate(()=>{const a=document.querySelector('#pg-telefono').getBoundingClientRect(),b=document.querySelector('.contact-action .btns').getBoundingClientRect();return a.right>b.left+1&&a.left<b.right&&a.bottom>b.top&&a.top<b.bottom});assert.equal(overlap,false,'mascot does not overlap booking actions');
  await page.goto(base+'/404.html',{waitUntil:'networkidle'});await capture('404');
  await page.goto(base+'/',{waitUntil:'networkidle'});await capture('home');
+ if(width===390){
+ assert.equal(await page.locator('.testa').evaluate(e=>getComputedStyle(e).borderRadius),'22px');
+ await page.locator('#burger').click();assert.equal(await page.locator('#burger').getAttribute('aria-expanded'),'true');
+ await page.locator('#menu-close').click();assert.equal(await page.locator('#burger').getAttribute('aria-expanded'),'false');
+ }
+ assert.equal(await page.locator('#pt-cover .loader-emblem img').count(),1);
+ assert.equal(await page.locator('#pt-cover .pt-word, #pt-cover .pt-run').count(),0);
+
  await page.locator('.testa .links a[href$="/prodotti"]').isVisible().then(async visible=>{if(visible){await page.locator('.testa .links a[href$="/prodotti"]').click();await page.waitForTimeout(120);assert(await page.locator('#pt-cover').evaluate(e=>e.classList.contains('in')),'transition starts');await capture('transition');await page.waitForURL('**/prodotti');await page.waitForTimeout(650);assert.equal(await page.locator('#pt-cover').evaluate(e=>e.classList.contains('in')||document.documentElement.classList.contains('pt-arrive')),false,'arrival clears');await page.goBack();await page.waitForTimeout(650);assert.equal(await page.locator('#pt-cover').evaluate(e=>e.classList.contains('in')),false,'back restores page');}});
  assert.deepEqual(errors,[],`JS errors at ${width}`);await context.close();
  }

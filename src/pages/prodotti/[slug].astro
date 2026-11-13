@@ -11,7 +11,7 @@ const motif = p.jar === 'cera' ? 'alveare' : p.jar === 'crema' || p.cat === 'cap
 const gallery = [
   {src: img(imgOf(p), 1600).src, label: 'Confezione', alt: `${p.n} Glamood, ${p.ml}`},
   {src: img(p.hero, 1600).src, label: 'Ispirazione', alt: `Composizione illustrata per ${p.n}`},
-  ...(p.splash ? [{src: img(p.splash,1600).src,label:'Texture',alt:`Texture di ${p.n}`}] : []),
+  ...(p.splash ? [{src: img(p.splash,1600).src,label:'Dettaglio',alt:`Composizione di ${p.n}`}] : []),
   ...(p.jar ? [{src: img(`v2/prodotti-3d/etichette/etichetta-${p.jar}-completa`).src,label:'Etichetta',alt:`Etichetta completa di ${p.n}`}] : []),
 ];
 ---
@@ -23,16 +23,16 @@ const gallery = [
       <div class="product-gallery">
         <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" {...productImg(imgOf(p), '(max-width:767px) 82vw, 40vw')} alt={gallery[0].alt} fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">+</span></button>
         <div class="product-thumbnails" aria-label="Immagini del prodotto">{gallery.map((g,i)=><button type="button" class="product-thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-src={g.src} data-alt={g.alt} data-srcset={i === 0 ? productImg(imgOf(p), '(max-width:767px) 82vw, 40vw').srcset : undefined}><img src={g.src} alt="" width="120" height="120" loading="lazy"/><span>{g.label}</span></button>)}</div>
-        <p class="product-gallery-hint">Scegli un dettaglio. Tocca l’immagine per ingrandirlo.</p>
+        <p class="product-gallery-hint">Seleziona una foto, poi toccala per ingrandirla.</p>
       </div>
       <div class="product-summary">
         <p class="product-eyebrow">La cura, firmata Glamood</p>
         <h1 id="product-title">{p.n}</h1><p class="product-subtitle">{p.sub}</p><p class="product-description">{p.desc}</p>
         <div class="product-facts">{p.tiles.map(t=><div><span>{t.l}</span><b>{t.v}</b></div>)}</div>
-        <div class="product-buy"><div><b>{p.ml}</b><span>Prezzo e disponibilità da confermare in salone</span></div><a class="btn-pop fill" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedilo a Fabio <span aria-hidden="true">↗</span></a></div>
+        <div class="product-buy"><div><b>{p.ml}</b><span>Per prezzo e disponibilità, contattaci su WhatsApp</span></div><a class="btn-pop fill" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedi informazioni <span aria-hidden="true">↗</span></a></div>
         <div class="product-accordions">
           <details open><summary>Come si usa <span aria-hidden="true">+</span></summary><p>{p.use}</p></details>
-          <details><summary>Ingredienti indicati <span aria-hidden="true">+</span></summary><p>{p.ing.join(', ')}.</p><p class="product-small">L’elenco completo degli ingredienti è in arrivo. Per la formula completa, chiedi in salone.</p></details>
+          <details><summary>Ingredienti indicati <span aria-hidden="true">+</span></summary><p>{p.ing.join(', ')}.</p><p class="product-small">Queste sono le note principali del prodotto. Richiedi in salone l’elenco completo degli ingredienti (INCI).</p></details>
           <details><summary>Il prodotto giusto per te <span aria-hidden="true">+</span></summary><p>{p.long}</p></details>
         </div>
       </div>
