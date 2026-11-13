@@ -18,8 +18,8 @@ export const loadArt = async (s: { jar: string; light: string; shadow: string; l
 
 const layers = new WeakMap<HTMLCanvasElement, HTMLCanvasElement>();
 /** Draw the jar so that its opaque box fits (w x h) centred at (cx, bottom), rot in turns (0 = label front). */
-export function drawJar(ctx: CanvasRenderingContext2D, art: JarArt, cx: number, bottom: number, w: number, h: number, rot: number, lift = 0) {
-  if (!art.jar.naturalWidth) return;
+export function drawJar(ctx: CanvasRenderingContext2D, art: JarArt | undefined, cx: number, bottom: number, w: number, h: number, rot: number, lift = 0) {
+  if (!art?.jar.naturalWidth) return;
   const k = Math.min(w / (J.bx1 - J.bx0), h / (J.by1 - J.by0));       // canvas px per source px
   const ox = cx - (J.S / 2) * k, oy = bottom - J.by1 * k - lift;      // where source (0,0) lands
   const sc = art.jar.naturalWidth / J.S;
@@ -43,9 +43,13 @@ export function drawJar(ctx: CanvasRenderingContext2D, art: JarArt, cx: number, 
     const th = Math.asin(px);
     let u = th / (Math.PI * 2) + rot; u -= Math.round(u);              // -0.5 … 0.5 around the cylinder
     const lu = u / COVER + .5; if (lu < 0 || lu >= 1) continue;          // outside the label: frosted glass
-    const sx = Math.min(lw - 1, Math.floor(lu * lw));
+    // Sample the whole source footprint of a physical pixel. Taking a single
+    // source column aliases fine label text when a large label is reduced.
+    const footprint = Math.max(1, lw / (COVER * Math.PI * 2 * r * Math.sqrt(1 - px * px) * pixelRatio));
+    const sx = Math.max(0, Math.min(lw - 1, lu * lw - footprint / 2));
+    const sourceWidth = Math.min(footprint, lw - sx);
     const dy = (1 - Math.cos(th)) * smile;                               // labels follow the cylinder (slight smile)
-    g.drawImage(L, sx, 0, 1, lh, x - lx0, dy, 1.2 / pixelRatio, bandH);
+    g.drawImage(L, sx, 0, sourceWidth, lh, x - lx0, dy, 1.2 / pixelRatio, bandH);
   }
   g.globalCompositeOperation = 'source-atop';
   const gr = g.createLinearGradient(mid - r - lx0, 0, mid + r - lx0, 0);

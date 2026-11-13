@@ -1,6 +1,6 @@
 ---
 import Site from '../../layouts/Site.astro';
-import { img } from '../../data/img';
+import { img, productImg } from '../../data/img';
 import { PRODUCTS, CATS, imgOf, type Product } from '../../data/catalogo';
 import { wa, waText } from '../../data/business';
 export function getStaticPaths() { return PRODUCTS.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
@@ -21,8 +21,8 @@ const gallery = [
     <nav class="product-breadcrumb" aria-label="Percorso"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/prodotti#catalogo">Prodotti</a><span aria-hidden="true">/</span><span>{p.n}</span></nav>
     <section class="product-top" aria-labelledby="product-title">
       <div class="product-gallery">
-        <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" src={gallery[0].src} alt={gallery[0].alt} width="1600" height="1600" fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">＋</span></button>
-        <div class="product-thumbnails" aria-label="Immagini del prodotto">{gallery.map((g,i)=><button type="button" class="product-thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-src={g.src} data-alt={g.alt}><img src={g.src} alt="" width="120" height="120" loading="lazy"/><span>{g.label}</span></button>)}</div>
+        <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" {...productImg(imgOf(p), '(max-width:767px) 82vw, 40vw')} alt={gallery[0].alt} fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">＋</span></button>
+        <div class="product-thumbnails" aria-label="Immagini del prodotto">{gallery.map((g,i)=><button type="button" class="product-thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-src={g.src} data-alt={g.alt} data-srcset={i === 0 ? productImg(imgOf(p), '(max-width:767px) 82vw, 40vw').srcset : undefined}><img src={g.src} alt="" width="120" height="120" loading="lazy"/><span>{g.label}</span></button>)}</div>
         <p class="product-gallery-hint">Scegli un dettaglio. Tocca l’immagine per ingrandirlo.</p>
       </div>
       <div class="product-summary">
@@ -44,11 +44,11 @@ const gallery = [
     </section>
     <section class="product-routine" aria-labelledby="product-routine-title"><div><p class="product-eyebrow">Dal salone a casa tua</p><h2 id="product-routine-title">Il gesto<br/>che fa la differenza.</h2></div><div class="product-use-card"><span class="product-step">01</span><h3>Usalo così</h3><p>{p.use}</p></div><div class="product-use-card product-use-advice"><span class="product-step">02</span><h3>Fallo tuo</h3><p>Quantità, finish, abbinamenti: chiedi a Fabio come inserirlo nella tua routine.</p><a href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedi un consiglio <span aria-hidden="true">↗</span></a></div></section>
     {p.splash && <figure class="product-splash"><img {...img(p.splash,1600)} alt={`${p.n}: il prodotto e la sua texture`} loading="lazy"/><figcaption>{p.n} <span>{p.sub}</span></figcaption></figure>}
-    <section class="product-related" aria-labelledby="related-title"><div class="product-section-heading"><div><p class="product-eyebrow">Completa la tua routine</p><h2 id="related-title">C’è altro per te.</h2></div><a href="/prodotti#catalogo">Tutta la linea <span aria-hidden="true">↗</span></a></div><ul>{more.map(q=><li><a class="product-related-card" href={`/prodotti/${q.slug}`} style={`--card-bg:${q.bg}`}><div><img {...img(imgOf(q),960)} alt={q.n} loading="lazy"/></div><h3>{q.n}</h3><p>{q.sub}</p><span>{q.ml}<b aria-hidden="true">↗</b></span></a></li>)}</ul></section>
+    <section class="product-related" aria-labelledby="related-title"><div class="product-section-heading"><div><p class="product-eyebrow">Completa la tua routine</p><h2 id="related-title">C’è altro per te.</h2></div><a href="/prodotti#catalogo">Tutta la linea <span aria-hidden="true">↗</span></a></div><ul>{more.map(q=><li><a class="product-related-card" href={`/prodotti/${q.slug}`} style={`--card-bg:${q.bg}`}><div><img {...productImg(imgOf(q), '(max-width:767px) 40vw, (max-width:1023px) 40vw, 20vw')} alt={q.n} loading="lazy"/></div><h3>{q.n}</h3><p>{q.sub}</p><span>{q.ml}<b aria-hidden="true">↗</b></span></a></li>)}</ul></section>
     <section class="product-advisor" aria-labelledby="advisor-title"><img {...img('v2/personaggio/posa-telefono',960)} alt="Fabio, la mascotte Glamood, con il telefono" loading="lazy"/><div><p class="product-eyebrow">Due parole con Fabio</p><h2 id="advisor-title">Il dubbio?<br/>Lo sciogliamo in salone.</h2><p>Ti aiutiamo a scegliere il prodotto e a capire come usarlo per il tuo stile.</p><a class="btn-pop" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Scrivi su WhatsApp <span aria-hidden="true">↗</span></a></div></section>
   </div>
 </article>
-<dialog class="product-lightbox" aria-labelledby="lightbox-title"><div class="product-lightbox-bar"><h2 id="lightbox-title">{p.n} · Confezione</h2><button type="button" aria-label="Chiudi ingrandimento">✕</button></div><img src={gallery[0].src} alt={gallery[0].alt}/><p>Usa i gesti del dispositivo per leggere i dettagli.</p></dialog>
+<dialog data-lenis-prevent class="product-lightbox" aria-labelledby="lightbox-title"><div class="product-lightbox-bar"><h2 id="lightbox-title">{p.n} · Confezione</h2><button type="button" aria-label="Chiudi ingrandimento">✕</button></div><img src={gallery[0].src} alt={gallery[0].alt}/><p>Usa i gesti del dispositivo per leggere i dettagli.</p></dialog>
 </Site>
 <style is:global>
 .product-page{background:#F4EFE8;color:#133b40;padding:0 var(--gutter) 32px}
@@ -118,9 +118,8 @@ const imageButton = document.querySelector<HTMLButtonElement>('.product-main-ima
 const thumbs = [...document.querySelectorAll<HTMLButtonElement>('.product-thumb')];
 const dialog = document.querySelector<HTMLDialogElement>('.product-lightbox')!;
 const zoomImage = dialog.querySelector('img')!;
-let selected = thumbs[0];
 thumbs.forEach(button => button.addEventListener('click', () => {
- selected = button; mainImage.src = button.dataset.src!; mainImage.alt = button.dataset.alt!;
+ mainImage.removeAttribute('srcset'); mainImage.src = button.dataset.src!; if (button.dataset.srcset) mainImage.srcset = button.dataset.srcset; mainImage.alt = button.dataset.alt!;
  thumbs.forEach(t => t.setAttribute('aria-pressed',String(t === button)));
  imageButton.setAttribute('aria-label',`Ingrandisci: ${button.textContent?.trim()}`);
 }));

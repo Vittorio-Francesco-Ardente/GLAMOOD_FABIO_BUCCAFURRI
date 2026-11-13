@@ -1,7 +1,7 @@
 ---
 // /prodotti index (aggiornamento 12): the whole line by category, each product opens /prodotti/<slug>.
 // Each category is its own coloured band; cards rise in with a short stagger when they enter the screen.
-import { img } from '../data/img';
+import { img, productImg } from '../data/img';
 import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
 ---
 <div class="sx-cat">
@@ -14,8 +14,8 @@ import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
         <div class="ct-intro ct-rise"><h3>{c.n}</h3><p>{c.d}</p></div>
         <ul class="ct-grid">{PRODUCTS.filter((p) => p.cat === c.k).map((p, i) => (
           <li class="ct-rise" style={`--d:${i * 70}ms`}>
-            <a class="ct-card" href={`/prodotti/${p.slug}`} style={`--cb:${p.bg};--ci:${p.ink}`}>
-              <span class="ct-ph"><img {...img(imgOf(p), 960)} alt={`${p.n} Glamood`} loading="lazy" decoding="async" /></span>
+            <a class="ct-card" href={`/prodotti/${p.slug}`} style={`--cb:${p.bg};--ci:${p.ink};--card-pattern:url('/img/svg/product-${p.jar === "cera" ? "alveare" : p.cat === "barba" || p.cat === "dopobarba" ? "agrumi" : p.jar === "crema" || p.cat === "capelli" ? "botanico" : "onde"}.svg')`}>
+              <span class="ct-ph"><img {...productImg(imgOf(p), '(max-width:767px) 82vw, (max-width:1023px) 42vw, 27vw')} alt={`${p.n} Glamood`} loading="lazy" decoding="async" /></span>
               <span class="ct-tx"><b>{p.n}</b><span>{p.sub} · {p.ml}</span><span class="ct-description">{p.desc}</span><span class="ct-detail">Scopri il prodotto</span></span>
               <span class="ct-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             </a>

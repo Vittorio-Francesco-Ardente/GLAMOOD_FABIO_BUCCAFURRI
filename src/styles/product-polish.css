@@ -17,31 +17,13 @@ html.product-immersive .p3-skip{display:inline-flex}
 .sx-cat .ct-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .sx-cat .ct-card{background:#fff;color:#133b40;box-shadow:0 10px 24px rgb(8 57 62 / .08);border:1px solid rgb(8 57 62 / .12)}
 .sx-cat .ct-ph{background:var(--cb);aspect-ratio:1.12;padding:8%;position:relative;isolation:isolate}
-.sx-cat .ct-ph::before{content:"";position:absolute;inset:0;z-index:-1;background:url('/img/svg/pattern-wave-seamless.svg') center/360px;opacity:.18}
+.sx-cat .ct-ph::before{content:"";position:absolute;inset:0;z-index:-1;background-image:var(--card-pattern);background-size:230px;opacity:.18}
 .sx-cat .ct-tx{padding:24px 24px 78px;gap:10px}
 .sx-cat .ct-tx b{font-size:clamp(21px,2vw,28px);line-height:1.08}
 .sx-cat .ct-tx span{opacity:1;line-height:1.5}
 .sx-cat .ct-description{font-size:15px;color:#395a5e}
 .sx-cat .ct-detail{position:absolute;bottom:28px;left:24px;font-size:13px!important;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .sx-cat .ct-go{background:#0F6870;color:#fff}
-.pp-hero{min-height:auto;margin:0;padding:clamp(20px,3vw,48px) var(--gutter)}
-.pp-hero .bgref{background-image:url('/img/svg/pattern-wave-seamless.svg');background-size:480px;inset:0;animation:none!important;opacity:.16!important}
-.pp-hero-in{max-width:1360px;padding:0;gap:clamp(24px,4vw,64px);min-height:660px}
-.pp-tx{padding:clamp(24px,3vw,48px);background:#fff;color:#133b40;border-radius:28px;box-shadow:0 12px 36px rgb(8 57 62 / .08)}
-.pp-tx h1{font-size:clamp(42px,5.2vw,80px);line-height:1;overflow-wrap:anywhere}
-.pp-tx .pp-back,.pp-tx .pp-sub{color:#0F6870;opacity:1}
-.pp-tx .pp-desc{font-size:18px;line-height:1.65}
-.pp-art{min-width:0;min-height:500px}
-.pp-tiles{padding-top:32px;padding-bottom:32px;gap:16px}
-.pp-tile{background:#fff;color:#133b40;border:1px solid rgb(8 57 62 / .12)}
-.pp-tile b{font-size:clamp(24px,2.5vw,38px);line-height:1.05;overflow-wrap:anywhere}
-.pp-tile span{color:#0F6870}
-.pp-story{padding-block:32px 64px}
-.pp-story-copy{background:#fff;color:#133b40;border-radius:28px;padding:clamp(24px,3vw,40px)}
-.pp-story h3{color:#0F6870;line-height:1.4}
-.pp-more a{background:#fff;color:#133b40;padding:0 0 24px;overflow:hidden}
-.pp-more img{background:var(--cb);padding:24px}
-.pp-more b,.pp-more span{margin-inline:24px;line-height:1.4}
 .sx-p3 .p3-skip{display:none;position:fixed;right:max(20px,env(safe-area-inset-right));top:max(20px,env(safe-area-inset-top));z-index:80;align-items:center;gap:16px;min-height:50px;padding:0 22px;border:2px solid #08393e;border-radius:999px;background:#ffe28a;color:#08393e;font:800 14px/1.2 var(--f-display);text-decoration:none;box-shadow:0 5px 0 #08393e}
 .sx-p3 .p3-txt{background:#fff;color:#133b40;padding:clamp(22px,2.2vw,34px);border-radius:28px;box-shadow:0 12px 40px rgb(8 57 62 / .12)}
 .sx-p3 .p3-txt .p3-note,.sx-p3 .p3-txt .p3-k{color:#0F6870}
@@ -78,3 +60,8 @@ html.product-immersive .p3-skip{display:inline-flex}
 @media(max-width:1023px){.sx-cat .ct-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-hero-in{min-height:0}.pp-art{min-height:420px}.pp-hero-in{grid-template-columns:1fr}.pp-art{grid-row:1}.pp-tx{grid-row:2}}
 @media(max-width:767px){.site-header{padding:10px 16px}.sx-cat .ct-intro{display:grid;gap:12px}.sx-cat .ct-grid{grid-template-columns:1fr}.sx-cat .ct-head{padding-top:40px}.sx-cat .ct-band-in{padding-block:32px}.pp-art{min-height:330px}.pp-tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pp-tile{padding:16px 10px;border-radius:16px}.pp-tile b{font-size:clamp(16px,4.5vw,24px)}.pp-tile span{font-size:10px;letter-spacing:.04em}.pp-more ul{grid-template-columns:1fr}.sx-p3 .p3s-tx dl div{grid-template-columns:1fr}.sx-p3 .p3s-in{padding-bottom:40px}.sx-dove .contact-action{grid-template-columns:90px 1fr}.sx-dove #pg-telefono{width:90px}.e404-page .e{grid-template-columns:1fr;gap:24px}.e404-page .e img{width:min(80vw,360px);justify-self:center;margin:0}}
 @media(prefers-reduced-motion:reduce){.sx-p3 .p3-skip{box-shadow:none}}
+
+.sx-p3 .p3-bg,.sx-p3 .p3c-bg{background-repeat:repeat;background-size:360px auto}
+.sx-p3 .p3-bg[data-i="3"]{background-blend-mode:screen}
+.sx-p3 .p3-skip{z-index:75}
+html.product-sheet-open .p3-skip{display:none!important}

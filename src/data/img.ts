@@ -12,3 +12,12 @@ export function img(name: string, width?: number) {
   return { src, width: w, height: Math.round((m.h * w) / m.w) };
 }
 export const has = (name: string) => name in im;
+
+// Product photos select an optimized source for the rendered slot and display density.
+// Keep the full-size source available for the separate zoom view.
+export function productImg(name: string, sizes: string) {
+  const m = im[name];
+  if (!m) throw new Error(`img: unknown asset ${name}`);
+  const widths = [...new Set(m.widths)];
+  return { ...img(name, 960), sizes, srcset: widths.map(w => `/img/${name}-${w}.webp ${w}w`).join(', ') };
+}

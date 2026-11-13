@@ -8,6 +8,7 @@ import { img } from '../data/img';
 import { P3D } from '../data/products3d';
 import { wa, waText } from '../data/business';
 const V = 'v2/prodotti-3d';
+const surfaces = [{bg:'#E7EEE5', motif:'onde'}, {bg:'#F1DEAE',motif:'alveare'}, {bg:'#DDEAE7',motif:'agrumi'}, {bg:'#0F6870',motif:'botanico'}];
 const shadowFor = (ml: string) => `${V}/luci-ombre/ombra-contatto-barattolo-150ml`;
 const data = P3D.map((p) => ({
   k: p.k, n: p.n, full: p.full, note: p.note, ml: p.ml, use: p.use, desc: p.desc, ing: p.ing, ink: p.ink, accent: p.accent,
@@ -31,8 +32,8 @@ const slots = [
   <!-- desktop pinned stage -->
   <a class="p3-skip" href="#catalogo">Salta al catalogo <span aria-hidden="true">↘</span></a>
   <div class="p3-pin">
-    <div class="p3-bgs">{P3D.map((p, i) => <img class="p3-bg" data-i={i} {...img(`${V}/sfondi-scroll/sfondo-${p.k}-desk`, 1600)} alt="" decoding="async" loading={i ? 'lazy' : 'eager'} />)}
-      <img class="p3-bg p3-bg-line" {...img(`${V}/linea/linea-petrolio-desk`, 1600)} alt="" loading="lazy" decoding="async" /></div>
+    <div class="p3-bgs">{P3D.map((p, i) => <div class="p3-bg" data-i={i} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/product-${surfaces[i].motif}.svg')`}></div>)}
+      <div class="p3-bg p3-bg-line" style="background-color:#0A4A50;background-image:url('/img/svg/product-onde.svg')"></div></div>
     <div class="p3-titles">{P3D.map((p, i) => <p class="p3-title" data-i={i} style={`color:${p.ink}`}>{p.n}</p>)}</div>
     <div class="p3-ings">{P3D.map((p, i) => p.pics.slice(0, 6).map((f, j) => (
       <img class="p3-ing" data-i={i} data-l={slots[j][3]} style={`left:${slots[j][0]}%;top:${slots[j][1]}%;height:${slots[j][2]}vh`} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />
@@ -64,7 +65,7 @@ const slots = [
     </article>
     {P3D.map((p, i) => (
       <article class="p3c" data-i={i} style={`--ink:${p.ink};--ac:${p.accent}`} aria-labelledby={`p3c-${p.k}`}>
-        <picture><source media="(max-width:767px)" srcset={img(`${V}/sfondi-scroll/sfondo-${p.k}-mob`, 960).src} /><img class="p3c-bg" {...img(`${V}/sfondi-scroll/sfondo-${p.k}-desk`, 1600)} alt="" loading="lazy" decoding="async" /></picture>
+        <div class="p3c-bg" style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/product-${surfaces[i].motif}.svg')`}></div>
         <div class="p3c-stage" aria-hidden="true">
           {p.pics.slice(0, 3).map((f, j) => <img class="p3c-ing" data-j={j} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />)}
           <canvas class="p3c-cv" data-i={i}></canvas>
@@ -200,7 +201,7 @@ const { P, art } = JSON.parse(document.getElementById('p3-data')!.textContent!) 
 const N = P.length;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const desk = matchMedia('(min-width:1024px)').matches && !reduced;
-const DPR = Math.min(innerWidth < 1200 ? 1.5 : 2, devicePixelRatio || 1);   // tablets 1.5, desktop 2
+const DPR = Math.min(3, devicePixelRatio || 1); // Physical pixel resolution, including Retina phones/tablets.
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
 sec.querySelector<HTMLAnchorElement>('.p3-skip')!.addEventListener('click', (e) => {
@@ -216,21 +217,24 @@ sec.querySelector<HTMLAnchorElement>('.p3-skip')!.addEventListener('click', (e) 
 });
 const sm = (x: number) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
 const fitCanvas = (cv: HTMLCanvasElement) => { const r = cv.getBoundingClientRect(); const w = Math.round(r.width * DPR), h = Math.round(r.height * DPR); if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } return { w: r.width, h: r.height }; };
-let ready = false;
+const pendingArt: Array<Promise<JarArt> | undefined> = [];
+function ensureArt(i: number) {
+  return pendingArt[i] ??= loadArt({jar: DPR > 1 ? art.jar : art.jarS, light: DPR > 1 ? art.light : art.lightS, shadow: P[i].shadow, label: P[i].label}).then(value => { arts[i] = value; return value; });
+}
 let bootPromise: Promise<void> | null = null;
 const boot = () => bootPromise ??= loadProducts();
 async function loadProducts() {
-  ready = true;
-  const big = desk && DPR > 1;
-  const list = await Promise.all(P.map((p) => loadArt({ jar: big ? art.jar : art.jarS, light: big ? art.light : art.lightS, shadow: p.shadow, label: p.label })));
-  arts.push(...list);
+  // First product becomes usable without waiting for all four labels.
+  await ensureArt(0);
   desk ? startDesk() : startCards();
   stills();
-};
+  if (desk) for (let i = 1; i < N; i++) ensureArt(i).then(stills);
+}
 new IntersectionObserver((es, o) => { if (es.some((e) => e.isIntersecting)) { o.disconnect(); boot(); } }, { rootMargin: '600px 0px' }).observe(sec);
 
 // ---------- static front views (line slide, sheet) ----------
 function still(cv: HTMLCanvasElement, i: number, rot = 0) {
+  if (!arts[i]) return;
   const { w, h } = fitCanvas(cv); const c = cv.getContext('2d')!; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
   drawJar(c, arts[i], w / 2, h * .92, w * .9, h * .8, rot);
 }
@@ -271,7 +275,7 @@ function startDesk() {
     if (active !== lastActive) { lastActive = active; txts.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); x.querySelectorAll<HTMLElement>('a,button').forEach((b) => (b.tabIndex = k === active ? 0 : -1)); }); chips.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); }); sec.style.setProperty('--hint', P[active].ink); }
     // copy fades out while the jars swap, so a moving jar never passes over readable text
     const swapK = i < N - 1 ? Math.abs(sw - .5) * 2 : 1, copyK = Math.min(swapK, 1 - lineK);
-    txts.forEach((x, k) => (x.style.opacity = k === active ? String(copyK) : '0'));
+    txts.forEach((x, k) => { x.style.opacity = k === active ? String(copyK) : '0'; x.inert = k !== active || lineK > .6; });
     chips.forEach((x, k) => (x.style.opacity = k === active ? String(copyK) : '0'));
     hint.style.opacity = String((1 - lineK) * (shown < .15 ? 1 : .45));
     line.style.opacity = String(lineK); line.classList.toggle('on', lineK > .6); line.querySelectorAll('button').forEach((b) => (b.tabIndex = lineK > .6 ? 0 : -1));
@@ -315,7 +319,7 @@ function startDesk() {
 function startCards() {
   const cards = [...sec.querySelectorAll<HTMLCanvasElement>('.p3c-cv')];
   const st = cards.map(() => ({ rot: 0, v: 0, target: null as null | number, vis: false, drag: null as null | { x: number; r: number } }));
-  const io = new IntersectionObserver((es) => es.forEach((e) => { const k = cards.indexOf(e.target as HTMLCanvasElement); st[k].vis = e.isIntersecting; if (e.isIntersecting && !reduced) st[k].target = 0; }), { threshold: .35 });
+  const io = new IntersectionObserver((es) => es.forEach((e) => { const k = cards.indexOf(e.target as HTMLCanvasElement); st[k].vis = e.isIntersecting; if (e.isIntersecting) { ensureArt(k); if (!reduced) st[k].target = 0; } }), { threshold: .35 });
   cards.forEach((cv, k) => {
     io.observe(cv);
     cv.addEventListener('pointerdown', (e) => { st[k].drag = { x: e.clientX, r: st[k].rot }; st[k].target = null; cv.setPointerCapture(e.pointerId); });
@@ -324,16 +328,21 @@ function startCards() {
   });
   sec.querySelectorAll<HTMLButtonElement>('.p3c-turn').forEach((b) => b.addEventListener('click', () => { const s = st[+b.dataset.i!]; const side = Math.abs(s.rot) < .15 ? .3 : 0; s.target = side; b.textContent = side ? 'Davanti' : 'Gira'; }));
   let last = performance.now();
+  const painted = cards.map(() => ({rot: NaN, width: 0, height: 0}));
   const frame = (now: number) => {
     requestAnimationFrame(frame); const dt = Math.min(.05, (now - last) / 1000); last = now;
     cards.forEach((cv, k) => {
-      const s = st[k]; if (!s.vis) return;
+      const s = st[k]; if (!s.vis || !arts[k]) return;
       if (!s.drag) {
         if (s.target !== null) { s.rot += (s.target - s.rot) * Math.min(1, dt * 4); if (Math.abs(s.target - s.rot) < .002) s.target = null; }
         else if (Math.abs(s.v) > .0005) { s.rot += s.v; s.v *= .92; }
         else s.v = 0;                                 // 6°/s when idle
       }
-      const { w, h } = fitCanvas(cv); const c = cv.getContext('2d')!; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
+      const { w, h } = fitCanvas(cv);
+      const prev = painted[k], rotation = reduced ? 0 : s.rot;
+      if (Math.abs(prev.rot - rotation) < .0001 && prev.width === cv.width && prev.height === cv.height) return;
+      painted[k] = {rot: rotation, width: cv.width, height: cv.height};
+      const c = cv.getContext('2d')!; c.imageSmoothingQuality = 'high'; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
       const jh = Math.min(h * .78, (w * .82) / 1.21);               // jar box ratio (opaque part) is ~1.21:1
       drawJar(c, arts[k], w / 2, h / 2 + jh / 2, w * .82, jh, reduced ? 0 : s.rot);
     });
@@ -356,7 +365,7 @@ function openSheet(i: number, from: HTMLElement) {
   if (arts[i]) requestAnimationFrame(() => still(sheet.querySelector('.p3s-cv') as HTMLCanvasElement, i));
 }
 function closeSheet() { if (sheet.hidden) return; sheet.hidden = true; document.documentElement.classList.remove("product-sheet-open"); sec.removeAttribute("inert"); document.querySelector(".site-header")?.removeAttribute("inert"); lockScroll(false); back?.focus({ preventScroll: true }); }
-sec.querySelectorAll<HTMLElement>('[data-open]').forEach((b) => b.addEventListener('click', () => { boot().then(() => openSheet(+b.dataset.open!, b)); }));
+sec.querySelectorAll<HTMLElement>('[data-open]').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.open!; Promise.all([boot(), ensureArt(i)]).then(() => openSheet(i, b)); }));
 sheet.querySelector('.p3s-x')!.addEventListener('click', closeSheet);
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
 </script>

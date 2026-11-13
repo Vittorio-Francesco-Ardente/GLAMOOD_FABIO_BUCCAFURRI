@@ -13,7 +13,7 @@ const browser=await pw.chromium.launch({executablePath:process.env.CHROME_PATH||
 const report=[];let failure;
 try {
  for(const width of [390,768,1440]){
- const context=await browser.newContext({viewport:{width,height:900},hasTouch:width<768,isMobile:width<768});
+ const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:width<1024?3:2,hasTouch:width<768,isMobile:width<768});
  await context.addInitScript(()=>sessionStorage.setItem('glamood-intro','1'));
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const base=`http://127.0.0.1:4329${prefix}`;
