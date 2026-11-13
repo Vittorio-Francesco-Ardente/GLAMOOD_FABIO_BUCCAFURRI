@@ -229,3 +229,15 @@ html.product-immersive .dock-host .barra,html.product-sheet-open .dock-host .bar
  html .sx-p3 .p3:not(.p3-at-line) .p3-dots{bottom:41px}
  html .sx-p3 .p3-nav .p3-nb:hover{background:#0A4A50}
 }
+
+/* Last screen "La linea Glamood": the site's bubble lettering, bigger, readable on the dark stage */
+html .sx-p3 .p3-line-k.bubble{display:flex;flex-wrap:wrap;justify-content:center;column-gap:.28em;font-family:"Glamood Bubble",var(--f-display)!important;font-weight:400!important;font-size:clamp(54px,6.6vw,120px)!important;line-height:.9!important;letter-spacing:-.04em!important;text-transform:lowercase!important;text-shadow:none!important;padding:0 16px}
+html .sx-p3 .p3-line-k.bubble .bw{margin-top:0}
+html .sx-p3 .p3-lj b{font-family:"Glamood Bubble",var(--f-display)!important;font-weight:400!important;font-size:clamp(26px,2.7vw,46px)!important;line-height:.95!important;letter-spacing:-.01em!important;text-transform:lowercase!important;max-width:none!important;text-wrap:balance;text-shadow:0 .05em 0 rgb(3 30 33 / .5)}
+html .sx-p3 .p3-lj i{font-size:clamp(15px,1.3vw,21px)!important}
+html .sx-p3 .p3-nav .p3-nb.is-exit{font-family:"Glamood Bubble",var(--f-display)!important;font-weight:400!important;font-size:clamp(26px,2.1vw,34px)!important;line-height:1!important;letter-spacing:0!important;text-transform:lowercase!important;height:auto!important;min-height:64px!important;padding:0 34px!important}
+html .sx-p3 .p3.p3-at-line .p3-dots{bottom:calc(max(28px,calc(env(safe-area-inset-bottom) + 20px)) + 84px)!important}
+@media (max-width:767px){
+ html .sx-p3 .p3-line-k.bubble{flex-direction:column;align-items:center;font-size:clamp(48px,15vw,72px)!important}
+ html .sx-p3 .p3-lj b{font-size:clamp(22px,6.6vw,30px)!important;max-width:36vw!important}
+}
