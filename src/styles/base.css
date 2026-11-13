@@ -61,8 +61,8 @@ html.run-fs .barra,html.run-fs .testa{opacity:0!important;pointer-events:none!im
 @media (max-width:1023px){#es-st,#so-po{display:none}}
 @media (max-width:767px){.ticket .seal{width:58px;top:14px}}
 /* aggiornamento 20: where the character stands (desktop, side of the section; never on text or buttons) */
-#pg-saluto{right:15%;bottom:9%}
-.tagli{position:relative}#pg-forbici{right:2.5%;top:clamp(56px,7vw,96px)}
+#pg-saluto{right:7%;bottom:6%;height:clamp(320px,52vh,560px)}
+.tagli{position:relative}#pg-forbici{right:2.5%;top:clamp(56px,7vw,96px);height:clamp(240px,32vh,360px)}
 /* game cover: the barber runs beside the start card */
 #run-wrap #pg-corre{position:absolute;right:9%;bottom:14%;height:46%;z-index:1}
 #run-wrap .ov-start[data-mode="pause"] #pg-corre{display:none}

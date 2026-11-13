@@ -16,7 +16,7 @@ const shadow = pose !== 'sbuca' && pose !== 'corre';
 
 <style is:global>
 /* the files are square with the figure centred; its feet sit ~1% above the bottom edge */
-.pg{position:absolute;z-index:2;margin:0;height:clamp(200px,28vh,300px);aspect-ratio:1;pointer-events:none;opacity:0;transform:translateY(16px) scale(.94);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
+.pg{position:absolute;z-index:2;margin:0;height:clamp(300px,46vh,520px);aspect-ratio:1;pointer-events:none;opacity:0;transform:translateY(16px) scale(.94);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
 .pg.pg-on{opacity:1;transform:none}
 .pg-im{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:contain;animation:pgBob 2.6s ease-in-out infinite alternate}
 .pg-sh{position:absolute;left:0;bottom:-3%;width:100%;height:9%;object-fit:cover;object-position:50% 50%;opacity:.75}   /* only the painted band of the shadow file */
