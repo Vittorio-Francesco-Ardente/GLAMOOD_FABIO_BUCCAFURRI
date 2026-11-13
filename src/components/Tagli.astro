@@ -56,6 +56,9 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .lb.s>span{writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.03em}
 .lb.n>span{font-size:calc(var(--H)*.05);letter-spacing:0}
 .lb.q img{position:absolute;left:8%;top:12%;width:84%;height:76%;object-fit:contain}
+/* Same haircut image as the opened detail sheet, framed inside every VHS cover.
+   These percentages match the photo window of the 1040x1880 front artwork. */
+.cv .cover-photo{position:absolute;left:7.5%;top:20.1%;width:85%;height:61%;display:block;object-fit:cover;object-position:center 38%;border-radius:4%;z-index:0;pointer-events:none}
 .ledge{position:absolute;left:0;right:0;bottom:0;height:var(--ledge);background:linear-gradient(var(--petrol-light),var(--petrol) 30%,var(--petrol-darker));box-shadow:0 -2px 0 rgb(255 255 255 / .25) inset,0 30px 40px -20px rgb(10 74 80 / .6)}
 .ledge::after{display:none;content:"";position:absolute;left:0;right:0;top:100%;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover;transform:scaleY(-1)}
 .probe{position:absolute;visibility:hidden;pointer-events:none;width:1px;height:var(--H)}
@@ -155,7 +158,7 @@ const frag = document.createDocumentFragment();
 for (let v = 0; v < N; v++) {
   const c = CUTS[v % NC], L = LAB[c[1]]; const el = document.createElement('div'); el.className = 'tape'; el.dataset.v = String(v);
   el.style.setProperty('--ar', L.ar); el.style.setProperty('--sar', L.sar);
-  el.innerHTML = `<div class="face sp" style="--tex:url(${urlFor(c[1], 'spine')})"><div class="lb n" style="${pos_(L.sq)}"><span>${String(v % NC + 1).padStart(2, '0')}</span></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="${brandUrl('faccia-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${urlFor(c[1], 'front')})"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="${c[2]}" data-r="bot" style="${pos_(L.bot)}"><span>${c[2]}</span></div></div><div class="face lt" style="--tex:url(${urlFor(c[1], 'lato')})"></div>`;
+  el.innerHTML = `<div class="face sp" style="--tex:url(${urlFor(c[1], 'spine')})"><div class="lb n" style="${pos_(L.sq)}"><span>${String(v % NC + 1).padStart(2, '0')}</span></div><div class="lb s" data-t="${c[0]}" data-r="spine" style="${pos_(L.spine)}"><span>${c[0]}</span></div><div class="lb q" style="${pos_(L.face)}"><img src="${brandUrl('faccia-petrolio-trasparente-480.webp')}" alt="" draggable="false"></div></div><div class="face cv" style="--tex:url(${urlFor(c[1], 'front')})"><img class="cover-photo" src="${urlFor(c[1], 'foto')}" alt="" loading="lazy" decoding="async" draggable="false"><div class="lb t" data-t="${c[0]}" data-r="top" style="${pos_(L.top)}"><span>${c[0]}</span></div><div class="lb b" data-t="${c[2]}" data-r="bot" style="${pos_(L.bot)}"><span>${c[2]}</span></div></div><div class="face lt" style="--tex:url(${urlFor(c[1], 'lato')})"></div>`;
   frag.append(el); tapes.push({ el, sp: el.children[0] as HTMLElement, cv: el.children[1] as HTMLElement, lt: el.children[2] as HTMLElement, lift: 0, hid: false });
 }
 stage.append(frag);
