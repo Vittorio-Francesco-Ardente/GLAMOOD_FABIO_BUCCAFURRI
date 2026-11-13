@@ -130,7 +130,7 @@ html.product-sheet-open .p3-skip{display:none!important}
 .site-header .sx-header .burger:hover{background:#F4EFE8}
 /* Skip link on portrait screens: just above the product card, never over the copy. */
 /* Portrait: the catalogue link lives inside the product card (top right), no floating pill. */
-@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1), (prefers-reduced-motion:no-preference) and (pointer:coarse){
+@media (prefers-reduced-motion:no-preference){
  html.product-immersive .sx-p3 .p3-skip,.sx-p3 .p3-skip{display:none!important}
 }
 /* Touch devices: keep the scroll stage fluid. No continuous re-rasterising of the big vector backgrounds,
@@ -172,7 +172,7 @@ html.product-sheet-open .p3-skip{display:none!important}
  .sx-cat .ct-filter button span{min-width:24px;height:24px;font-size:11px}
 }
 /* Touch tablets: same compact composition as phones, with more air and larger type. */
-@media (prefers-reduced-motion:no-preference) and (pointer:coarse) and (min-width:768px){
+@media (prefers-reduced-motion:no-preference) and (min-width:768px){
  .sx-p3 .p3-copy{height:236px!important;bottom:max(22px,env(safe-area-inset-bottom))!important}
  .sx-p3 .p3-txt{padding:22px 28px!important}
  .sx-p3 .p3-txt h3{font-size:clamp(32px,4vw,42px)!important}
@@ -192,7 +192,7 @@ html.product-sheet-open .p3-skip{display:none!important}
 }
 
 /* Touch tablets: "La linea" shows the three jars in one horizontal row. */
-@media (prefers-reduced-motion:no-preference) and (pointer:coarse) and (min-width:768px){
+@media (prefers-reduced-motion:no-preference) and (min-width:768px){
  .sx-p3 .p3-line-row{flex-wrap:nowrap!important;gap:2vw;align-items:flex-end}
  .sx-p3 .p3-lj,.sx-p3 .p3-lj:nth-child(2){order:0!important;flex-basis:auto!important;margin:0!important}
  .sx-p3 .p3-lj canvas,.sx-p3 .p3-lj:nth-child(2) canvas{width:min(27vw,34svh*1.16)!important}

@@ -174,9 +174,8 @@ const slots = [
  .p3-lj:hover i,.p3-lj:focus-visible i,.p3-lj:nth-child(2) i{opacity:1;transform:none}
  .p3-hint{position:absolute;z-index:6;left:50%;bottom:24px;translate:-50% 0;font:800 12px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--hint,#0F6870);opacity:.8;transition:opacity .4s}
 }
-/* ---------- portrait screens: same scroll stage, phone layout ---------- */
-/* compact composition: phones and every touch tablet (portrait or landscape) — name on top, jar centred, card centred below */
-@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1), (prefers-reduced-motion:no-preference) and (pointer:coarse){
+/* ---------- slider stage on every screen: name on top, jar centred, card below, arrows to change product (phones, tablets and desktop) ---------- */
+@media (prefers-reduced-motion:no-preference){
  .p3-titles{padding-top:calc(64px + 2svh)}
  .p3-title{font-size:min(23vw,14svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
  .p3-ing{scale:.72}
@@ -289,7 +288,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // The scroll-driven stage now runs on every screen (phones get a portrait layout); reduced motion keeps the static cards.
 const desk = !reduced;
 const coarse = matchMedia('(pointer:coarse)').matches;
-const portrait = () => coarse || innerHeight > innerWidth * 1.05;   // compact layout (phones + touch tablets)
+const portrait = () => true;   // one slider layout on every screen (arrows, dots, swipe)
 const DPR = Math.min(3, devicePixelRatio || 1); // Physical pixel resolution, including Retina phones/tablets.
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
@@ -341,7 +340,7 @@ function stills() { document.querySelectorAll<HTMLCanvasElement>('canvas[data-st
 
 // ---------- desktop pinned stage ----------
 // compact screens (phones, touch tablets): the stage is a one-screen slider instead of a scroll-pinned scene
-const compact = () => coarse || innerHeight > innerWidth * 1.05;
+const compact = () => true;
 const stepOf = (v: number) => (v > N - .5 ? N : Math.round(Math.min(v, N - 1)));
 let goStep: (k: number, keepInLine?: boolean) => void = () => {};
 function startDesk() {
@@ -403,6 +402,7 @@ function startDesk() {
   };
   const curStep = () => stepOf(compact() ? slideT : shown);
   prevB.addEventListener('click', () => goStep(curStep() - 1));
+  addEventListener('keydown', (ev) => { if (!on || ev.altKey || ev.ctrlKey || ev.metaKey || (ev.target as HTMLElement)?.closest?.('input,textarea,select,[contenteditable]') || !sheet.hidden) return; if (ev.key === 'ArrowRight') { ev.preventDefault(); goStep(curStep() + 1); } else if (ev.key === 'ArrowLeft') { ev.preventDefault(); goStep(curStep() - 1); } });
   nav.querySelectorAll<HTMLButtonElement>('.p3-dots button').forEach((d) => d.addEventListener('click', () => goStep(+d.dataset.step!, true)));
   nextB.addEventListener('click', () => goStep(curStep() + 1));
   let navStep = -1;
@@ -474,7 +474,7 @@ function startDesk() {
     const key = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${tBottom | 0}|${cTop | 0}|${arts.length}|${arts[i] ? 1 : 0}${arts[nx] ? 1 : 0}`;
     if (key === lastKey) return; lastKey = key;
     const w = cw, h = chh; c.setTransform(SDPR, 0, 0, SDPR, 0, 0); c.clearRect(0, 0, w, h);
-    const tall = coarse || h > w * 1.05;
+    const tall = true;
     const jarYv = `${Math.round(tall ? tBottom + 14 + (cTop - tBottom - 64) / 2 : h * .55)}px`; if (pin.style.getPropertyValue('--jar-y') !== jarYv) pin.style.setProperty('--jar-y', jarYv);
     // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
     const avail = cTop - tBottom - 64;   /* room for the page dots between jar and card */
