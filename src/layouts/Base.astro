@@ -61,5 +61,23 @@ if (business.geo) ld.geo = { '@type': 'GeoCoordinates', latitude: business.geo.l
 <body class={bodyClass}>
   <slot />
   <Deco />
+  <script is:inline>
+    // Deterrent against casual "copy/save image": block the context menu and dragging on
+    // images, canvases, videos and elements painted with a CSS background image.
+    (function () {
+      var MEDIA = /^(IMG|PICTURE|CANVAS|VIDEO|SVG|IMAGE)$/i;
+      function isImage(el) {
+        for (var i = 0; el && el.nodeType === 1 && i < 6; i++, el = el.parentElement) {
+          if (MEDIA.test(el.nodeName)) return true;
+          var bg = getComputedStyle(el).backgroundImage;
+          if (bg && bg !== 'none') return true;
+          if (/^(A|BUTTON|INPUT|TEXTAREA|P|H[1-6]|LI|SPAN)$/i.test(el.nodeName) && el.textContent && el.textContent.trim()) return false;
+        }
+        return false;
+      }
+      document.addEventListener('contextmenu', function (e) { if (isImage(e.target)) e.preventDefault(); }, true);
+      document.addEventListener('dragstart', function (e) { if (isImage(e.target)) e.preventDefault(); }, true);
+    })();
+  </script>
 </body>
 </html>
