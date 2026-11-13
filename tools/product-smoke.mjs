@@ -13,10 +13,12 @@ const browser=await pw.chromium.launch({executablePath:process.env.CHROME_PATH||
 const report=[];let failure;
 try {
  const initial=await browser.newPage({viewport:{width:390,height:844}});
+ await initial.clock.install({time:new Date('2026-11-13T10:00:00Z')});
+ await initial.clock.pauseAt(new Date('2026-11-13T10:00:01Z'));
  await initial.goto(`http://127.0.0.1:4329${prefix}/`,{waitUntil:'domcontentloaded'});
  assert(await initial.locator('#intro .loader-emblem img').count(),'entry uses the face emblem');
  await initial.screenshot({path:'qa/product-experience/entry-loader.png'});
- await initial.waitForTimeout(1250);
+ await initial.clock.runFor(1300);
  assert.equal(await initial.locator('#intro').count(),0,'entry loader clears');
  await initial.close();
  for(const width of [390,768,1440]){
