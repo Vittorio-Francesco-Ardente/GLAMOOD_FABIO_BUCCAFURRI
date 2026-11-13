@@ -132,6 +132,8 @@ html.product-sheet-open .p3-skip{display:none!important}
 /* Portrait: the catalogue link lives inside the product card (top right), no floating pill. */
 @media (prefers-reduced-motion:no-preference){
  html.product-immersive .sx-p3 .p3-skip,.sx-p3 .p3-skip{display:none!important}
+ /* the script drives the card opacity every frame: a CSS transition on top only leaves the old card lingering */
+ html .sx-p3 .p3-copy .p3-txt{transition:none!important}
 }
 /* Touch devices: keep the scroll stage fluid. No continuous re-rasterising of the big vector backgrounds,
    no blur / shadow filters on moving layers, no huge text shadow on the wiping titles. */
