@@ -32,7 +32,7 @@ try {
  await page.goto(base+'/prodotti',{waitUntil:'networkidle'});await page.waitForTimeout(600);
  assert(await page.locator('.p3-skip').isVisible(),'skip is visible');
  assert(await page.locator('.testa').isVisible(),'one header on every page, products included');
- assert.equal(await page.locator('.barra').evaluate(e=>getComputedStyle(e).visibility),'hidden','dock hidden in intro');
+ assert.equal(await page.locator('.barra').evaluate(e=>getComputedStyle(e).opacity),'0','dock hidden in intro');
  await capture('intro');
  if(width>=1024){await page.locator('.p3-txt.on .p3-more').click();await page.locator('#p3s').waitFor({state:'visible'});await capture('sheet');await page.locator('.p3s-x').click();await page.locator('#p3s').waitFor({state:'hidden'});}
  await page.locator('.p3-skip').click();await page.waitForTimeout(700);

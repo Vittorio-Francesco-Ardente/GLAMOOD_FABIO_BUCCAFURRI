@@ -12,7 +12,8 @@
 
 /* /prodotti: the same header floats over the first product scene, transparent. */
 .site-header-products{position:absolute;top:0;left:0;right:0;background:transparent!important}
-html.product-immersive .sx-header .barra,html.product-sheet-open .sx-header .barra{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+/* over the product stage the dock slides away (same motion as when it appears), never a hard cut */
+html.product-immersive .sx-header .barra,html.product-sheet-open .sx-header .barra{opacity:0!important;pointer-events:none!important;transform:translate(-50%,calc(100% + 40px))!important}
 html.product-immersive .p3-skip{display:inline-flex}
 #h-mf,#h-ml{display:none!important}
 .sx-cat .ct-head{padding-top:64px;padding-bottom:32px}

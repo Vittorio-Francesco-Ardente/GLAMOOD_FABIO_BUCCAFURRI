@@ -104,6 +104,7 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
  box-shadow:inset 0 1px #ffffffbf,inset 0 -1px #0000000f,0 24px 40px -16px rgb(6 40 44 / .55),0 6px 14px -6px rgb(6 40 44 / .3);
  opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 40px));transition:transform .6s cubic-bezier(.2,.9,.25,1.05),opacity .4s}
 &.scorre .barra{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.barra.no-anim .cursore{transition:none!important}
 .barra .cursore{position:absolute;z-index:0;top:7px;left:0;width:0;height:calc(100% - 14px);border-radius:17px;background:var(--petrol);box-shadow:inset 0 1px #ffffff40,0 10px 18px -8px rgb(6 40 44 / .6);transition:transform .16s linear,width .16s linear;will-change:transform,width}
 .barra .voce{position:relative;z-index:1;display:inline-flex;align-items:center;height:48px;padding:0 15px;border-radius:17px;color:var(--petrol);text-decoration:none;font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em;transition:color .3s}
 .barra .voce svg{width:21px;height:21px;flex:none}
@@ -240,16 +241,20 @@ const syncSaloneLinks = () => {
 };
 syncSaloneLinks();
 addEventListener('resize', syncSaloneLinks, { passive:true });
+// One read per frame, writes only when something changes; the dock has hysteresis (appears after 160px,
+// leaves only back under 70px) so momentum and the iOS bounce never make it flicker in and out.
+const immersiveEl = document.querySelector<HTMLElement>('.p3');
+let dockOn = false, immOn = false, scrollRaf = 0;
 const onScroll = () => {
+  scrollRaf = 0;
   const y = window.scrollY || document.documentElement.scrollTop;
-  const immersive = document.querySelector<HTMLElement>('.p3');
-  const rect = immersive?.getBoundingClientRect();
-  const active = !!rect && rect.top < innerHeight * .65 && rect.bottom > 80;
-  document.documentElement.classList.toggle('product-immersive', active);
-  root.classList.remove('header-hidden');
-  root.classList.toggle('scorre', !active && y > 140);
+  let active = false;
+  if (immersiveEl) { const rect = immersiveEl.getBoundingClientRect(); active = rect.top < innerHeight * .65 && rect.bottom > 80; }
+  if (active !== immOn) { immOn = active; document.documentElement.classList.toggle('product-immersive', active); }
+  const want = !active && (dockOn ? y > 70 : y > 160);
+  if (want !== dockOn) { dockOn = want; root.classList.toggle('scorre', want); }
 };
-onScroll(); addEventListener('scroll', onScroll, { passive: true });
+onScroll(); addEventListener('scroll', () => { if (!scrollRaf) scrollRaf = requestAnimationFrame(onScroll); }, { passive: true });
 // link colour follows what is really under the header (light page, photo, petrol hero…)
 const lum = (c: string) => { const m = c.match(/[\d.]+/g); if (!m) return null; const [r, g, b, a = '1'] = m.map(Number) as any; if (+a < .5) return null; return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; };
 const shell = root.closest<HTMLElement>('.site-header');
@@ -313,8 +318,8 @@ const go = (v: HTMLElement) => { clearTimeout(t); target = v; voci.forEach((x) =
 voci.forEach((v) => { v.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') go(v); }); v.addEventListener('focus', () => go(v)); });
 barra.addEventListener('pointerleave', () => { t = setTimeout(() => go(home), 120); });
 barra.addEventListener('focusout', (e) => { if (!barra.contains(e.relatedTarget as Node)) go(home); });
-go(home); addEventListener('resize', () => go(target));
-document.fonts.ready.then(() => go(target));
+barra.classList.add('no-anim'); go(home); addEventListener('resize', () => go(target));
+document.fonts.ready.then(() => { go(target); requestAnimationFrame(() => requestAnimationFrame(() => barra.classList.remove('no-anim'))); });
 // menu
 // the circle grows from, and shrinks back into, the button that is actually on screen
 let opener: HTMLElement = burger;

@@ -152,7 +152,7 @@ const cart = new Image();
 const loadCartoon = () => { if (!cart.src) cart.src = (photoEl.currentSrc || photoEl.src).replace('fabio-foto', 'fabio-cartoon'); };
 const mask = document.createElement('canvas'), mx = mask.getContext('2d')!, rim = document.createElement('canvas'), rx = rim.getContext('2d')!;
 let W = 0, H = 0, dpr = 1, pts: any[] = [], pace = 0, last: any = null, full = 0, active = false;
-function size() { const r = cv.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, touch ? 1.5 : 2); W = cv.width = mask.width = rim.width = Math.round(r.width * dpr); H = cv.height = mask.height = rim.height = Math.round(r.height * dpr); }
+function size() { const r = cv.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, touch ? 1.25 : 1.5); /* six full-canvas composites per frame: keep the buffer light */ W = cv.width = mask.width = rim.width = Math.round(r.width * dpr); H = cv.height = mask.height = rim.height = Math.round(r.height * dpr); }
 size(); new ResizeObserver(() => { size(); wake(); }).observe(fig);
 function add(x: number, y: number) {
   loadCartoon();
@@ -171,6 +171,14 @@ function puffs(c: CanvasRenderingContext2D, grow: number) {
     for (const f of p.puffs) { c.beginPath(); c.arc(p.x + f.dx * s, p.y + f.dy * s, f.r * s + grow, 0, 6.283); c.fill(); } }
 }
 const tmp = document.createElement('canvas'); const tx = tmp.getContext('2d')!;
+// photo and cartoon are scaled once into canvas-sized buffers; each frame then copies them 1:1 (much cheaper
+// than resampling the 1800px source images every frame)
+const scaledCache: Record<string, HTMLCanvasElement> = {};
+function scaled(im: HTMLImageElement, key: string, R: [number, number, number, number]) {
+  const k = `${key}|${W}|${H}|${im.currentSrc || im.src}`; let c = scaledCache[key];
+  if (!c || (c as any)._k !== k) { c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d')!.drawImage(im, ...R); (c as any)._k = k; scaledCache[key] = c; }
+  return c;
+}
 function draw() {
   const now = performance.now(); pts = pts.filter((p) => now - p.t < LIFE);
   mx.clearRect(0, 0, W, H); rx.clearRect(0, 0, W, H); mx.fillStyle = '#000'; rx.fillStyle = '#F4EFE8';
@@ -180,17 +188,18 @@ function draw() {
   // Only the cloud drawn by the pointer reveals the cartoon: no forced shapes around the arm.
 
   ctx.clearRect(0, 0, W, H);
-  if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
+  if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(scaled(photoEl, 'photo', R), 0, 0); photoEl.style.opacity = '0'; }
   ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.drawImage(mask, 0, 0); ctx.restore();
   rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
   if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
   if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; } else tx.clearRect(0, 0, W, H);
   tx.globalCompositeOperation = 'source-over'; tx.drawImage(mask, 0, 0); tx.globalCompositeOperation = 'source-in';
-  if (cart.complete && cart.naturalWidth) tx.drawImage(cart, ...R);
+  if (cart.complete && cart.naturalWidth) tx.drawImage(scaled(cart, 'cart', R), 0, 0);
   ctx.drawImage(tmp, 0, 0);
-  active = pts.length > 0 || (full > 0 && full < 1); if (active) requestAnimationFrame(draw);
+  active = heroOn && (pts.length > 0 || (full > 0 && full < 1)); if (active) requestAnimationFrame(draw);
 }
-function wake() { if (!active) { active = true; requestAnimationFrame(draw); } }
+let heroOn = true; new IntersectionObserver((es) => { heroOn = es[0].isIntersecting; if (heroOn && pts.length) wake(); }).observe(fig);
+function wake() { if (!active && heroOn) { active = true; requestAnimationFrame(draw); } }
 if (!reduced) {
   fig.addEventListener('pointermove', (e) => add(e.clientX, e.clientY));
   fig.addEventListener('pointerdown', (e) => add(e.clientX, e.clientY));
