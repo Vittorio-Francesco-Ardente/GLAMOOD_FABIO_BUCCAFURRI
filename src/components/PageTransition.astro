@@ -5,36 +5,37 @@
 import { img } from '../data/img';
 ---
 <script is:inline>
-  (function(){try{if(sessionStorage.getItem('glamood-pt')==='1'){document.documentElement.classList.add('pt-arrive');sessionStorage.removeItem('glamood-pt');}}catch(e){}})();
+  // Arrival cover only right after one of our own transitions (flag younger than 6 s), so a stale flag never covers a normal visit.
+  (function(){try{var t=+sessionStorage.getItem('glamood-pt')||0;sessionStorage.removeItem('glamood-pt');if(t&&Date.now()-t<6000)document.documentElement.classList.add('pt-arrive');}catch(e){}})();
 </script>
-<div class="pt-cover" id="pt-cover" aria-hidden="true"><img class="pt-g" {...img('brand/G-rasoio-crema-trasparente', 480)} alt="" decoding="async" /></div>
+<div class="pt-cover" id="pt-cover" aria-hidden="true"><img class="pt-g" {...img('brand/G-rasoio-crema-trasparente', 480)} alt="" decoding="sync" loading="eager" fetchpriority="high" /></div>
+<script is:inline>
+  (function(){var h=document.documentElement;if(!h.classList.contains('pt-arrive'))return;var c=document.getElementById('pt-cover'),done=false;
+  var lift=function(){if(done)return;done=true;requestAnimationFrame(function(){requestAnimationFrame(function(){c.classList.add('out');setTimeout(function(){h.classList.remove('pt-arrive');c.classList.remove('in','out');},520);});});};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',lift,{once:true});else lift();setTimeout(lift,700);})();
+</script>
 <style is:global>
 .pt-cover{position:fixed;inset:0;z-index:calc(var(--z-loader) + 10);display:grid;place-items:center;pointer-events:none;background:var(--petrol-darker) url("/img/svg/pattern-liquido-tono.svg") center/cover;transform:translate3d(0,100%,0);will-change:transform;backface-visibility:hidden}
 /* The G sits directly on the pattern: no disc, ring or spinner around it. */
 .pt-g{width:clamp(76px,9vw,124px);height:auto;opacity:0;will-change:transform,opacity}
-.pt-cover.in .pt-g{animation:ptG .3s .08s cubic-bezier(.16,1,.3,1) both}
+.pt-cover.in .pt-g{animation:ptG .28s .06s cubic-bezier(.16,1,.3,1) both}
 .pt-arrive .pt-cover .pt-g{opacity:1}
 .pt-cover.out .pt-g{animation:ptGout .25s ease-in both}
 @keyframes ptG{from{opacity:0;transform:translateY(18px) scale(.92)}to{opacity:1;transform:none}}
 @keyframes ptGout{from{opacity:1}to{opacity:0;transform:translateY(-16px)}}
-.pt-cover.in{transform:translate3d(0,0,0);transition:transform .42s cubic-bezier(.76,0,.24,1);pointer-events:auto}
-.pt-arrive .pt-cover{transform:translate3d(0,0,0)}
-.pt-cover.out{transform:translate3d(0,-100%,0)!important;transition:transform .5s cubic-bezier(.76,0,.24,1)}
+.pt-cover.in{transform:translate3d(0,0,0);transition:transform .36s cubic-bezier(.65,0,.35,1);pointer-events:auto}
+.pt-arrive .pt-cover{transform:translate3d(0,0,0);animation:ptSafe .45s 1.6s cubic-bezier(.65,0,.35,1) forwards}
+.pt-cover.out{transform:translate3d(0,-100%,0)!important;transition:transform .48s cubic-bezier(.65,0,.35,1);animation:none}
+/* last resort with no JavaScript at all: the cover lifts by itself */
+@keyframes ptSafe{to{transform:translate3d(0,-100%,0)}}
 @media (prefers-reduced-motion:reduce){.pt-cover{display:none}}
 </style>
 <script>
 const cover = document.getElementById('pt-cover')!;
 const html = document.documentElement;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-// Arrival starts only after one painted frame, with a bounded fail-safe.
-const resetCover = () => { html.classList.remove('pt-arrive'); cover.classList.remove('in', 'out', 'runs'); };
-if (html.classList.contains('pt-arrive')) {
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    cover.classList.add('out'); window.setTimeout(resetCover, 560);
-  }));
-  window.setTimeout(resetCover, 1600);
-}
-let navigating = false;
+const resetCover = () => { html.classList.remove('pt-arrive'); cover.classList.remove('in', 'out'); };
+let navigating = false, navTimer = 0;
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 function toTop() {
   const y0 = scrollY; if (y0 <= 0) return;
@@ -47,25 +48,47 @@ function toTop() {
   requestAnimationFrame(step);
 }
 const norm = (p: string) => p.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '') || '/';
+// which links we take over: same site, a different page, opened in this tab
+function target(el: EventTarget | null) {
+  const a = (el as Element | null)?.closest?.('a') as HTMLAnchorElement | null;
+  if (!a || !a.href || (a.target && a.target !== '_self') || a.hasAttribute('download') || a.hasAttribute('data-maps')) return null;
+  const url = new URL(a.href, location.href);
+  if (url.origin !== location.origin || !/^https?:$/.test(url.protocol)) return null;
+  return { url, same: norm(url.pathname) === norm(location.pathname) };
+}
+// prefetch the next page as soon as the pointer or finger is on its link: by the time the cover is up it is already here
+const fetched = new Set<string>();
+function prefetch(e: Event) {
+  const t = target(e.target); if (!t || t.same) return;
+  const href = t.url.href.split('#')[0]; if (fetched.has(href)) return; fetched.add(href);
+  const l = document.createElement('link'); l.rel = 'prefetch'; l.href = href; l.as = 'document'; document.head.appendChild(l);
+}
+document.addEventListener('pointerover', prefetch, { passive: true });
+document.addEventListener('touchstart', prefetch, { passive: true });
+document.addEventListener('focusin', prefetch);
 document.addEventListener('click', (e) => {
   if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-  const a = (e.target as Element).closest('a') as HTMLAnchorElement | null;
-  if (!a || a.target === '_blank' || a.hasAttribute('download') || a.hasAttribute('data-maps')) return;
-  const url = new URL(a.href, location.href);
-  if (url.origin !== location.origin) return;
-  if (norm(url.pathname) === norm(location.pathname)) {
-    if (url.hash) return; // in-page anchors are handled by the motion engine
+  const t = target(e.target); if (!t) return;
+  if (t.same) {
+    if (t.url.hash) return; // in-page anchors are handled by the motion engine
     e.preventDefault(); toTop(); return;
   }
   if (reduced) return;
   e.preventDefault();
-  cover.classList.remove('out'); cover.classList.add('in');
-  if (navigating) return;
+  if (navigating) return; // a second tap never restarts the transition
   navigating = true;
-  try { sessionStorage.setItem('glamood-pt', '1'); sessionStorage.setItem('glamood-intro', '1'); } catch (err) {}
-  setTimeout(() => { location.assign(url.href); }, 440);
-
+  try { sessionStorage.setItem('glamood-pt', String(Date.now())); sessionStorage.setItem('glamood-intro', '1'); } catch (err) {}
+  html.classList.remove('pt-arrive'); cover.classList.remove('out');
+  void cover.offsetWidth; cover.classList.add('in');
+  let gone = false;
+  const go = () => { if (gone) return; gone = true; location.assign(t.url.href); };
+  cover.addEventListener('transitionend', (ev) => { if (ev.target === cover) go(); }, { once: true });
+  window.setTimeout(go, 400);
+  // if the browser never leaves (navigation cancelled, offline), give the page back
+  window.clearTimeout(navTimer);
+  navTimer = window.setTimeout(() => { if (document.visibilityState === 'visible') { cover.classList.add('out'); window.setTimeout(resetCover, 520); navigating = false; } }, 8000);
 });
 // back/forward cache: never come back to a covered page
-addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) { resetCover(); navigating = false; } });
+addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) { window.clearTimeout(navTimer); resetCover(); navigating = false; } });
+addEventListener('pagehide', () => { window.clearTimeout(navTimer); });
 </script>
