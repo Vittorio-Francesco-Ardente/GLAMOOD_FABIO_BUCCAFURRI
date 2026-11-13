@@ -201,11 +201,15 @@ function draw() {
 let heroOn = true; new IntersectionObserver((es) => { heroOn = es[0].isIntersecting; if (heroOn && pts.length) wake(); }).observe(fig);
 function wake() { if (!active && heroOn) { active = true; requestAnimationFrame(draw); } }
 if (!reduced) {
-  fig.addEventListener('pointermove', (e) => add(e.clientX, e.clientY));
-  fig.addEventListener('pointerdown', (e) => add(e.clientX, e.clientY));
+  // mouse: the cloud follows the pointer. Touch: only a real tap starts it, so a finger that scrolls the page over Fabio costs nothing
+  let tap: null | { x: number; y: number } = null;
+  fig.addEventListener('pointermove', (e) => { if (e.pointerType !== 'touch' && e.pointerType !== 'pen') add(e.clientX, e.clientY); else if (tap && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 10) tap = null; });
+  fig.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'touch' && e.pointerType !== 'pen') add(e.clientX, e.clientY); else tap = { x: e.clientX, y: e.clientY }; });
+  fig.addEventListener('pointerup', (e) => { if (tap) add(e.clientX, e.clientY); tap = null; });
+  fig.addEventListener('pointercancel', () => { tap = null; });
   // idle auto-sweep once after load (teaches the effect), after the intro if it plays
-  const sweep = () => { loadCartoon(); const go = () => { const r = fig.getBoundingClientRect(); const t0 = performance.now();
-    const sw = (t: number) => { const k = (t - t0) / 1200; if (k > 1) return; add(r.left + r.width * (0.2 + 0.6 * k), r.top + r.height * (0.32 + 0.1 * Math.sin(k * 6))); requestAnimationFrame(sw); }; requestAnimationFrame(sw); };
+  const sweep = () => { if (scrollY > 20) return; loadCartoon(); const go = () => { const r = fig.getBoundingClientRect(); const t0 = performance.now();
+    const sw = (t: number) => { const k = (t - t0) / 1200; if (k > 1 || scrollY > 20) return; add(r.left + r.width * (0.2 + 0.6 * k), r.top + r.height * (0.32 + 0.1 * Math.sin(k * 6))); requestAnimationFrame(sw); }; requestAnimationFrame(sw); };
     if (cart.complete && cart.naturalWidth) go(); else cart.onload = go; };
   const delay = document.documentElement.classList.contains('loading') ? 3400 : 900;
   const ready = () => setTimeout(sweep, delay);

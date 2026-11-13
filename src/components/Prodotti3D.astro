@@ -417,6 +417,7 @@ function startDesk() {
   (window as any).__p3sync = syncNav; syncNav();
   // compact screens are real slides (arrows / swipe), no scroll-linked snapping: nothing to fight with the browser scroll
 
+  const put = (el: any, k: string, v: string) => { const c = el._pc || (el._pc = {}); if (c[k] !== v) { c[k] = v; el.style[k] = v; } };
   function tick(now: number) {
     raf = on ? requestAnimationFrame(tick) : 0;
     const dt = Math.min(.05, (now - (lastT || now)) / 1000); lastT = now;
@@ -428,22 +429,22 @@ function startDesk() {
     const lineK = sm((shown - (N - .15)) / .4);
     // which product is on stage, and the slide between two products in the last 22% of each segment
     const sw = sm(sm((t - .6) / .4)), nx = Math.min(N - 1, i + 1);
-    bgs.forEach((b, k) => { b.style.opacity = String(k === N ? lineK : k === i ? 1 - (i < N - 1 ? sw : 0) : k === nx && i < N - 1 ? sw : 0); });
+    bgs.forEach((b, k) => { put(b, 'opacity', String(k === N ? lineK : k === i ? 1 - (i < N - 1 ? sw : 0) : k === nx && i < N - 1 ? sw : 0)); });
     const active = sw > .5 && i < N - 1 ? nx : i;
     if (active !== lastActive) { lastActive = active; dispatchEvent(new Event('glamood:surface')); txts.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); x.querySelectorAll<HTMLElement>('a,button').forEach((b) => (b.tabIndex = k === active ? 0 : -1)); }); chips.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); }); sec.style.setProperty('--hint', P[active].ink); }
     // copy fades out while the jars swap, so a moving jar never passes over readable text
     const swapK = i < N - 1 ? Math.abs(sw - .5) * 2 : 1, copyK = Math.min(swapK, 1 - lineK);
-    txts.forEach((x, k) => { x.style.opacity = k === active ? String(copyK) : '0'; x.inert = k !== active || lineK > .6; });
-    chips.forEach((x, k) => (x.style.opacity = k === active ? String(copyK) : '0'));
-    hint.style.opacity = String((1 - lineK) * (shown < .15 ? 1 : .45));
-    line.style.opacity = String(lineK); line.classList.toggle('on', lineK > .6); const atLine = lineK > .5; if (sec.classList.contains('p3-at-line') !== atLine) { sec.classList.toggle('p3-at-line', atLine); dispatchEvent(new Event('glamood:surface')); } (window as any).__p3sync?.(); line.querySelectorAll('button').forEach((b) => (b.tabIndex = lineK > .6 ? 0 : -1));
+    txts.forEach((x, k) => { put(x, 'opacity', k === active ? String(copyK) : '0'); { const v = k !== active || lineK > .6; if (x.inert !== v) x.inert = v; } });
+    chips.forEach((x, k) => put(x, 'opacity', k === active ? String(copyK) : '0'));
+    put(hint, 'opacity', String((1 - lineK) * (shown < .15 ? 1 : .45)));
+    put(line, 'opacity', String(lineK)); line.classList.toggle('on', lineK > .6); const atLine = lineK > .5; if (sec.classList.contains('p3-at-line') !== atLine) { sec.classList.toggle('p3-at-line', atLine); dispatchEvent(new Event('glamood:surface')); } (window as any).__p3sync?.(); line.querySelectorAll('button').forEach((b) => (b.tabIndex = lineK > .6 ? 0 : -1));
     // giant titles: mask wipe up for the current, down for the next
     titles.forEach((el, k) => {
       let reveal = 0, dy = 0;
       if (k === i) { reveal = 1 - (i < N - 1 ? sw : 0); dy = -sw * 20; }
       else if (k === nx && i < N - 1) { reveal = sw; dy = (1 - sw) * 20; }
       reveal *= 1 - lineK;
-      el.style.clipPath = `inset(${(1 - reveal) * 100}% 0 0 0)`; el.style.transform = `translateY(${dy}px)`;
+      put(el, 'clipPath', `inset(${(1 - reveal) * 100}% 0 0 0)`); put(el, 'transform', `translateY(${dy}px)`);
     });
     // ingredients: three depth layers, own drift; enter from below, leave upward
     const time = (now - t0) / 1000;
@@ -454,7 +455,7 @@ function startDesk() {
       const sp = [.5, .8, 1.2][l], amp = [8, 14, 22][l];
       const y = enter * 260 * (l + 1) / 2 + Math.sin(time * sp + k) * amp;   // only the gentle float + the swap: no jump when the product changes
       const x = Math.cos(time * sp * .7 + k * 1.7) * amp * .8;
-      el.style.opacity = String(vis); el.style.transform = `translate(${x}px,${y}px) rotate(${Math.sin(time * sp * .6 + k) * 8}deg) scale(${.96 + vis * .04})`;
+      put(el, 'opacity', String(vis)); put(el, 'transform', `translate(${x}px,${y}px) rotate(${Math.sin(time * sp * .6 + k) * 8}deg) scale(${.96 + vis * .04})`);
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
     // redraw the canvas only when something visible changed (idle frames cost nothing, key for phones)

@@ -86,6 +86,8 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
  .links{gap:clamp(10px,1.2vw,16px)}
  .links a{font-size:clamp(11px,1.12vw,14px);letter-spacing:.03em}
  .soc{gap:3px}
+ /* small desktops: the social icons give their room to the page links (they are also in the menu) */
+ .soc .icon{display:none}
  .btn-pre{padding-inline:14px}
 }
 .icon{width:44px;height:44px;display:none;place-items:center;border-radius:50%;color:var(--hc);transition:background .2s,transform .2s var(--ease-out)}
@@ -250,12 +252,14 @@ addEventListener('resize', syncSaloneLinks, { passive:true });
 // One read per frame, writes only when something changes; the dock has hysteresis (appears after 160px,
 // leaves only back under 70px) so momentum and the iOS bounce never make it flicker in and out.
 const immersiveEl = document.querySelector<HTMLElement>('.p3');
-let dockOn = false, immOn = false, scrollRaf = 0;
+let dockOn = false, immOn = false, scrollRaf = 0, immTop = 0, immH = 0;
+const measureImm = () => { if (!immersiveEl) return; immTop = immersiveEl.getBoundingClientRect().top + scrollY; immH = immersiveEl.offsetHeight; };
+measureImm(); addEventListener('load', measureImm); addEventListener('resize', measureImm, { passive: true }); if (immersiveEl) new ResizeObserver(measureImm).observe(immersiveEl);
 const onScroll = () => {
   scrollRaf = 0;
   const y = window.scrollY || document.documentElement.scrollTop;
   let active = false;
-  if (immersiveEl) { const rect = immersiveEl.getBoundingClientRect(); active = rect.top < innerHeight * .65 && rect.bottom > 80; }
+  if (immersiveEl) { const top = immTop - y; active = top < innerHeight * .65 && top + immH > 80; }
   if (active !== immOn) { immOn = active; document.documentElement.classList.toggle('product-immersive', active); }
   const want = !active && (dockOn ? y > 70 : y > 160);
   if (want !== dockOn) { dockOn = want; root.classList.toggle('scorre', want); }

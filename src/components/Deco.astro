@@ -31,5 +31,9 @@ const tick = () => {
     el.style.transform = `translateY(${(-p * k * r.height).toFixed(1)}px) rotate(${(p * rot).toFixed(2)}deg) scale(${(1 + Math.abs(p) * -0.03).toFixed(3)})`;
   });
 };
+// animated section patterns (.bgref) are big layers: run their animation only while the section is on screen
+const pats = [...document.querySelectorAll<HTMLElement>('.bgref')];
+const pio = new IntersectionObserver((es) => es.forEach((e) => { (e.target as HTMLElement).style.animationPlayState = e.isIntersecting ? 'running' : 'paused'; }), { rootMargin: '5% 0px' });
+pats.forEach((el) => { el.style.animationPlayState = 'paused'; pio.observe(el); });
 if (!reduced && els.length) { const req = () => { if (!raf) raf = requestAnimationFrame(tick); }; addEventListener('scroll', req, { passive: true }); req(); }
 </script>

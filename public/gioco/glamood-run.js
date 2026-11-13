@@ -647,11 +647,14 @@ export function createGame(root, opts = {}) {
   }
 
   /* ---------------- loop ---------------- */
+  let lastR = 0, scrolledAt = -1e9; addEventListener('scroll', () => { scrolledAt = performance.now(); }, { passive: true });
   let raf = 0, last = 0, inView = true, ftAvg = .016, ftN = 0;
   const frame = ts => {
     raf = requestAnimationFrame(frame);
     const raw = (ts - last) / 1000 || 0, dt = Math.min(.05, raw); last = ts;
-    update(dt); render();
+    update(dt);
+    // menus, pause and end screen: the scene behind is decoration -> at most 20 fps, and none while the page scrolls
+    if (state === 'play' || (ts - lastR > 50 && ts - scrolledAt > 160)) { render(); lastR = ts; }
     // adaptive quality: after warming up, if frames stay slow, step down (resolution, then extras); never step back up mid-run
     if (state === 'play' && raw > 0 && raw < .5) {
       ftAvg += (raw - ftAvg) * .05; ftN++;

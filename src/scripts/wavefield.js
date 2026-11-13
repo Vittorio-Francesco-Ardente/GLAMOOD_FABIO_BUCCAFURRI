@@ -24,15 +24,16 @@ export function mountWaves(el, o = {}) {
   const l = gl.getAttribLocation(p, 'p'); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 2, gl.FLOAT, false, 0, 0);
   const u = (n) => gl.getUniformLocation(p, n);
   gl.uniform3fv(u('C0'), hex(opt.dark)); gl.uniform3fv(u('C1'), hex(opt.mid)); gl.uniform3fv(u('C2'), hex(opt.light)); gl.uniform1f(u('K'), opt.crest);
-  let lastT = 0;
-  const draw = (t) => {
-    lastT = t;
-    const dpr = Math.min(devicePixelRatio || 1, touch ? 1.15 : 1.5);
-    const w = Math.max(1, (c.clientWidth * dpr) | 0), h = Math.max(1, (c.clientHeight * dpr) | 0);
+  // soft gradients: half resolution (the browser upscales smoothly) and 30 fps are invisible, and 4-8x cheaper
+  let lastT = 0, lastDraw = -1, cw = c.clientWidth, ch = c.clientHeight;
+  const draw = (t, force) => {
+    if (!force && t - lastDraw < 1 / 30) return; lastDraw = t; lastT = t;
+    const dpr = .5;
+    const w = Math.max(1, (cw * dpr) | 0), h = Math.max(1, (ch * dpr) | 0);
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     gl.viewport(0, 0, w, h); gl.uniform2f(u('R'), w, h); gl.uniform1f(u('T'), t * opt.speed + 3); gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
-  draw(0); new ResizeObserver(() => draw(lastT)).observe(c);
+  draw(0, true); new ResizeObserver(() => { cw = c.clientWidth; ch = c.clientHeight; draw(lastT, true); }).observe(c);
   if (!reduced) c.loopCtl = loop(el, draw, opt.gate);
   return c;
 }
