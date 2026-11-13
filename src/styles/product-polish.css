@@ -212,18 +212,18 @@ html.product-immersive .dock-host .barra,html.product-sheet-open .dock-host .bar
 /* Desktop (wide screen + mouse): product card on the left of the jar, arrows and dots at the bottom centre.
    Phones and touch tablets keep the centred composition. */
 @media (prefers-reduced-motion:no-preference) and (min-width:1024px) and (min-aspect-ratio:1/1) and (hover:hover) and (pointer:fine){
- .sx-p3 .p3-copy{left:var(--gutter)!important;right:auto!important;top:50%!important;bottom:auto!important;translate:0 -50%!important;width:min(30vw,420px)!important;height:0!important}
- .sx-p3 .p3-txt{top:50%!important;bottom:auto!important;translate:0 -50%!important;padding:clamp(22px,2.2vw,34px)!important;border-radius:28px!important;box-shadow:0 12px 40px rgb(8 57 62 / .12)!important}
- .sx-p3 .p3-txt h3{font-size:clamp(30px,3vw,46px)!important;margin-top:14px}
- .sx-p3 .p3-txt .p3-note{font-size:18px;margin-top:8px}
- .sx-p3 .p3-txt .p3-desc{display:block;overflow:visible;-webkit-line-clamp:unset;font-size:17px;line-height:1.5;margin-top:16px;max-width:30ch}
- .sx-p3 .p3-txt .p3-price{display:block;margin-top:16px}
- .sx-p3 .p3-btns{margin-top:22px;flex-wrap:wrap}
- .sx-p3 .p3-btns .btn-pop{flex:0 1 auto}
- .sx-p3 .p3-nav .p3-nb:not(.is-exit){top:auto;bottom:28px;translate:none;left:auto;right:auto}
- .sx-p3 .p3-nav .p3-nb[data-dir="-1"]{left:calc(50% - 124px)}
- .sx-p3 .p3-nav .p3-nb[data-dir="1"]:not(.is-exit){left:calc(50% + 74px)}
- .sx-p3 .p3.p3-at-line .p3-nav .p3-nb[data-dir="-1"]{left:calc(50% - 200px)}
- .sx-p3 .p3:not(.p3-at-line) .p3-dots{bottom:41px}
- .sx-p3 .p3-nav .p3-nb:hover{background:#0A4A50}
+ html .sx-p3 .p3-copy{left:var(--gutter)!important;right:auto!important;top:50%!important;bottom:auto!important;translate:0 -50%!important;width:min(30vw,420px)!important;height:0!important}
+ html .sx-p3 .p3-txt{top:50%!important;bottom:auto!important;translate:0 -50%!important;padding:clamp(22px,2.2vw,34px)!important;border-radius:28px!important;box-shadow:0 12px 40px rgb(8 57 62 / .12)!important}
+ html .sx-p3 .p3-txt h3{font-size:clamp(30px,3vw,46px)!important;margin-top:14px}
+ html .sx-p3 .p3-txt .p3-note{font-size:18px;margin-top:8px}
+ html .sx-p3 .p3-txt .p3-desc{display:block;overflow:visible;-webkit-line-clamp:unset;font-size:17px;line-height:1.5;margin-top:16px;max-width:30ch}
+ html .sx-p3 .p3-txt .p3-price{display:block;margin-top:16px}
+ html .sx-p3 .p3-btns{margin-top:22px;flex-wrap:wrap}
+ html .sx-p3 .p3-btns .btn-pop{flex:0 1 auto}
+ html .sx-p3 .p3-nav .p3-nb:not(.is-exit){top:auto;bottom:28px;translate:none;left:auto;right:auto}
+ html .sx-p3 .p3-nav .p3-nb[data-dir="-1"]{left:calc(50% - 124px)}
+ html .sx-p3 .p3-nav .p3-nb[data-dir="1"]:not(.is-exit){left:calc(50% + 74px)}
+ html .sx-p3 .p3.p3-at-line .p3-nav .p3-nb[data-dir="-1"]{left:calc(50% - 200px)}
+ html .sx-p3 .p3:not(.p3-at-line) .p3-dots{bottom:41px}
+ html .sx-p3 .p3-nav .p3-nb:hover{background:#0A4A50}
 }
