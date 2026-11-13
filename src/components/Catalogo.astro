@@ -6,7 +6,7 @@ import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
 ---
 <div class="sx-cat">
 <section class="ct" id="catalogo" aria-labelledby="ct-t">
-  <div class="ct-head"><p class="ct-k">Tutta la linea</p><h2 id="ct-t">Scegli il tuo</h2>
+  <div class="ct-head"><p class="ct-k">Tutta la linea</p><h2 id="ct-t" tabindex="-1">Scegli il tuo</h2><p class="ct-lead">Trova il tuo gesto quotidiano: scegli una categoria e scopri come usare ogni prodotto.</p>
     <nav class="ct-nav" aria-label="Categorie">{CATS.map((c) => <a href={`#cat-${c.k}`}>{c.n}</a>)}</nav></div>
   {CATS.map((c) => (
     <div class={`ct-band has-bgref`} id={`cat-${c.k}`} style={`--bg:${c.bg};--ink:${c.ink};--ac:${c.accent}`}>
@@ -16,7 +16,7 @@ import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
           <li class="ct-rise" style={`--d:${i * 70}ms`}>
             <a class="ct-card" href={`/prodotti/${p.slug}`} style={`--cb:${p.bg};--ci:${p.ink}`}>
               <span class="ct-ph"><img {...img(imgOf(p), 960)} alt={`${p.n} Glamood`} loading="lazy" decoding="async" /></span>
-              <span class="ct-tx"><b>{p.n}</b><span>{p.sub} · {p.ml}</span></span>
+              <span class="ct-tx"><b>{p.n}</b><span>{p.sub} · {p.ml}</span><span class="ct-description">{p.desc}</span><span class="ct-detail">Scopri il prodotto</span></span>
               <span class="ct-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             </a>
           </li>

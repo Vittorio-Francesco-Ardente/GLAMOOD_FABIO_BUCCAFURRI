@@ -7,7 +7,7 @@ const { tone = 'dark' } = Astro.props;
 const items: [string, string][] = [['salone', 'Salone'], ['tagli', 'Tagli'], ['listino', 'Listino'], ['prodotti', 'Prodotti'], ['dove', 'Dove siamo']];
 const baseLen = import.meta.env.BASE_URL.replace(/\/$/, '').length;
 const here = Astro.url.pathname.slice(baseLen).replace(/\.html$/, '').replace(/^\/|\/$/g, '');
-const cur = (id: string) => (here === id ? 'page' : undefined);
+const cur = (id: string) => (here === id || (id && here.startsWith(id + '/')) ? 'page' : undefined);
 const ico: Record<string, string> = {
   '': '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   salone: '<path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2M19 18v2"/>',
@@ -242,8 +242,13 @@ syncSaloneLinks();
 addEventListener('resize', syncSaloneLinks, { passive:true });
 const onScroll = () => {
   const y = window.scrollY || document.documentElement.scrollTop;
-  root.classList.toggle('header-hidden', y > (phoneViewport.matches ? 12 : 4));
-  root.classList.toggle('scorre', y > (phoneViewport.matches ? 120 : 4));
+  const immersive = document.querySelector<HTMLElement>('.p3');
+  const rect = immersive?.getBoundingClientRect();
+  const active = !!rect && rect.top < innerHeight * .65 && rect.bottom > 80;
+  document.documentElement.classList.toggle('product-immersive', active);
+  root.toggleAttribute('inert', active);
+  root.classList.remove('header-hidden');
+  root.classList.toggle('scorre', !active && y > 140);
 };
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
 // link colour follows what is really under the header (light page, photo, petrol hero…)

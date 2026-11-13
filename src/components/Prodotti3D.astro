@@ -29,14 +29,15 @@ const slots = [
 <section class="p3" id="prodotti" aria-labelledby="p3-t" style={`--n:${P3D.length}`}>
   <h2 class="sr-only" id="p3-t">I prodotti Glamood</h2>
   <!-- desktop pinned stage -->
-  <div class="p3-pin" aria-hidden="true">
+  <a class="p3-skip" href="#catalogo">Salta al catalogo <span aria-hidden="true">↘</span></a>
+  <div class="p3-pin">
     <div class="p3-bgs">{P3D.map((p, i) => <img class="p3-bg" data-i={i} {...img(`${V}/sfondi-scroll/sfondo-${p.k}-desk`, 1600)} alt="" decoding="async" loading={i ? 'lazy' : 'eager'} />)}
       <img class="p3-bg p3-bg-line" {...img(`${V}/linea/linea-petrolio-desk`, 1600)} alt="" loading="lazy" decoding="async" /></div>
     <div class="p3-titles">{P3D.map((p, i) => <p class="p3-title" data-i={i} style={`color:${p.ink}`}>{p.n}</p>)}</div>
     <div class="p3-ings">{P3D.map((p, i) => p.pics.slice(0, 6).map((f, j) => (
       <img class="p3-ing" data-i={i} data-l={slots[j][3]} style={`left:${slots[j][0]}%;top:${slots[j][1]}%;height:${slots[j][2]}vh`} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />
     )))}</div>
-    <canvas class="p3-cv" id="p3-cv"></canvas>
+    <canvas class="p3-cv" id="p3-cv" aria-hidden="true"></canvas>
     <div class="p3-copy">{P3D.map((p, i) => (
       <div class="p3-txt" data-i={i} style={`--ink:${p.ink};--ac:${p.accent}`}>
         <p class="p3-k">0{i + 1} / 0{P3D.length} · {p.ml}</p>
@@ -53,7 +54,7 @@ const slots = [
       <p class="p3-line-k">La linea Glamood</p>
       <div class="p3-line-row">{P3D.map((p, i) => <button type="button" class="p3-lj" data-open={i} tabindex="-1"><canvas data-still={i}></canvas><span>{p.n}</span></button>)}</div>
     </div>
-    <p class="p3-hint">Scorri: il barattolo gira · trascinalo per girarlo tu</p>
+    <p class="p3-hint">Muovi il mouse per ruotare · scorri per il prossimo</p>
   </div>
   <!-- phones (and reduced motion): one card per product -->
   <div class="p3m">
@@ -202,11 +203,24 @@ const desk = matchMedia('(min-width:1024px)').matches && !reduced;
 const DPR = Math.min(innerWidth < 1200 ? 1.5 : 2, devicePixelRatio || 1);   // tablets 1.5, desktop 2
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
+sec.querySelector<HTMLAnchorElement>('.p3-skip')!.addEventListener('click', (e) => {
+  e.preventDefault(); e.stopPropagation();
+  const catalog = document.getElementById('catalogo')!;
+  const y = catalog.getBoundingClientRect().top + scrollY;
+  const lenis = (window as any).lenis;
+  if (lenis) lenis.scrollTo(y, { immediate: true }); else scrollTo(0, y);
+  document.documentElement.classList.remove('product-immersive');
+  document.querySelector('.sx-header')?.removeAttribute('inert');
+  history.replaceState(null, '', '#catalogo');
+  document.getElementById('ct-t')?.focus({ preventScroll: true });
+});
 const sm = (x: number) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
 const fitCanvas = (cv: HTMLCanvasElement) => { const r = cv.getBoundingClientRect(); const w = Math.round(r.width * DPR), h = Math.round(r.height * DPR); if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } return { w: r.width, h: r.height }; };
 let ready = false;
-const boot = async () => {
-  if (ready) return; ready = true;
+let bootPromise: Promise<void> | null = null;
+const boot = () => bootPromise ??= loadProducts();
+async function loadProducts() {
+  ready = true;
   const big = desk && DPR > 1;
   const list = await Promise.all(P.map((p) => loadArt({ jar: big ? art.jar : art.jarS, light: big ? art.light : art.lightS, shadow: p.shadow, label: p.label })));
   arts.push(...list);
@@ -230,10 +244,12 @@ function startDesk() {
   const ings = [...sec.querySelectorAll<HTMLElement>('.p3-ing')], line = sec.querySelector<HTMLElement>('.p3-line')!, hint = sec.querySelector<HTMLElement>('.p3-hint')!;
   const fitT = () => titles.forEach((el) => { el.style.fontSize = ''; const max = innerWidth * .92, w = el.scrollWidth; if (w > max) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * max / w) + 'px'; });
   document.fonts.ready.then(fitT); fitT(); addEventListener('resize', fitT);
+  let hover = 0, hoverTarget = 0;
   let shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on && !raf) raf = requestAnimationFrame(tick); }).observe(sec);
   cv.addEventListener('pointerdown', (e) => { dragging = { x: e.clientX, d: drag }; dragV = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
-  cv.addEventListener('pointermove', (e) => { if (!dragging) return; const nd = dragging.d + (e.clientX - dragging.x) / 900; dragV = nd - drag; drag = nd; });
+  cv.addEventListener('pointerleave', () => { hoverTarget = 0; });
+  cv.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') hoverTarget = ((e.clientX / innerWidth) - .5) * .5; if (!dragging) return; const nd = dragging.d + (e.clientX - dragging.x) / 900; dragV = nd - drag; drag = nd; });
   const up = () => { dragging = null; cv.classList.remove('drag'); };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   cv.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.preventDefault(); dragV += e.deltaX / 3000; } }, { passive: false });
@@ -244,6 +260,7 @@ function startDesk() {
     raf = on ? requestAnimationFrame(tick) : 0;
     const target = Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
     shown += (target - shown) * .14;
+    hover += (hoverTarget - hover) * .09;
     if (!dragging) { drag += dragV; dragV *= .9; drag *= .92; }            // inertia, then snaps back to the front
     const p = Math.min(shown, N - 1e-3), i = Math.floor(p), t = p - i;
     const lineK = sm((shown - (N - .15)) / .4);
@@ -279,8 +296,8 @@ function startDesk() {
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
     const w = cw, h = chh; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
-    const jw = Math.min(w * .34, h * .62 * 1.21), jh = jw / 1.21, base = h * .78;
-    const rotOf = (tt: number) => .2 * Math.sin(Math.PI * Math.max(0, Math.min(1, (tt - .12) / .76))) + drag;   // front → side panel → front
+    const jw = Math.min(w * .38, h * .68 * 1.21), jh = jw / 1.21, base = h * .78;
+    const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
       c.globalAlpha = jarAlpha;
@@ -297,11 +314,11 @@ function startDesk() {
 // ---------- phone cards ----------
 function startCards() {
   const cards = [...sec.querySelectorAll<HTMLCanvasElement>('.p3c-cv')];
-  const st = cards.map(() => ({ rot: -.3, v: 0, target: null as null | number, vis: false, drag: null as null | { x: number; r: number } }));
+  const st = cards.map(() => ({ rot: 0, v: 0, target: null as null | number, vis: false, drag: null as null | { x: number; r: number } }));
   const io = new IntersectionObserver((es) => es.forEach((e) => { const k = cards.indexOf(e.target as HTMLCanvasElement); st[k].vis = e.isIntersecting; if (e.isIntersecting && !reduced) st[k].target = 0; }), { threshold: .35 });
   cards.forEach((cv, k) => {
     io.observe(cv);
-    cv.addEventListener('pointerdown', (e) => { st[k].drag = { x: e.clientX, r: st[k].rot }; st[k].target = null; });
+    cv.addEventListener('pointerdown', (e) => { st[k].drag = { x: e.clientX, r: st[k].rot }; st[k].target = null; cv.setPointerCapture(e.pointerId); });
     cv.addEventListener('pointermove', (e) => { const s = st[k]; if (!s.drag) return; const nr = s.drag.r - (e.clientX - s.drag.x) / (cv.clientWidth * 2.2); s.v = nr - s.rot; s.rot = nr; });
     const up = () => { st[k].drag = null; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up); cv.addEventListener('pointerleave', up);
   });
@@ -314,7 +331,7 @@ function startCards() {
       if (!s.drag) {
         if (s.target !== null) { s.rot += (s.target - s.rot) * Math.min(1, dt * 4); if (Math.abs(s.target - s.rot) < .002) s.target = null; }
         else if (Math.abs(s.v) > .0005) { s.rot += s.v; s.v *= .92; }
-        else if (!reduced) s.rot += dt / 60;                                 // 6°/s when idle
+        else s.v = 0;                                 // 6°/s when idle
       }
       const { w, h } = fitCanvas(cv); const c = cv.getContext('2d')!; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
       const jh = Math.min(h * .78, (w * .82) / 1.21);               // jar box ratio (opaque part) is ~1.21:1
@@ -335,11 +352,11 @@ function openSheet(i: number, from: HTMLElement) {
   ($('p3s-wa') as HTMLAnchorElement).href = p.wa;
   (sheet.querySelector('.p3s-illu') as HTMLImageElement).src = p.illu;
   (sheet.querySelector('.p3s-pat') as HTMLElement).style.backgroundImage = `url(${p.pattern})`;
-  sheet.hidden = false; lockScroll(true); sheet.focus();
+  sheet.hidden = false; document.documentElement.classList.add("product-sheet-open"); sec.setAttribute("inert", ""); document.querySelector(".site-header")?.setAttribute("inert", ""); lockScroll(true); sheet.focus();
   if (arts[i]) requestAnimationFrame(() => still(sheet.querySelector('.p3s-cv') as HTMLCanvasElement, i));
 }
-function closeSheet() { if (sheet.hidden) return; sheet.hidden = true; lockScroll(false); back?.focus({ preventScroll: true }); }
-sec.querySelectorAll<HTMLElement>('[data-open]').forEach((b) => b.addEventListener('click', () => { if (!ready) boot(); openSheet(+b.dataset.open!, b); }));
+function closeSheet() { if (sheet.hidden) return; sheet.hidden = true; document.documentElement.classList.remove("product-sheet-open"); sec.removeAttribute("inert"); document.querySelector(".site-header")?.removeAttribute("inert"); lockScroll(false); back?.focus({ preventScroll: true }); }
+sec.querySelectorAll<HTMLElement>('[data-open]').forEach((b) => b.addEventListener('click', () => { boot().then(() => openSheet(+b.dataset.open!, b)); }));
 sheet.querySelector('.p3s-x')!.addEventListener('click', closeSheet);
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
 </script>

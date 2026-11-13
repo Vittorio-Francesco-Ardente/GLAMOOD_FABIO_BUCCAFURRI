@@ -19,7 +19,7 @@ import { business, wa, hoursLabel } from '../data/business';
         <span class="pin-l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z" fill="#0F6870"/><circle cx="12" cy="10" r="2.6" fill="#F4EFE8"/></svg>Glamood<small>{business.address}</small></span>
         <span class="pm-go">Apri in Mappe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
       </a>
-        <Personaggio pose="telefono" id="pg-telefono" />
+
       </div>
       <div class="info">
         <h3>{business.city}</h3>
@@ -28,7 +28,7 @@ import { business, wa, hoursLabel } from '../data/business';
           <div class="row"><b>Orari</b><span>{hoursLabel()}</span><span class="t">Orari</span></div>
           <div class="row"><b>Prenotazioni</b><span>Su WhatsApp, Fabio risponde appena ha le mani libere</span><span class="t">WhatsApp</span></div>
         </div>
-        <div class="btns"><a class="btn-pop fill" href="https://www.google.com/maps/search/?api=1&query=Glamood%2C%20Via%20Sbarre%20Centrali%20282%2FG%2C%20Reggio%20Calabria" data-maps>Portami da Glamood</a><a class="btn-pop" href={wa()} target="_blank" rel="noopener">Prenota</a></div>
+        <div class="contact-action"><Personaggio pose="telefono" id="pg-telefono" mobile /><div class="btns"><a class="btn-pop fill" href="https://www.google.com/maps/search/?api=1&query=Glamood%2C%20Via%20Sbarre%20Centrali%20282%2FG%2C%20Reggio%20Calabria" data-maps>Portami da Glamood</a><a class="btn-pop" href={wa()} target="_blank" rel="noopener">Prenota</a></div></div>
       </div>
     </div>
   </div>

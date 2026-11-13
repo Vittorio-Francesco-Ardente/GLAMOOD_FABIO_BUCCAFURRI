@@ -1,6 +1,4 @@
 ---
-// One page per product (aggiornamento 12): big hero in the product colours, three info tiles, story,
-// how to use, ingredients (full list "in arrivo"), splash photo where available, "ti potrebbe piacere".
 import Site from '../../layouts/Site.astro';
 import { img } from '../../data/img';
 import { PRODUCTS, CATS, imgOf, type Product } from '../../data/catalogo';
@@ -8,88 +6,130 @@ import { wa, waText } from '../../data/business';
 export function getStaticPaths() { return PRODUCTS.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
 const { p } = Astro.props as { p: Product };
 const cat = CATS.find((c) => c.k === p.cat)!;
-const more = [...PRODUCTS.filter((q) => q.cat === p.cat && q.slug !== p.slug), ...PRODUCTS.filter((q) => q.cat !== p.cat)].slice(0, 3);
-const light = (c: string) => { const n = parseInt(c.slice(1), 16); return ((n >> 16) * .2126 + ((n >> 8) & 255) * .7152 + (n & 255) * .0722) / 255 > .55; };
+const more = [...PRODUCTS.filter((q) => q.cat === p.cat && q.slug !== p.slug), ...PRODUCTS.filter((q) => q.cat !== p.cat)].slice(0, 4);
+const motif = p.jar === 'cera' ? 'alveare' : p.jar === 'crema' || p.cat === 'capelli' ? 'botanico' : p.cat === 'barba' || p.cat === 'dopobarba' ? 'agrumi' : 'onde';
+const gallery = [
+  {src: img(imgOf(p), 1600).src, label: 'Confezione', alt: `${p.n} Glamood, ${p.ml}`},
+  {src: img(p.hero, 1600).src, label: 'Ispirazione', alt: `Composizione illustrata per ${p.n}`},
+  ...(p.splash ? [{src: img(p.splash,1600).src,label:'Texture',alt:`Texture di ${p.n}`}] : []),
+  ...(p.jar ? [{src: img(`v2/prodotti-3d/etichette/etichetta-${p.jar}-completa`).src,label:'Etichetta',alt:`Etichetta completa di ${p.n}`}] : []),
+];
 ---
-<Site title={`${p.n} | Prodotti Glamood, barber shop a Reggio Calabria`} description={`${p.n} Glamood ${p.sub}: ${p.desc}`} path={`/prodotti/${p.slug}`} top={p.bg} tone={light(p.bg) ? 'light' : 'dark'}>
-<div class="pp" style={`--bg:${p.bg};--bg2:${p.bg2};--ink:${p.ink};--ac:${p.accent}`}>
-  <section class="pp-hero has-bgref"><div class={`bgref ${p.pattern}`} style="opacity:.35"></div>
-    <div class="pp-hero-in">
-      <div class="pp-tx">
-        <a class="pp-back" href="/prodotti#catalogo">← {cat.n}</a>
-        <h1>{p.n}</h1>
-        <p class="pp-sub">{p.sub}</p>
-        <p class="pp-desc">{p.desc}</p>
-        <div class="pp-btns"><a class="btn-pop fill" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedilo in salone</a><span class="pp-price">Prezzo da confermare</span></div>
+<Site title={`${p.n} | Prodotti Glamood, barber shop a Reggio Calabria`} description={`${p.n} Glamood ${p.sub}: ${p.desc}`} path={`/prodotti/${p.slug}`} top={p.bg} tone="light">
+<article class="product-page" style={`--product-bg:${p.bg};--product-soft:${p.bg2};--product-ink:${p.ink};--product-pattern:url('/img/svg/product-${motif}.svg')`}>
+  <div class="product-wrap">
+    <nav class="product-breadcrumb" aria-label="Percorso"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/prodotti#catalogo">Prodotti</a><span aria-hidden="true">/</span><span>{p.n}</span></nav>
+    <section class="product-top" aria-labelledby="product-title">
+      <div class="product-gallery">
+        <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" src={gallery[0].src} alt={gallery[0].alt} width="1600" height="1600" fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">＋</span></button>
+        <div class="product-thumbnails" aria-label="Immagini del prodotto">{gallery.map((g,i)=><button type="button" class="product-thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-src={g.src} data-alt={g.alt}><img src={g.src} alt="" width="120" height="120" loading="lazy"/><span>{g.label}</span></button>)}</div>
+        <p class="product-gallery-hint">Scegli un dettaglio. Tocca l’immagine per ingrandirlo.</p>
       </div>
-      <div class="pp-art">
-        {p.pics.slice(0, 3).map((f, i) => <img class={`pp-ing pp-ing${i}`} {...img(f, 480)} alt="" loading="lazy" decoding="async" />)}
-        <img class="pp-prod" {...img(imgOf(p), 1600)} alt={`${p.n} Glamood`} decoding="async" fetchpriority="high" />
+      <div class="product-summary">
+        <p class="product-eyebrow">La cura, firmata Glamood</p>
+        <h1 id="product-title">{p.n}</h1><p class="product-subtitle">{p.sub}</p><p class="product-description">{p.desc}</p>
+        <div class="product-facts">{p.tiles.map(t=><div><span>{t.l}</span><b>{t.v}</b></div>)}</div>
+        <div class="product-buy"><div><b>{p.ml}</b><span>Prezzo e disponibilità da confermare in salone</span></div><a class="btn-pop fill" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedilo a Fabio <span aria-hidden="true">↗</span></a></div>
+        <div class="product-accordions">
+          <details open><summary>Come si usa <span aria-hidden="true">＋</span></summary><p>{p.use}</p></details>
+          <details><summary>Ingredienti indicati <span aria-hidden="true">＋</span></summary><p>{p.ing.join(', ')}.</p><p class="product-small">L’elenco completo degli ingredienti è in arrivo. Per la formula completa, chiedi in salone.</p></details>
+          <details><summary>Il prodotto giusto per te <span aria-hidden="true">＋</span></summary><p>{p.long}</p></details>
+        </div>
       </div>
-    </div>
-  </section>
-  <section class="pp-tiles" aria-label="In breve">{p.tiles.map((t) => <div class="pp-tile pp-rise"><b>{t.v}</b><span>{t.l}</span></div>)}</section>
-  <section class="pp-story">
-    <div class="pp-ill pp-rise"><img {...img(p.hero, 960)} alt="" loading="lazy" decoding="async" /></div>
-    <div class="pp-rise">
-      <h2>Com'è</h2><p>{p.long}</p>
-      <h3>Come si usa</h3><p>{p.use}</p>
-      <h3>Ingredienti</h3><p>{p.ing.join(', ')}. <span class="pp-soft">L'elenco completo è in arrivo.</span></p>
-      <h3>Formato</h3><p>{p.ml}</p>
-    </div>
-  </section>
-  {p.splash && <section class="pp-splash pp-rise"><img {...img(p.splash, 1600)} alt={`${p.n} Glamood con il prodotto in primo piano`} loading="lazy" decoding="async" /></section>}
-  <section class="pp-more">
-    <h2>Ti potrebbe piacere</h2>
-    <ul>{more.map((q) => <li class="pp-rise"><a href={`/prodotti/${q.slug}`} style={`--cb:${q.bg};--ci:${q.ink}`}><img {...img(imgOf(q), 960)} alt="" loading="lazy" decoding="async" /><b>{q.n}</b><span>{q.sub}</span></a></li>)}</ul>
-  </section>
-</div>
+    </section>
+    <div class="product-ribbon" aria-hidden="true"><span>Glamood</span><i>✳</i><span>Il tuo stile, ogni giorno</span><i>✳</i><span>Reggio Calabria</span></div>
+    <section class="product-story" aria-labelledby="product-story-title">
+      <div class="product-story-art"><img {...img(p.hero,960)} alt={`Illustrazione della linea ${p.n}`} loading="lazy"/><span class="product-art-seal">Cura<br/>e carattere.</span></div>
+      <div class="product-story-copy"><p class="product-eyebrow">Dentro il prodotto</p><h2 id="product-story-title">Piccoli gesti.<br/>Il tuo stile.</h2><p>{p.long}</p><div class="product-ingredient-list">{p.ing.map((name,i)=><div class="product-ingredient"><img {...img(p.pics[Math.min(i,p.pics.length-1)],480)} alt="" loading="lazy"/><span>{name}</span></div>)}</div></div>
+    </section>
+    <section class="product-routine" aria-labelledby="product-routine-title"><div><p class="product-eyebrow">Dal salone a casa tua</p><h2 id="product-routine-title">Il gesto<br/>che fa la differenza.</h2></div><div class="product-use-card"><span class="product-step">01</span><h3>Usalo così</h3><p>{p.use}</p></div><div class="product-use-card product-use-advice"><span class="product-step">02</span><h3>Fallo tuo</h3><p>Quantità, finish, abbinamenti: chiedi a Fabio come inserirlo nella tua routine.</p><a href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedi un consiglio <span aria-hidden="true">↗</span></a></div></section>
+    {p.splash && <figure class="product-splash"><img {...img(p.splash,1600)} alt={`${p.n}: il prodotto e la sua texture`} loading="lazy"/><figcaption>{p.n} <span>{p.sub}</span></figcaption></figure>}
+    <section class="product-related" aria-labelledby="related-title"><div class="product-section-heading"><div><p class="product-eyebrow">Completa la tua routine</p><h2 id="related-title">C’è altro per te.</h2></div><a href="/prodotti#catalogo">Tutta la linea <span aria-hidden="true">↗</span></a></div><ul>{more.map(q=><li><a class="product-related-card" href={`/prodotti/${q.slug}`} style={`--card-bg:${q.bg}`}><div><img {...img(imgOf(q),960)} alt={q.n} loading="lazy"/></div><h3>{q.n}</h3><p>{q.sub}</p><span>{q.ml}<b aria-hidden="true">↗</b></span></a></li>)}</ul></section>
+    <section class="product-advisor" aria-labelledby="advisor-title"><img {...img('v2/personaggio/posa-telefono',960)} alt="Fabio, la mascotte Glamood, con il telefono" loading="lazy"/><div><p class="product-eyebrow">Due parole con Fabio</p><h2 id="advisor-title">Il dubbio?<br/>Lo sciogliamo in salone.</h2><p>Ti aiutiamo a scegliere il prodotto e a capire come usarlo per il tuo stile.</p><a class="btn-pop" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Scrivi su WhatsApp <span aria-hidden="true">↗</span></a></div></section>
+  </div>
+</article>
+<dialog class="product-lightbox" aria-labelledby="lightbox-title"><div class="product-lightbox-bar"><h2 id="lightbox-title">{p.n} · Confezione</h2><button type="button" aria-label="Chiudi ingrandimento">✕</button></div><img src={gallery[0].src} alt={gallery[0].alt}/><p>Usa i gesti del dispositivo per leggere i dettagli.</p></dialog>
 </Site>
-
 <style is:global>
-.pp{background:var(--bg);color:var(--ink)}
-.pp-hero{position:relative;overflow:hidden;min-height:100svh;display:grid;align-items:center}
-.pp-hero .bgref{background-size:520px}
-.pp-hero-in{position:relative;z-index:1;width:100%;max-width:1360px;margin:0 auto;padding:clamp(110px,14vh,150px) var(--gutter) clamp(48px,7vh,90px);display:grid;gap:clamp(20px,4vw,64px);align-items:center}
-.pp-back{display:inline-flex;min-height:44px;align-items:center;color:var(--ink);font:800 14px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;opacity:.85}
-.pp-tx h1{margin-top:8px;font:900 clamp(56px,9vw,150px)/.84 var(--f-display);text-transform:uppercase;letter-spacing:-.04em}
-.pp-sub{margin-top:12px;font-size:clamp(18px,1.6vw,24px);font-style:italic;color:var(--ink);opacity:.85}
-.pp-desc{margin-top:16px;font-size:18px;line-height:1.5;max-width:38ch}
-.pp-btns{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:26px}
-.pp-price{font:800 13px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
-.pp-art{position:relative;display:grid;place-items:center;min-height:min(60svh,560px)}
-.pp-prod{position:relative;z-index:2;width:min(100%,520px);height:auto;filter:drop-shadow(0 34px 34px rgb(0 0 0 / .28));animation:ppIn 1s var(--ease-out) both}
-.pp-ing{position:absolute;z-index:1;width:auto;height:clamp(70px,11vw,150px);filter:drop-shadow(0 16px 16px rgb(0 0 0 / .22));animation:ppFloat 6s ease-in-out infinite alternate}
-.pp-ing0{left:2%;top:6%}.pp-ing1{right:2%;top:12%;animation-duration:7.5s}.pp-ing2{right:8%;bottom:4%;z-index:3;animation-duration:8.5s}
-.pp-tiles{max-width:1360px;margin:0 auto;padding:0 var(--gutter) clamp(48px,6vw,90px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,2vw,22px)}
-.pp-tile{background:var(--bg2);border-radius:24px;padding:clamp(18px,2.4vw,34px);display:grid;gap:8px}
-.pp-tile b{font:900 clamp(24px,3vw,46px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.02em}
-.pp-tile span{font:800 12px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
-.pp-story{max-width:1360px;margin:0 auto;padding:clamp(40px,6vw,90px) var(--gutter);display:grid;gap:clamp(24px,5vw,80px);align-items:center}
-.pp-ill img{width:min(100%,560px);height:auto;display:block;margin:0 auto}
-.pp-story h2{font:900 clamp(36px,4vw,64px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.02em}
-.pp-story h3{margin-top:24px;font:800 13px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
-.pp-story p{margin-top:10px;font-size:18px;line-height:1.6;max-width:52ch}
-.pp-soft{opacity:.75}
-.pp-splash{max-width:1360px;margin:0 auto;padding:0 var(--gutter) clamp(40px,6vw,90px)}
-.pp-splash img{width:100%;height:auto;border-radius:28px;display:block}
-.pp-more{background:var(--bg2);padding:clamp(56px,7vw,110px) var(--gutter) calc(clamp(56px,7vw,110px) + 60px)}
-.pp-more h2{max-width:1360px;margin:0 auto;font:900 clamp(36px,5vw,80px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.03em}
-.pp-more ul{list-style:none;padding:0;max-width:1360px;margin:28px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px)}
-.pp-more a{display:grid;gap:6px;padding:18px 18px 22px;border-radius:24px;background:var(--cb);color:var(--ci);text-decoration:none;transition:transform .4s var(--ease-out)}
-.pp-more a:hover{transform:translateY(-6px)}
-.pp-more img{width:100%;aspect-ratio:1;object-fit:contain;height:auto}
-.pp-more b{font:900 20px/1 var(--f-display);text-transform:uppercase}
-.pp-more span{font-size:15px;opacity:.85}
-.pp-rise{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
-.pp-rise.pp-on{opacity:1;transform:none}
-@keyframes ppIn{from{opacity:0;transform:translateY(30px) scale(.96)}}
-@keyframes ppFloat{from{translate:0 -8px;rotate:-3deg}to{translate:0 8px;rotate:3deg}}
-@media (min-width:1024px){.pp-hero-in{grid-template-columns:1fr 1fr}.pp-story{grid-template-columns:1fr 1fr}}
-@media (max-width:767px){.pp-tiles{grid-template-columns:1fr}.pp-more ul{grid-template-columns:1fr}.pp-art{min-height:42svh}}
-@media (prefers-reduced-motion:reduce){.pp-rise{opacity:1;transform:none;transition:none}.pp-ing,.pp-prod{animation:none}}
+.product-page{background:#F4EFE8;color:#133b40;padding:0 var(--gutter) 32px}
+.product-wrap{max-width:1360px;margin:auto}
+.product-breadcrumb{display:flex;flex-wrap:wrap;gap:12px;padding:24px 0;font-size:13px;color:#456366}
+.product-breadcrumb a{text-underline-offset:4px}.product-breadcrumb>span:last-child{font-weight:700}
+.product-top{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);padding:clamp(20px,2.5vw,36px);border-radius:32px;background:var(--product-soft);align-items:start}
+.product-gallery{min-width:0}
+.product-main-image{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:1;background:var(--product-bg);border-radius:24px;overflow:hidden;isolation:isolate;cursor:zoom-in;border:1px solid rgb(8 57 62 / .1)}
+.product-main-image::before,.product-story-art::before{content:"";position:absolute;inset:0;z-index:-1;background-image:var(--product-pattern);background-size:230px;opacity:.4}
+.product-main-image>img{width:90%;height:90%;object-fit:contain;filter:drop-shadow(0 20px 20px rgb(8 57 62 / .18));transition:transform .4s}
+.product-main-image:hover>img{transform:scale(1.035)}
+.product-image-tag{position:absolute;top:18px;left:18px;background:white;color:#133b40;border-radius:999px;padding:9px 14px;font:800 12px/1.2 var(--f-display);text-transform:uppercase}
+.product-zoom{position:absolute;bottom:18px;right:18px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:#fff;color:#0f6870;font-size:28px}
+.product-thumbnails{display:flex;gap:10px;margin-top:14px}
+.product-thumb{background:#fff;border:2px solid transparent;border-radius:16px;padding:8px;display:grid;gap:6px;justify-items:center;flex:1;min-width:0;color:#133b40;cursor:pointer}
+.product-thumb[aria-pressed="true"]{border-color:#0F6870;background:#f8fffc}
+.product-thumb img{width:100%;height:72px;object-fit:contain}
+.product-thumb span{font:700 12px/1.4 var(--f-body)}
+.product-gallery-hint{font-size:12px;margin-top:12px;color:var(--product-ink);line-height:1.5}
+.product-summary{background:#fff;padding:clamp(24px,3vw,40px);border-radius:24px;min-width:0}
+.product-eyebrow{font:800 11px/1.5 var(--f-display);text-transform:uppercase;letter-spacing:.16em;color:#0F6870;margin:0 0 14px}
+.product-summary h1{font:900 clamp(38px,4.5vw,68px)/.98 var(--f-display);text-transform:uppercase;letter-spacing:-.035em;overflow-wrap:anywhere;color:#0f6870}
+.product-subtitle{font-size:19px;margin-top:14px;color:#3d6365}
+.product-description{font-size:17px;line-height:1.65;margin-top:20px;max-width:44ch}
+.product-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:26px}
+.product-facts>div{padding:14px 10px;background:#f1f6f3;border-radius:12px;display:grid;gap:6px}
+.product-facts span{font:700 10px/1.4 var(--f-display);letter-spacing:.09em;text-transform:uppercase;color:#456366}
+.product-facts b{font:800 clamp(14px,1.5vw,21px)/1.15 var(--f-display);overflow-wrap:anywhere}
+.product-buy{margin-top:24px;display:grid;gap:18px}.product-buy>div{display:flex;align-items:center;gap:18px}.product-buy b{white-space:nowrap;font-size:19px}.product-buy>div>span{font-size:12px;line-height:1.5;color:#536d6f;max-width:25ch}.product-buy .btn-pop{width:100%;gap:18px;font-size:15px}
+.product-accordions{margin-top:28px}
+.product-accordions details{border-top:1px solid #d4e1dd;padding:0}
+.product-accordions details:last-child{border-bottom:1px solid #d4e1dd}
+.product-accordions summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;font:800 14px/1.4 var(--f-display);padding:16px 0;min-height:48px}
+.product-accordions summary::-webkit-details-marker{display:none}
+.product-accordions summary span{font-size:20px;transition:rotate .2s}.product-accordions details[open] summary span{rotate:45deg}
+.product-accordions p{font-size:15px;line-height:1.65;padding-bottom:18px}.product-accordions .product-small{font-size:13px;color:#536d6f}
+.product-ribbon{display:flex;justify-content:space-around;align-items:center;gap:20px;flex-wrap:wrap;padding:26px 12px;margin:32px 0;border-block:1px solid #b7cbc5;font:800 13px/1.4 var(--f-display);text-transform:uppercase;letter-spacing:.07em;color:#0f6870}.product-ribbon i{font-size:28px;font-style:normal;color:#a77836}
+.product-story{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(24px,5vw,72px);padding:32px 0 64px}
+.product-story-art{position:relative;isolation:isolate;background:var(--product-soft);border-radius:32px;min-width:0;aspect-ratio:1;display:grid;place-items:center;overflow:hidden}
+.product-story-art>img{width:88%;height:88%;object-fit:contain}
+.product-art-seal{position:absolute;bottom:20px;right:20px;rotate:-10deg;display:grid;place-content:center;text-align:center;width:112px;height:112px;background:#ffe28a;border:2px solid #133b40;border-radius:50%;font:900 18px/1.1 var(--f-display);text-transform:uppercase}
+.product-page h2{font:900 clamp(32px,4vw,58px)/1 var(--f-display);letter-spacing:-.03em;text-transform:uppercase}
+.product-story-copy>p:not(.product-eyebrow){font-size:18px;line-height:1.7;margin-top:22px;max-width:48ch}
+.product-ingredient-list{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.product-ingredient{background:#fff;border-radius:18px;padding:12px;display:grid;gap:6px;justify-items:center;flex:1;min-width:110px;text-align:center}
+.product-ingredient img{height:90px;width:100%;object-fit:contain}.product-ingredient span{font:700 13px/1.4 var(--f-body)}
+.product-routine{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:20px;align-items:stretch;background:#dceae5;padding:clamp(24px,3vw,40px);border-radius:32px;margin-bottom:48px}
+.product-routine>div:first-child{align-self:center}.product-routine h2{font-size:clamp(28px,3vw,42px)}
+.product-use-card{background:#fff;border-radius:22px;padding:26px;color:#133b40}.product-step{display:grid;place-items:center;width:40px;height:40px;border:1px solid currentColor;border-radius:50%;font:800 14px/1 var(--f-display);margin-bottom:24px}
+.product-use-card h3{font:900 23px/1.2 var(--f-display);text-transform:uppercase;margin-bottom:12px}.product-use-card p{font-size:16px;line-height:1.65}.product-use-advice{background:#0f6870;color:#fff}.product-use-advice a{display:inline-block;font-weight:700;font-size:14px;margin-top:24px;text-underline-offset:5px}
+.product-splash{margin:0 0 48px;position:relative;border-radius:32px;overflow:hidden;background:var(--product-bg)}.product-splash>img{width:100%;max-height:540px;object-fit:cover;display:block}.product-splash figcaption{position:absolute;left:24px;bottom:24px;max-width:calc(100% - 48px);padding:18px 24px;border-radius:18px;background:#fff;font:900 20px/1.2 var(--f-display);text-transform:uppercase}.product-splash figcaption span{display:block;font:400 15px/1.5 var(--f-body);text-transform:none;margin-top:4px}
+.product-related{background:#ead5a5;border-radius:32px;padding:clamp(24px,3vw,40px);margin-bottom:48px}.product-section-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}.product-section-heading>a{white-space:nowrap;font-size:14px;font-weight:700;text-underline-offset:5px}.product-related h2{font-size:clamp(32px,4vw,54px)}
+.product-related ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;list-style:none;padding:0;margin:0}
+.product-related-card{display:flex;flex-direction:column;min-width:0;height:100%;border-radius:20px;background:white;overflow:hidden;text-decoration:none;color:#133b40;transition:transform .25s}.product-related-card:hover{transform:translateY(-5px)}
+.product-related-card>div{background:var(--card-bg);padding:18px;aspect-ratio:1;display:grid;place-items:center}.product-related-card img{width:100%;height:100%;object-fit:contain}.product-related-card h3{font:900 18px/1.1 var(--f-display);text-transform:uppercase;margin:20px 18px 8px}.product-related-card p{font-size:14px;line-height:1.5;margin:0 18px 14px}.product-related-card>span{display:flex;justify-content:space-between;align-items:center;margin:auto 18px 18px;font-size:13px}.product-related-card b{display:grid;place-items:center;width:32px;height:32px;background:#0f6870;color:#fff;border-radius:50%;font-size:18px}
+.product-advisor{display:grid;grid-template-columns:280px minmax(0,1fr);align-items:center;gap:32px;padding:clamp(24px,4vw,56px);border-radius:32px;background:#0f6870;color:#fff}.product-advisor>img{width:100%;max-height:320px;object-fit:contain}.product-advisor .product-eyebrow{color:#ffe28a}.product-advisor p:not(.product-eyebrow){font-size:17px;line-height:1.6;max-width:46ch;margin:20px 0 24px}.product-advisor h2{font-size:clamp(32px,4vw,54px)}
+.product-lightbox{border:0;border-radius:24px;padding:20px;width:min(94vw,1400px);max-height:92dvh;background:#fff;color:#133b40;margin:auto;overscroll-behavior:contain}.product-lightbox::backdrop{background:rgb(4 35 38 / .85)}.product-lightbox-bar{display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;background:#fff;padding-bottom:14px}.product-lightbox h2{font:800 18px/1.4 var(--f-display)}.product-lightbox button{width:48px;height:48px;border:2px solid #133b40;background:#ffe28a;border-radius:50%;cursor:pointer;flex:none}.product-lightbox>img{display:block;width:100%;height:auto;max-height:72dvh;object-fit:contain}.product-lightbox>p{font-size:12px;margin-top:12px;text-align:center}
+@media(max-width:1023px){.product-top{gap:24px;padding:24px}.product-summary{padding:24px}.product-routine{grid-template-columns:1fr 1fr}.product-routine>div:first-child{grid-column:1/-1}.product-related ul{grid-template-columns:repeat(2,minmax(0,1fr))}.product-story{gap:28px}.product-advisor{grid-template-columns:200px 1fr}}
+@media(max-width:767px){.product-page{padding-inline:16px}.product-top{grid-template-columns:1fr;padding:14px;border-radius:26px;gap:20px}.product-main-image{aspect-ratio:1}.product-summary{padding:24px 20px}.product-summary h1{font-size:clamp(38px,10vw,54px)}.product-thumb img{height:58px}.product-thumb span{font-size:11px}.product-ribbon{gap:12px;padding-inline:0;font-size:10px}.product-ribbon i{font-size:20px}.product-ribbon span:last-child{display:none}.product-story{grid-template-columns:1fr;padding:0 0 36px}.product-story-copy{padding:0 8px}.product-routine{grid-template-columns:1fr;padding:20px}.product-routine>div:first-child{grid-column:auto;margin-bottom:8px}.product-related{padding:22px 16px}.product-related ul{gap:12px}.product-related-card h3{font-size:16px;margin-inline:12px}.product-related-card p,.product-related-card>span{margin-inline:12px}.product-section-heading{align-items:start;flex-direction:column}.product-advisor{grid-template-columns:1fr;gap:16px;text-align:center;padding:28px 24px}.product-advisor>img{height:230px;grid-row:2}.product-advisor p{margin-inline:auto!important}.product-splash figcaption{position:relative;left:auto;bottom:auto;max-width:none;margin:12px}.product-splash>img{height:240px}.product-lightbox{padding:14px}.product-lightbox>img{max-height:none}}
+@media(prefers-reduced-motion:reduce){.product-main-image>img,.product-related-card{transition:none}}
 </style>
 <script>
-const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('pp-on'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
-document.querySelectorAll('.pp-rise').forEach((el) => io.observe(el));
+import { lockScroll } from '../../scripts/core.js';
+const mainImage = document.getElementById('product-image') as HTMLImageElement;
+const imageButton = document.querySelector<HTMLButtonElement>('.product-main-image')!;
+const thumbs = [...document.querySelectorAll<HTMLButtonElement>('.product-thumb')];
+const dialog = document.querySelector<HTMLDialogElement>('.product-lightbox')!;
+const zoomImage = dialog.querySelector('img')!;
+let selected = thumbs[0];
+thumbs.forEach(button => button.addEventListener('click', () => {
+ selected = button; mainImage.src = button.dataset.src!; mainImage.alt = button.dataset.alt!;
+ thumbs.forEach(t => t.setAttribute('aria-pressed',String(t === button)));
+ imageButton.setAttribute('aria-label',`Ingrandisci: ${button.textContent?.trim()}`);
+}));
+imageButton.addEventListener('click', () => {
+ zoomImage.src = mainImage.src; zoomImage.alt = mainImage.alt;
+ dialog.querySelector('h2')!.textContent = mainImage.alt;
+ dialog.showModal(); lockScroll(true);
+});
+dialog.querySelector('button')!.addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', e => { if (e.target === dialog) {const r=dialog.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();} });
+dialog.addEventListener('close', () => {lockScroll(false);imageButton.focus({preventScroll:true});});
 </script>

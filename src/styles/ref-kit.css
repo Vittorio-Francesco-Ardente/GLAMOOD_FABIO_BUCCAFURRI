@@ -84,7 +84,7 @@
 .motif-layer{position:absolute;inset:0;z-index:0;pointer-events:none}
 
 /* REFERENCE TEXTURES (recoloured 1:1 from Vittorio's references). Full-bleed layer that floats slowly. */
-.bgref{position:absolute;inset:-8%;z-index:0;pointer-events:none;background-size:cover;background-position:center;will-change:transform;backface-visibility:hidden;animation:refdrift 22s ease-in-out infinite alternate}
+.bgref{position:absolute;inset:-8%;z-index:0;pointer-events:none;background-size:cover;background-repeat:no-repeat;background-position:center;will-change:transform;backface-visibility:hidden;animation:refdrift 22s ease-in-out infinite alternate}
 .bgref.alt{animation-duration:28s;animation-direction:alternate-reverse}
 @keyframes refdrift{0%{transform:translate3d(-5%,-3%,0)}50%{transform:translate3d(3%,3%,0)}100%{transform:translate3d(5%,-2%,0)}}
 @media (prefers-reduced-motion:reduce){.bgref{animation:none}}

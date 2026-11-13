@@ -13,7 +13,7 @@ const { title, description, path = '/', jsonld = false, top, tone = 'dark' } = A
   <a class="skip-link" href="#main">Salta al contenuto</a>
   <PageTransition />
   <Loader />
-  <Header tone={tone} />
+  <div class:list={["site-header", path === "/prodotti" && "site-header-products"]}><Header tone={tone} /></div>
   <main id="main" class:list={[top && 'page-top']} style={top ? `--top-bg:${top}` : undefined}>
     <slot />
   </main>
