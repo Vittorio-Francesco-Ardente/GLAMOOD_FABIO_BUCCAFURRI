@@ -26,7 +26,7 @@ const LEVELS = [
     ob: [34, 50, 28, 52, 24, 64],
     en: [{ i: 0, kind: 'fly', h: 30, fps: 9 }, { i: 1, kind: 'roll', h: 30, fps: 12 }, { i: 2, kind: 'fly', h: 26, fps: 10 }] },
   { id: 'L3', name: 'Centro e Castello', sub: 'Corso Garibaldi e il Castello Aragonese', sky: 'L3_01', skyNight: 'L3_01n', night: [.35, .65], 
-    layers: [{ n: 'L3_02', par: 0.1, h: 111, b: -52 }, { n: 'L3_03', par: 0.24, h: 208, b: 0 }, { n: 'L3_04', par: 0.42, h: 123, b: 3 }],
+    layers: [{ n: 'L3_02', par: 0.1, h: 111, b: -52, mirror: true }, { n: 'L3_03', par: 0.24, h: 208, b: 0, mirror: true }, { n: 'L3_04', par: 0.42, h: 123, b: 3, mirror: true }],
     ground: 'L3_ground', fg: null, mon: { h: 190, par: .22, b: -4 },
     ob: [36, 40, 44, 50, 32, 58],
     en: [{ i: 0, kind: 'fly', h: 26, fps: 10 }, { i: 1, kind: 'hang', h: 60, fps: 5 }, { i: 2, kind: 'fly', h: 28, fps: 12 }] },
@@ -59,7 +59,7 @@ const BADGES = {
 };
 const BADGE_IMG = { b0: 'badge_0', b1: 'badge_1', b2: 'badge_2', b3: 'badge_3' };
 const POWER = {
-  corno: { img: 'pw_corno', label: 'Cornetto: ti salva una volta', dur: 0 },
+  corno: { img: 'pw_corno', label: 'Peperoncino: ti salva una volta', dur: 0 },
   asciugamano: { img: 'pw_asciugamano', label: 'Asciugamano caldo: tutto rallenta', dur: 5 },
   flacone: { img: 'pw_flacone', label: 'Profumo: le gocce ti inseguono', dur: 7 },
   forbici: { img: 'pw_forbici', label: 'Forbici d’oro: taglia tutto', dur: 0 },
@@ -172,12 +172,16 @@ export function createGame(root, opts = {}) {
     if (dim) { g.globalCompositeOperation = 'source-atop'; g.fillStyle = `rgba(6,34,38,${dim})`; g.fillRect(0, 0, cv.width, cv.height); }
     scaled.set(key, cv); return cv;
   };
-  const tile = (c, im0, par, y, h, gapK = 1, hang = false, dim = 0) => {
+  const tile = (c, im0, par, y, h, gapK = 1, hang = false, dim = 0, mirror = false) => {
     const im = fit(im0, h, dim); if (!im) return;
-    const w = im.width, step = Math.round(w * gapK), off = -Math.round((scroll * par * SD) % step), Y = Math.round(y * SD) + OY, W = Math.round(VW * SD);
+    const w = im.width, step = Math.round(w * gapK), dist = scroll * par * SD, off = -Math.round(dist % step), Y = Math.round(y * SD) + OY, W = Math.round(VW * SD);
+    // mirror: every other copy is flipped, so strips whose art is cut at the edges meet a mirror of themselves
+    // (a whole symmetric building / hill) instead of half a building glued to half a castle
+    let idx = Math.floor(dist / step) - 1;
     c.save(); c.setTransform(1, 0, 0, 1, OX, 0);
-    for (let x = off - step; x < W; x += step) if (x + w > 0) {
-      c.drawImage(im, x, Y);
+    for (let x = off - step; x < W; x += step, idx++) if (x + w > 0) {
+      if (mirror && (idx & 1)) { c.save(); c.translate(x + w, Y); c.scale(-1, 1); c.drawImage(im, 0, 0); c.restore(); }
+      else c.drawImage(im, x, Y);
       if (hang && Y > 0) c.drawImage(im, 0, 0, w, 1, x, 0, w, Y + 1); // pendant cords reach the ceiling
     }
     c.restore();
@@ -195,7 +199,7 @@ export function createGame(root, opts = {}) {
       const im = sp(ly.n); if (!im) return;
       let h = ly.h; if (ly.cover) h = floorTop + 2;
       if (quality === 0 && i === 0 && nl > 2) return;          // weakest devices: skip the farthest strip
-      tile(c, im, ly.par, floorTop + ly.b - h, h, 1, ly.hang, DIM);
+      tile(c, im, ly.par, floorTop + ly.b - h, h, 1, ly.hang, DIM, ly.mirror);
       if (i === nl - 2 || nl === 1 || (nl === 2 && i === 0 && false)) drawMon(c, L, floorTop);
     });
     if (nl === 2) { /* salon & seafront: monument after the first strip */ }
@@ -368,7 +372,7 @@ export function createGame(root, opts = {}) {
       const pool = sc % LVLEN > 380 || sc > LVLEN ? L.en : L.en.slice(0, 2), E = pool[Math.floor(Math.random() * pool.length)], which = E.i, im = sp(`${L.id}_e${which}_0`);
       const w = im ? im.width * E.h / im.height : 40;
       o = { type: 'fly', kind: E.kind, E, which, L: L.id, x, w, h: E.h, y: 0, vx: 0, anim: rnd(0, 3), ph: 0, falling: false };
-      if (E.kind === 'fly') { const lvY = [18, 40, 88][Math.floor(Math.random() * 3)]; o.y = lvY; o.vx = 40; o.box = [w * .2, E.h * .2, w * .6, E.h * .6]; }
+      if (E.kind === 'fly') { const lvY = [12, 44][Math.floor(Math.random() * 2)]; /* two clear lanes: low = jump it, high = slide under it */ o.y = lvY; o.vx = 40; o.box = [w * .18, E.h * .18, w * .64, E.h * .64]; }
       else if (E.kind === 'hang') { o.y = 40; o.box = [w * .15, 0, w * .7, E.h * .45]; }
       else if (E.kind === 'roll') { o.y = 0; o.vx = 110; o.box = [w * .15, 2, w * .7, E.h * .8]; }
       else if (E.kind === 'leap') { o.y = 20; o.vx = 90; o.box = [w * .2, E.h * .2, w * .6, E.h * .6]; }
@@ -378,14 +382,14 @@ export function createGame(root, opts = {}) {
       const pick = pool[Math.floor(Math.random() * pool.length)] || { i: 0, h: L.ob[0] };
       const im = sp(`${L.id}_ob${pick.i}`);
       const h = pick.h, w = im ? im.width * h / im.height : 30;
-      o = { type: 'ground', name: `${L.id}_ob${pick.i}`, x, y: 0, w, h, vx: 0, box: [w * .16, 2, w * .68, h * .88] };
+      o = { type: 'ground', name: `${L.id}_ob${pick.i}`, x, y: 0, w, h, vx: 0, box: [w * .18, 0, w * .64, h * .9] };
     }
     obstacles.push(o);
     const dropsKind = 'drop';
     if (o.type === 'ground' && Math.random() < .6) {
       const nD = 4, y0 = o.h + 20, amp = Math.min(46, 112 - y0);
       for (let i = 0; i < nD; i++) pickups.push({ x: o.x - 10 + (o.w + 20) * i / (nD - 1), y: y0 + Math.sin(Math.PI * i / (nD - 1)) * amp, ph: rnd(0, TAU), kind: dropsKind });
-    } else if (o.kind === 'hang' || (o.kind === 'fly' && o.y === 40)) {
+    } else if (o.kind === 'hang' || (o.kind === 'fly' && o.y === 44)) {
       for (let i = 0; i < 3; i++) pickups.push({ x: o.x + 4 + i * 20, y: 14, ph: rnd(0, TAU), kind: dropsKind });
     } else if (Math.random() < .35) {
       const cx = o.x + o.w + gap * .5;
@@ -424,9 +428,10 @@ export function createGame(root, opts = {}) {
       }
     }
   }
+  function heroBox() { return p.duck ? [PX - 12, PX + 20, p.h + 2, p.h + 30] : [PX - 11, PX + 11, p.h + 2, p.h + 66]; }   // matches the drawn body (run / slide)
   function hits(o) {
     const bx = o.x + o.box[0], by = o.y + o.box[1], bw = o.box[2], bh = o.box[3];
-    const px0 = PX - 9, px1 = PX + 9 + (p.duck ? 10 : 0), py0 = p.h + 2, py1 = p.h + (p.duck ? 32 : 62);
+    const [px0, px1, py0, py1] = heroBox();
     return px1 > bx && px0 < bx + bw && py1 > by && py0 < by + bh;
   }
 
@@ -436,7 +441,7 @@ export function createGame(root, opts = {}) {
     prevLv = lv; lv = n; lvFade = first ? 1 : 0; if (n > maxLv) maxLv = n;
     mon = { L: LEVELS[n].id, x: VW + 80 };
     if (first) return;
-    grace = Math.max(grace, .9); gapLeft = Math.max(gapLeft, 300);
+    grace = Math.max(grace, 1.8); gapLeft = Math.max(gapLeft, 420); powerLeft = Math.max(powerLeft, 3);   // nothing to collect under the level postcard
     const L = curL();
     if (popEl) {
       const im = $('[data-pop-img]'); const tt = $('[data-pop-t]'); const ss = $('[data-pop-s]');
@@ -519,7 +524,7 @@ export function createGame(root, opts = {}) {
         }
       }
       if (living && !godMode && !tut && hits(o)) {
-        if (buff.shield) { buff.shield = false; o.dead = true; burst(o.x + o.w / 2, GY - o.y - o.h / 2, 12, 'rgba(240,204,116,1)', 140); addFx('fx_hit_', 6, o.x + o.w / 2, GY - o.y - o.h / 2, 70, 16); toast('Cornetto: salvo!'); shake = reducedMotion ? 0 : .12; }
+        if (buff.shield) { buff.shield = false; o.dead = true; burst(o.x + o.w / 2, GY - o.y - o.h / 2, 12, 'rgba(240,204,116,1)', 140); addFx('fx_hit_', 6, o.x + o.w / 2, GY - o.y - o.h / 2, 70, 16); toast('Peperoncino: salvo!'); shake = reducedMotion ? 0 : .12; }
         else hurt();
       }
     }
@@ -604,6 +609,10 @@ export function createGame(root, opts = {}) {
       glow(ctx, n, 'good', k.x, GY - k.y + bob + 16, 32 * sc, 1); spr(ctx, n, k.x, GY - k.y + bob + 16, 32 * sc); }
     for (const o of obstacles) drawObstacle(ctx, o);
     drawHero(ctx);
+    if (root.dataset.boxes) {            // QA: draw the hitboxes (set data-boxes on the game root)
+      ctx.lineWidth = 1.5; ctx.strokeStyle = '#00ff66'; const hb = heroBox(); ctx.strokeRect(hb[0], GY - hb[3], hb[1] - hb[0], hb[3] - hb[2]);
+      ctx.strokeStyle = '#ff2255'; for (const o of obstacles) if (o.box) ctx.strokeRect(o.x + o.box[0], GY - o.y - o.box[1] - o.box[3], o.box[2], o.box[3]);
+    }
     drawFx(ctx);
     if (tut && tut.wait && coarse) {
       const a = .16 + .1 * Math.sin(t * 8), left = tut.step === 2;
@@ -615,7 +624,8 @@ export function createGame(root, opts = {}) {
     ctx.font = '800 15px Archivo, system-ui, sans-serif'; ctx.textAlign = 'center';
     for (const q of texts) { ctx.fillStyle = `rgba(244,220,150,${clamp(q.life * 2, 0, 1)})`; ctx.strokeStyle = 'rgba(5,27,30,.7)'; ctx.lineWidth = 3; ctx.strokeText(q.s, q.x, q.y - 8); ctx.fillText(q.s, q.x, q.y - 8); }
     // power-up timers
-    let bx = VW / 2 - 40; const by = 10;
+    let nb = (buff.shield ? 1 : 0) + (buff.slow > 0 ? 1 : 0) + (buff.magnet > 0 ? 1 : 0) + (buff.double > 0 ? 1 : 0);
+    let bx = VW / 2 - (nb - 1) * 15; const by = 34;   // under the level name, never on top of it
     const chip = (img, frac) => { spr(ctx, img, bx, by + 22, 22); if (frac < 1) { ctx.fillStyle = 'rgba(244,239,232,.9)'; ctx.fillRect(bx - 11, by + 26, 22 * frac, 2.5); } bx += 30; };
     if (buff.shield) chip('pw_corno', 1); if (buff.slow > 0) chip('pw_asciugamano', buff.slow / POWER.asciugamano.dur); if (buff.magnet > 0) chip('pw_flacone', buff.magnet / POWER.flacone.dur); if (buff.double > 0) chip('pw_doppio', buff.double / POWER.doppio.dur);
     const vk = Math.round(nk * 10);
