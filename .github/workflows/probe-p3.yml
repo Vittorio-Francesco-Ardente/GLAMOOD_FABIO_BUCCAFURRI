@@ -1,0 +1,28 @@
+name: Probe p3
+on:
+  push:
+    branches: [probe/p3]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SITE: https://vittorio-francesco-ardente.github.io
+      BASE: /GLAMOOD_FABIO_BUCCAFURRI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - uses: actions/cache/restore@v4
+        with:
+          path: public/img
+          key: img-${{ hashFiles('assets/web/**', 'tools/assets.mjs') }}
+          restore-keys: img-
+      - run: npm ci
+      - run: npm run build
+      - run: npm install -g playwright@1.56.1
+      - run: node tools/probe-p3.mjs
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
