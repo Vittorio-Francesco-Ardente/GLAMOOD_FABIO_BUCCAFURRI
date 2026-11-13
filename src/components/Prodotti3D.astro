@@ -59,7 +59,8 @@ const slots = [
     ))}</div>
     <div class="p3-line">
       <p class="p3-line-k">La linea Glamood</p>
-      <div class="p3-line-row">{P3D.map((p, i) => <button type="button" class="p3-lj" data-open={i} tabindex="-1"><canvas data-still={i}></canvas><span>{p.n}</span></button>)}</div>
+      <div class="p3-line-row">{P3D.map((p, i) => <button type="button" class="p3-lj" data-open={i} tabindex="-1" style={`--d:${i * 110}ms`} aria-label={`${p.full}, ${p.note}: apri la scheda`}><canvas data-still={i}></canvas><span><b>{p.full}</b><i>{p.note} · {p.ml}</i></span></button>)}</div>
+      <p class="p3-line-sub">Tocca un barattolo per la scheda</p>
     </div>
     <p class="p3-hint">Muovi il mouse per ruotare · scorri per il prossimo</p>
   </div>
@@ -151,13 +152,23 @@ const slots = [
  .p3-chip[data-i="2"] li:not(.ml){background:#0F6870}
  .p3-chip li.ml{background:var(--ink);color:#F4EFE8;border-color:var(--ink)}
  .p3-chip[data-i="2"] li.ml{color:#0F6870}
- .p3-line{position:absolute;inset:0;z-index:7;display:grid;align-content:center;justify-items:center;gap:3vh;opacity:0;pointer-events:none}
+ .p3-line{position:absolute;inset:0;z-index:7;display:grid;align-content:center;justify-items:center;gap:2vh;padding-top:6vh;opacity:0;pointer-events:none}
+ .p3-line::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 52% 40% at 50% 64%,rgb(236 196 108 / .2),transparent 70%),radial-gradient(ellipse 70% 30% at 50% 88%,rgb(3 30 33 / .45),transparent 70%);pointer-events:none}
+ .p3-line-sub{font:700 13px/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:rgb(244 239 232 / .7);margin-top:3vh}
  .p3-line.on{pointer-events:auto}
- .p3-line-k{font:900 clamp(40px,5vw,84px)/.9 var(--f-display);text-transform:uppercase;color:#F4EFE8;letter-spacing:-.02em}
- .p3-line-row{display:flex;gap:1.5vw;align-items:flex-end}
- .p3-lj{display:grid;justify-items:center;gap:12px;background:none;border:0;color:#F4EFE8;font:900 clamp(16px,1.4vw,22px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:transform .4s var(--ease-out)}
- .p3-lj:hover{transform:translateY(-8px)}
- .p3-lj canvas{width:min(27vw,48vh*1.16,460px);aspect-ratio:1.16}
+ .p3-line-k{font:900 clamp(40px,4.6vw,80px)/.9 var(--f-display);text-transform:uppercase;color:#F4EFE8;letter-spacing:-.02em;text-shadow:0 12px 30px rgb(3 30 33 / .35)}
+ .p3-line-row{display:flex;gap:0;align-items:flex-end;margin-top:1vh}
+ .p3-lj{--y:0px;--s:1;--hy:0px;position:relative;display:grid;justify-items:center;gap:10px;margin:0 -1.2vw;background:none;border:0;color:#F4EFE8;cursor:pointer;opacity:0;translate:0 48px;transform:translateY(calc(var(--y) + var(--hy))) scale(var(--s));transition:opacity .7s var(--ease-out) var(--d),translate .9s cubic-bezier(.2,.9,.25,1.05) var(--d),transform .5s cubic-bezier(.2,.9,.25,1.05)}
+ .p3-line.on .p3-lj{opacity:1;translate:0 0}
+ .p3-lj:nth-child(odd){--y:-3vh;--s:.9}
+ .p3-lj:nth-child(2){z-index:2}
+ .p3-lj:hover,.p3-lj:focus-visible{--hy:-14px}
+ .p3-lj:focus-visible{outline:none}.p3-lj:focus-visible canvas{outline:3px solid #ECC46C;outline-offset:6px;border-radius:24px}
+ .p3-lj canvas{width:min(30vw,52vh*1.16,560px);aspect-ratio:1.16;filter:drop-shadow(0 30px 34px rgb(3 30 33 / .35))}
+ .p3-lj span{display:grid;justify-items:center;gap:6px;text-align:center}
+ .p3-lj b{font:900 clamp(16px,1.5vw,24px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.05em}
+ .p3-lj i{font:italic 400 clamp(13px,1vw,16px)/1.3 var(--f-body);color:rgb(244 239 232 / .75);opacity:0;transform:translateY(-4px);transition:opacity .3s,transform .3s}
+ .p3-lj:hover i,.p3-lj:focus-visible i,.p3-lj:nth-child(2) i{opacity:1;transform:none}
  .p3-hint{position:absolute;z-index:6;left:50%;bottom:24px;translate:-50% 0;font:800 12px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--hint,#0F6870);opacity:.8;transition:opacity .4s}
 }
 /* ---------- phones / tablets / reduced motion: one card per product ---------- */
@@ -262,6 +273,14 @@ function still(cv: HTMLCanvasElement, i: number, rot = 0) {
   const { w, h } = fitCanvas(cv); const c = cv.getContext('2d')!; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
   drawJar(c, arts[i], w / 2, h * .92, w * .9, h * .8, rot);
 }
+const turning = new Map<HTMLCanvasElement, number>();
+function turn(cv: HTMLCanvasElement, i: number, to: number) {
+  cancelAnimationFrame(turning.get(cv) || 0);
+  const from = +(cv.dataset.rot || 0), t0 = performance.now();
+  const step = (t: number) => { const k = Math.min(1, (t - t0) / 650), e = 1 - Math.pow(1 - k, 3), r = from + (to - from) * e; cv.dataset.rot = String(r); still(cv, i, r); if (k < 1) turning.set(cv, requestAnimationFrame(step)); };
+  turning.set(cv, requestAnimationFrame(step));
+}
+if (!reduced) sec.querySelectorAll<HTMLButtonElement>('.p3-lj').forEach((b) => { const cv = b.querySelector('canvas')!, i = +b.dataset.open!; const go = (to: number) => () => { if (arts[i]) turn(cv, i, to); }; b.addEventListener('pointerenter', go(.22)); b.addEventListener('pointerleave', go(0)); b.addEventListener('focus', go(.22)); b.addEventListener('blur', go(0)); });
 function stills() { document.querySelectorAll<HTMLCanvasElement>('canvas[data-still]').forEach((cv) => still(cv, +cv.dataset.still!)); }
 
 // ---------- desktop pinned stage ----------
@@ -325,7 +344,7 @@ function startDesk() {
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
     const w = cw, h = chh; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
-    const jw = Math.min(w * .36, h * .6 * 1.21), jh = jw / 1.21, base = h * .86;
+    const jw = Math.min(w * .4, h * .64 * 1.21), jh = jw / 1.21, base = h * .87;
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
