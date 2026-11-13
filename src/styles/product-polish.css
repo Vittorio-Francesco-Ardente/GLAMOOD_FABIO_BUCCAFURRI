@@ -1,7 +1,9 @@
 /* Shared layout fixes: normal-flow header, readable product surfaces, safe mascot placement. */
 /* One header for every page: it takes the colour of the section it sits on (no separate band),
    only the text switches between petrol and cream when needed (Header.astro, detectTone). */
-.site-header{background:var(--hdr-bg,var(--hdr-top,var(--cream)));padding:14px var(--gutter);position:relative;z-index:var(--z-header)}
+/* The header lies ON the first section of the page (transparent, no band of its own): the page starts at the very top. */
+.site-header{position:absolute;top:0;left:0;right:0;background:transparent!important;padding:14px var(--gutter);z-index:var(--z-header)}
+.page-top>.product-page{padding-top:calc(76px + env(safe-area-inset-top))}
 /* no panel of its own: only the text colour changes */
 .site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 .site-header .sx-header[data-tone] .links a{text-shadow:none}
@@ -80,7 +82,8 @@ html.product-sheet-open .p3-skip{display:none!important}
 
 /* Phones: the header is part of the page too, no separate white pill; only the text colour adapts. */
 @media(max-width:767px){
- .site-header{padding:10px 16px;background:var(--hdr-bg,var(--hdr-top,var(--cream)))}
+ .site-header{padding:10px 16px}
+ .page-top>.product-page{padding-top:calc(68px + env(safe-area-inset-top))}
  .site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{gap:12px;padding:6px 0;border:0;border-radius:0;background:transparent;box-shadow:none;min-height:56px}
  .site-header .sx-header .mark img{height:21px;width:auto;max-width:44vw;object-fit:contain}
  .site-header .sx-header .burger{background:color-mix(in srgb,var(--hc) 14%,transparent)}

@@ -42,7 +42,7 @@ try {
  for(const slug of ['cera-opaca','crema-styling','balsamo-barba','olio-barba','crema-da-barba','shampoo','spray-al-sale','dopobarba']){
  await page.goto(base+'/prodotti/'+slug,{waitUntil:'networkidle'});
  const b=await bounds();assert(b.scroll<=b.width+1,`${slug} overflow ${b.scroll}/${b.width}`);assert.equal(b.broken.length,0,`${slug} missing images ${b.broken}`);
- assert.equal(await page.locator('.testa').evaluate(e=>getComputedStyle(e).position),'relative','header is in document flow');
+ assert.equal(await page.locator('.site-header').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','header lies on the page');
  assert.equal(await page.locator('.product-summary').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)','white information card');
  if(slug==='cera-opaca'){
  await capture('detail');
