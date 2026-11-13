@@ -200,3 +200,8 @@ html.product-sheet-open .p3-skip{display:none!important}
  .sx-p3 .p3-lj b{font-size:15px!important;max-width:none!important}
  .sx-p3 .p3:not(.p3-at-line) .p3-dots{bottom:calc(236px + max(22px,env(safe-area-inset-bottom)) + 18px)}
 }
+
+/* bottom bar host: a plain fixed layer on the viewport */
+.dock-host{display:block!important;position:fixed;left:0;right:0;bottom:0;height:0;z-index:calc(var(--z-header) + 1);pointer-events:none}
+.dock-host .barra{pointer-events:auto}
+html.product-immersive .dock-host .barra,html.product-sheet-open .dock-host .barra,html.game-on .dock-host .barra{opacity:0!important;pointer-events:none!important;transform:translate(-50%,calc(100% + 40px))!important}

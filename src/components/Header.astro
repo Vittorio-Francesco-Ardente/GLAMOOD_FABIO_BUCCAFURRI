@@ -225,6 +225,12 @@ import { reduced, trapTab, lockScroll, wireMaps } from '../scripts/core.js';
 const root = document.querySelector<HTMLElement>('.sx-header')!;
 const menu = document.getElementById('menu')!, burger = document.getElementById('burger')!, burger2 = document.getElementById('burger2')!;
 const barra = document.getElementById('barra')!;
+// The bottom bar lives directly under <body>, in its own fixed host: no ancestor (absolute header, sticky
+// sections, Safari quirks) can ever change what it is fixed to. The host mirrors the header's state classes.
+const dockHost = document.createElement('div'); dockHost.className = 'sx-header dock-host'; dockHost.dataset.tone = root.dataset.tone || '';
+document.body.appendChild(dockHost); dockHost.appendChild(barra);
+const mirror = () => { dockHost.classList.toggle('scorre', root.classList.contains('scorre')); dockHost.classList.toggle('menu-is-open', root.classList.contains('menu-is-open')); };
+new MutationObserver(mirror).observe(root, { attributes: true, attributeFilter: ['class'] });
 wireMaps(menu);
 // Show the mobile dock only after a meaningful scroll, then keep it stable.
 // Desktop/tablet retain their original four-pixel threshold.
