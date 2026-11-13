@@ -2,7 +2,7 @@
 // real labels (etichette/etichetta-<k>-completa). Prices and the full ingredient list are not known yet:
 // the labels themselves say "in arrivo", so the site says "da confermare" (TODO in TODO.md).
 export type Product3D = {
-  k: 'pomata' | 'cera' | 'balsamo' | 'crema';
+  k: 'cera' | 'balsamo' | 'crema';
   n: string;          // short name
   full: string;       // name on the label
   note: string;       // key ingredient line on the label
@@ -15,11 +15,6 @@ export type Product3D = {
   accent: string;
 };
 export const P3D: Product3D[] = [
-  { k: 'pomata', n: 'Pomata', full: 'Pomata lucida', note: 'al cedro di Calabria', ml: '100 ml',
-    use: 'Scalda poco prodotto tra le mani e modella i capelli asciutti.',
-    desc: 'Lucida e morbida: pettinature pulite che si ripettinano con le dita.',
-    ing: ['Cedro di Calabria'], pics: ['cedro-01', 'texture-prodotto-01', 'texture-prodotto-05', 'cedro-01'],
-    ink: '#0F6870', accent: '#B8935A' },
   { k: 'cera', n: 'Cera', full: 'Cera opaca', note: 'al miele di zagara', ml: '100 ml',
     use: 'Lavora poca cera tra le dita e modella le ciocche asciutte.',
     desc: 'Tenuta forte, effetto opaco: il capello resta dove lo metti, tutto il giorno.',

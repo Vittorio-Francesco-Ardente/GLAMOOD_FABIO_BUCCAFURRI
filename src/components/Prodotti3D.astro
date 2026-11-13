@@ -8,7 +8,10 @@ import { img } from '../data/img';
 import { P3D } from '../data/products3d';
 import { wa, waText } from '../data/business';
 const V = 'v2/prodotti-3d';
-const surfaces = [{bg:'#E7EEE5', motif:'onde'}, {bg:'#F1DEAE',motif:'alveare'}, {bg:'#DDEAE7',motif:'agrumi'}, {bg:'#0F6870',motif:'botanico'}];
+// Liquid vector backgrounds (assets/svg/liquido-*.svg, traced from Vittorio's references): sharp at any size.
+const LIQ: Record<string, { bg: string; liquid: string; slug: string }> = { cera: { bg: '#F1DEAE', liquid: 'miele', slug: 'cera-opaca' }, balsamo: { bg: '#DDEAE7', liquid: 'salvia', slug: 'balsamo-barba' }, crema: { bg: '#0F6870', liquid: 'petrolio-tono', slug: 'crema-styling' } };
+const surfaces = P3D.map((p) => LIQ[p.k]);
+const liq = (n: string) => `background-color:${n === 'abisso' ? '#0A4A50' : ''};background-image:url('/img/svg/liquido-${n}.svg')`;
 const shadowFor = (ml: string) => `${V}/luci-ombre/ombra-contatto-barattolo-150ml`;
 const data = P3D.map((p) => ({
   k: p.k, n: p.n, full: p.full, note: p.note, ml: p.ml, use: p.use, desc: p.desc, ing: p.ing, ink: p.ink, accent: p.accent,
@@ -18,12 +21,15 @@ const data = P3D.map((p) => ({
   pattern: img(`${V}/illustrazioni/pattern-illustrato-${p.k}`, 960).src,
   shadow: img(shadowFor(p.ml), 1600).src,
   wa: wa(waText.info(p.full)),
+  liquid: `/img/svg/liquido-${LIQ[p.k].liquid}.svg`, bgc: LIQ[p.k].bg, slug: LIQ[p.k].slug,
+  hero: img(`${V}/confezioni/barattolo-${p.k}`, 480).src,
+  ings: p.pics.slice(0, 3).map((f) => img(`${V}/ingredienti/${p.k}/${f}`, 480).src),
 }));
 const art = { jar: img(`${V}/barattolo/barattolo-nudo-fronte`, 1600).src, jarS: img(`${V}/barattolo/barattolo-nudo-fronte`, 960).src, light: img(`${V}/luci-ombre/passata-luce-barattolo`, 1600).src, lightS: img(`${V}/luci-ombre/passata-luce-barattolo`, 960).src };
 const slots = [
   // x, y in % of the stage, size in vh, layer: 0 back (small, soft), 1 mid, 2 front (big, blurred).
   // Kept clear of the copy column (left) and of the ingredient chips (right).
-  [36, 14, 10, 0], [64, 12, 9, 0], [72, 70, 13, 1], [42, 76, 9, 1], [90, 68, 17, 2], [60, 80, 12, 2],   // all above the bottom bar
+  [34, 13, 10, 0], [66, 11, 9, 0], [79, 27, 12, 1], [26, 84, 10, 1], [91, 80, 16, 2], [62, 88, 11, 2],   // all above the bottom bar
 ];
 ---
 <div class="sx-p3">
@@ -32,8 +38,8 @@ const slots = [
   <!-- desktop pinned stage -->
   <a class="p3-skip" href="#catalogo">Salta al catalogo <span aria-hidden="true">↘</span></a>
   <div class="p3-pin">
-    <div class="p3-bgs">{P3D.map((p, i) => <div class="p3-bg" data-i={i} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/product-${surfaces[i].motif}.svg')`}></div>)}
-      <div class="p3-bg p3-bg-line" style="background-color:#0A4A50;background-image:url('/img/svg/product-onde.svg')"></div></div>
+    <div class="p3-bgs">{P3D.map((p, i) => <div class="p3-bg" data-i={i} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>)}
+      <div class="p3-bg p3-bg-line" style={liq('abisso')}></div></div>
     <div class="p3-titles">{P3D.map((p, i) => <p class="p3-title" data-i={i} style={`color:${p.ink}`}>{p.n}</p>)}</div>
     <div class="p3-ings">{P3D.map((p, i) => p.pics.slice(0, 6).map((f, j) => (
       <img class="p3-ing" data-i={i} data-l={slots[j][3]} style={`left:${slots[j][0]}%;top:${slots[j][1]}%;height:${slots[j][2]}vh`} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />
@@ -59,13 +65,13 @@ const slots = [
   </div>
   <!-- phones (and reduced motion): one card per product -->
   <div class="p3m">
-    <article class="p3c p3c-intro">
-      <picture><source media="(max-width:767px)" srcset={img(`${V}/sfondi-scroll/controluce-pomata-mob`, 960).src} /><img class="p3c-bg" {...img(`${V}/sfondi-scroll/controluce-pomata-desk`, 1600)} alt="" loading="lazy" decoding="async" /></picture>
-      <div class="p3c-in"><p class="p3-k" style="color:#ECC46C">La linea Glamood</p><h3 class="p3c-h">I barattoli<br />di Fabio</h3><p class="p3c-p">Quattro prodotti, gli stessi che usa in salone. Gira il barattolo con il dito per leggere l'etichetta.</p></div>
+    <article class="p3c p3c-intro" data-tone-bg="dark">
+      <picture><source media="(max-width:767px)" srcset={img(`${V}/sfondi-scroll/controluce-crema-mob`, 960).src} /><img class="p3c-bg" {...img(`${V}/sfondi-scroll/controluce-crema-desk`, 1600)} alt="" loading="lazy" decoding="async" /></picture>
+      <div class="p3c-in"><p class="p3-k" style="color:#ECC46C">La linea Glamood</p><h3 class="p3c-h">I barattoli<br />di Fabio</h3><p class="p3c-p">Tre barattoli, gli stessi che usa in salone. Gira il barattolo con il dito per leggere l'etichetta.</p></div>
     </article>
     {P3D.map((p, i) => (
       <article class="p3c" data-i={i} style={`--ink:${p.ink};--ac:${p.accent}`} aria-labelledby={`p3c-${p.k}`}>
-        <div class="p3c-bg" style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/product-${surfaces[i].motif}.svg')`}></div>
+        <div class="p3c-bg" style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>
         <div class="p3c-stage" aria-hidden="true">
           {p.pics.slice(0, 3).map((f, j) => <img class="p3c-ing" data-j={j} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />)}
           <canvas class="p3c-cv" data-i={i}></canvas>
@@ -96,9 +102,11 @@ const slots = [
         <div><dt>Formato</dt><dd id="p3s-ml"></dd></div>
         <div><dt>Prezzo</dt><dd>Da confermare in salone</dd></div>
       </dl>
-      <a class="btn-pop fill" id="p3s-wa" href={wa()} target="_blank" rel="noopener">Prenota e chiedilo a Fabio</a>
+      <div class="p3s-ings" id="p3s-ings" aria-hidden="true"></div>
+      <div class="p3s-cta"><a class="btn-pop fill" id="p3s-wa" href={wa()} target="_blank" rel="noopener">Prenota e chiedilo a Fabio</a><a class="p3s-full" id="p3s-full" href="/prodotti">Scheda completa <span aria-hidden="true">↗</span></a></div>
     </div>
   </div>
+  <div class="p3s-more"><p class="p3-k">Guarda anche</p><div class="p3s-row">{P3D.map((p, i) => <button type="button" class="p3s-o" data-sheet={i}><img src={data[i].hero} alt="" loading="lazy" decoding="async" /><span><b>{p.full}</b>{p.note}</span></button>)}</div></div>
   <img class="p3s-pg" {...img(`${V}/personaggio/posa-barattolo`, 960)} alt="" loading="lazy" decoding="async" />
 </div>
 </div>
@@ -140,9 +148,9 @@ const slots = [
  .p3-chip{position:absolute;right:0;top:50%;translate:0 -50%;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:flex-end;gap:10px;opacity:0;transition:opacity .35s}
  .p3-chip.on,.p3-chip[data-i="0"]:not(.off){opacity:1}
  .p3-chip li{white-space:nowrap;padding:10px 16px;border-radius:999px;border:2px solid var(--ink);color:var(--ink);font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;background:#F4EFE8}
- .p3-chip[data-i="3"] li:not(.ml){background:#0F6870}
+ .p3-chip[data-i="2"] li:not(.ml){background:#0F6870}
  .p3-chip li.ml{background:var(--ink);color:#F4EFE8;border-color:var(--ink)}
- .p3-chip[data-i="3"] li.ml{color:#0F6870}
+ .p3-chip[data-i="2"] li.ml{color:#0F6870}
  .p3-line{position:absolute;inset:0;z-index:7;display:grid;align-content:center;justify-items:center;gap:3vh;opacity:0;pointer-events:none}
  .p3-line.on{pointer-events:auto}
  .p3-line-k{font:900 clamp(40px,5vw,84px)/.9 var(--f-display);text-transform:uppercase;color:#F4EFE8;letter-spacing:-.02em}
@@ -189,6 +197,22 @@ const slots = [
 .p3s-tx dt{font:800 12px/1.4 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--brass)}
 .p3s-tx dd{margin:0;font-size:17px;line-height:1.5}
 .p3s-pg{display:none}
+.p3s{background-size:cover;background-position:center}
+.p3s-ings{display:flex;flex-wrap:wrap;gap:10px;margin:-8px 0 24px}
+.p3s-ings span{display:grid;justify-items:center;gap:6px;flex:1;min-width:96px;padding:12px 10px;border-radius:18px;background:#F4EFE8}
+.p3s-ings img{height:64px;width:100%;object-fit:contain}
+.p3s-ings i{font:700 12px/1.3 var(--f-body);font-style:normal;text-align:center;color:#133b40}
+.p3s-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.p3s-full{font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;color:#0F6870;text-underline-offset:5px}
+.p3s-more{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 var(--gutter) 72px}
+.p3s-more>.p3-k{display:inline-block;padding:10px 16px;border-radius:999px;background:#fff;color:#0F6870}
+.p3s-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin-top:14px}
+.p3s-o{display:flex;align-items:center;gap:16px;padding:14px 18px;border:0;border-radius:22px;background:#fff;color:#133b40;text-align:left;cursor:pointer;box-shadow:0 12px 30px -18px rgb(8 57 62 / .5);transition:transform .3s var(--ease-out)}
+.p3s-o:hover{transform:translateY(-4px)}
+.p3s-o img{width:84px;height:84px;object-fit:contain;flex:none}
+.p3s-o span{display:grid;gap:4px;font-size:14px;font-style:italic;color:#3d6365}
+.p3s-o b{font:900 18px/1.05 var(--f-display);font-style:normal;text-transform:uppercase;color:#0F6870}
+.p3s-o[hidden]{display:none}
 @media (min-width:1024px){.p3s-in{grid-template-columns:1fr 1fr}.p3s-pg{display:block;position:fixed;right:2%;bottom:0;z-index:2;width:clamp(150px,13vw,220px);height:auto;pointer-events:none}}
 @media (max-width:767px){.p3s-tx dl div{grid-template-columns:1fr;gap:4px}}
 }
@@ -360,12 +384,17 @@ function openSheet(i: number, from: HTMLElement) {
   $('p3s-use').textContent = p.use; $('p3s-ing').textContent = p.ing.join(', ') + ' (elenco completo in arrivo)'; $('p3s-ml').textContent = p.ml;
   ($('p3s-wa') as HTMLAnchorElement).href = p.wa;
   (sheet.querySelector('.p3s-illu') as HTMLImageElement).src = p.illu;
-  (sheet.querySelector('.p3s-pat') as HTMLElement).style.backgroundImage = `url(${p.pattern})`;
+  sheet.style.backgroundColor = p.bgc; sheet.style.backgroundImage = `url(${p.liquid})`;
+  ($('p3s-full') as HTMLAnchorElement).href = (document.querySelector('.mark') as HTMLAnchorElement).href.replace(/\/?$/, '/') + 'prodotti/' + p.slug;
+  $('p3s-ings').innerHTML = p.ings.map((s: string, j: number) => `<span><img src="${s}" alt="" loading="lazy" /><i>${p.ing[j] ?? ''}</i></span>`).join('');
+  sheet.querySelectorAll<HTMLElement>('.p3s-o').forEach((b) => (b.hidden = +b.dataset.sheet! === i));
+  sheet.scrollTop = 0;
   sheet.hidden = false; document.documentElement.classList.add("product-sheet-open"); sec.setAttribute("inert", ""); document.querySelector(".site-header")?.setAttribute("inert", ""); lockScroll(true); sheet.focus();
   if (arts[i]) requestAnimationFrame(() => still(sheet.querySelector('.p3s-cv') as HTMLCanvasElement, i));
 }
 function closeSheet() { if (sheet.hidden) return; sheet.hidden = true; document.documentElement.classList.remove("product-sheet-open"); sec.removeAttribute("inert"); document.querySelector(".site-header")?.removeAttribute("inert"); lockScroll(false); back?.focus({ preventScroll: true }); }
 sec.querySelectorAll<HTMLElement>('[data-open]').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.open!; Promise.all([boot(), ensureArt(i)]).then(() => openSheet(i, b)); }));
 sheet.querySelector('.p3s-x')!.addEventListener('click', closeSheet);
+sheet.querySelectorAll<HTMLElement>('.p3s-o').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.sheet!; Promise.all([boot(), ensureArt(i)]).then(() => { const prev = back; openSheet(i, prev || b); }); }));
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
 </script>

@@ -7,6 +7,8 @@ export function getStaticPaths() { return PRODUCTS.map((p) => ({ params: { slug:
 const { p } = Astro.props as { p: Product };
 const cat = CATS.find((c) => c.k === p.cat)!;
 const more = [...PRODUCTS.filter((q) => q.cat === p.cat && q.slug !== p.slug), ...PRODUCTS.filter((q) => q.cat !== p.cat)].slice(0, 4);
+const LIQ: Record<string, string> = { styling: 'miele', barba: 'salvia', capelli: 'petrolio-tono', dopobarba: 'abisso' };
+const liquid = p.jar === 'crema' ? 'petrolio-tono' : LIQ[p.cat];
 const motif = p.jar === 'cera' ? 'alveare' : p.jar === 'crema' || p.cat === 'capelli' ? 'botanico' : p.cat === 'barba' || p.cat === 'dopobarba' ? 'agrumi' : 'onde';
 const gallery = [
   {src: img(imgOf(p), 1600).src, label: 'Confezione', alt: `${p.n} Glamood, ${p.ml}`},
@@ -15,10 +17,10 @@ const gallery = [
   ...(p.jar ? [{src: img(`v2/prodotti-3d/etichette/etichetta-${p.jar}-completa`).src,label:'Etichetta',alt:`Etichetta completa di ${p.n}`}] : []),
 ];
 ---
-<Site title={`${p.n} | Prodotti Glamood, barber shop a Reggio Calabria`} description={`${p.n} Glamood ${p.sub}: ${p.desc}`} path={`/prodotti/${p.slug}`} top={p.bg} tone="light">
-<article class="product-page" style={`--product-bg:${p.bg};--product-soft:${p.bg2};--product-ink:${p.ink};--product-pattern:url('/img/svg/product-${motif}.svg')`}>
+<Site title={`${p.n} | Prodotti Glamood, barber shop a Reggio Calabria`} description={`${p.n} Glamood ${p.sub}: ${p.desc}`} path={`/prodotti/${p.slug}`} top="#F4EFE8" tone="light">
+<article class="product-page" style={`--product-bg:${p.bg};--product-soft:${p.bg2};--product-ink:${p.ink};--product-pattern:url('/img/svg/product-${motif}.svg');--product-liquid:url('/img/svg/liquido-${liquid}.svg')`}>
   <div class="product-wrap">
-    <nav class="product-breadcrumb" aria-label="Percorso"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/prodotti#catalogo">Prodotti</a><span aria-hidden="true">/</span><span>{p.n}</span></nav>
+    <nav class="product-breadcrumb" aria-label="Percorso"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/prodotti#catalogo">Prodotti</a><span aria-hidden="true">/</span><a href={`/prodotti#cat-${p.cat}`}>{cat.n}</a><span aria-hidden="true">/</span><span>{p.n}</span></nav>
     <section class="product-top" aria-labelledby="product-title">
       <div class="product-gallery">
         <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" {...productImg(imgOf(p), '(max-width:767px) 82vw, 40vw')} alt={gallery[0].alt} fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">+</span></button>
@@ -55,7 +57,7 @@ const gallery = [
 .product-wrap{max-width:1360px;margin:auto}
 .product-breadcrumb{display:flex;flex-wrap:wrap;gap:12px;padding:24px 0;font-size:13px;color:#456366}
 .product-breadcrumb a{text-underline-offset:4px}.product-breadcrumb>span:last-child{font-weight:700}
-.product-top{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);padding:clamp(20px,2.5vw,36px);border-radius:32px;background:var(--product-soft);align-items:start}
+.product-top{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);padding:clamp(20px,2.5vw,36px);border-radius:32px;background:var(--product-soft) var(--product-liquid) center/cover no-repeat;align-items:start}
 .product-gallery{min-width:0}
 .product-main-image{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:1;background:var(--product-bg);border-radius:24px;overflow:hidden;isolation:isolate;cursor:zoom-in;border:1px solid rgb(8 57 62 / .1)}
 .product-main-image::before,.product-story-art::before{content:"";position:absolute;inset:0;z-index:-1;background-image:var(--product-pattern);background-size:230px;opacity:.4}

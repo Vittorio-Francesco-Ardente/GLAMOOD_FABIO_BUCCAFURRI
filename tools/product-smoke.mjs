@@ -16,9 +16,10 @@ try {
  await initial.clock.install({time:new Date('2026-11-13T10:00:00Z')});
  await initial.clock.pauseAt(new Date('2026-11-13T10:00:01Z'));
  await initial.goto(`http://127.0.0.1:4329${prefix}/`,{waitUntil:'domcontentloaded'});
- assert(await initial.locator('#intro .loader-emblem img').count(),'entry uses the face emblem');
+ assert.equal(await initial.locator('#intro .ld-letter').count(),7,'entry spells GLAMOOD');
+ assert.equal(await initial.locator('#intro .loader-emblem').count(),0,'no spinner ring');
  await initial.screenshot({path:'qa/product-experience/entry-loader.png'});
- await initial.clock.runFor(1300);
+ await initial.clock.runFor(1800);
  assert.equal(await initial.locator('#intro').count(),0,'entry loader clears');
  await initial.close();
  for(const width of [390,768,1440]){
@@ -30,7 +31,7 @@ try {
  const bounds=async()=>page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,broken:[...document.images].filter(i=>i.complete&&i.currentSrc&&!i.naturalWidth).map(i=>i.currentSrc)}));
  await page.goto(base+'/prodotti',{waitUntil:'networkidle'});await page.waitForTimeout(600);
  assert(await page.locator('.p3-skip').isVisible(),'skip is visible');
- assert.equal(await page.locator('.testa').isVisible(),false,'header hidden in intro');
+ assert(await page.locator('.testa').isVisible(),'one header on every page, products included');
  assert.equal(await page.locator('.barra').evaluate(e=>getComputedStyle(e).visibility),'hidden','dock hidden in intro');
  await capture('intro');
  if(width>=1024){await page.locator('.p3-txt.on .p3-more').click();await page.locator('#p3s').waitFor({state:'visible'});await capture('sheet');await page.locator('.p3s-x').click();await page.locator('#p3s').waitFor({state:'hidden'});}
@@ -38,12 +39,12 @@ try {
  assert.equal(await page.evaluate(()=>document.activeElement?.id),'ct-t','skip focuses catalog');
  assert.equal(await page.locator('.barra').evaluate(e=>getComputedStyle(e).opacity),'1','dock restored in catalog');
  await capture('catalog');
- for(const slug of ['pomata-lucida','cera-opaca','crema-styling','pomata-classica','balsamo-barba','olio-barba','crema-da-barba','shampoo','spray-al-sale','dopobarba']){
+ for(const slug of ['cera-opaca','crema-styling','balsamo-barba','olio-barba','crema-da-barba','shampoo','spray-al-sale','dopobarba']){
  await page.goto(base+'/prodotti/'+slug,{waitUntil:'networkidle'});
  const b=await bounds();assert(b.scroll<=b.width+1,`${slug} overflow ${b.scroll}/${b.width}`);assert.equal(b.broken.length,0,`${slug} missing images ${b.broken}`);
  assert.equal(await page.locator('.testa').evaluate(e=>getComputedStyle(e).position),'relative','header is in document flow');
  assert.equal(await page.locator('.product-summary').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)','white information card');
- if(slug==='pomata-lucida'){
+ if(slug==='cera-opaca'){
  await capture('detail');
  await page.getByRole('button',{name:'Etichetta',exact:true}).click();
  await page.locator('.product-main-image').click();assert(await page.locator('.product-lightbox').isVisible());await capture('label');
@@ -59,11 +60,12 @@ try {
  await page.goto(base+'/404.html',{waitUntil:'networkidle'});await capture('404');
  await page.goto(base+'/',{waitUntil:'networkidle'});await capture('home');
  if(width===390){
- assert.equal(await page.locator('.testa').evaluate(e=>getComputedStyle(e).borderRadius),'22px');
+ assert.equal(await page.locator('.testa').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','no separate header panel');
  await page.locator('#burger').click();assert.equal(await page.locator('#burger').getAttribute('aria-expanded'),'true');
  await page.locator('#menu-close').click();assert.equal(await page.locator('#burger').getAttribute('aria-expanded'),'false');
  }
- assert.equal(await page.locator('#pt-cover .loader-emblem img').count(),1);
+ assert.equal(await page.locator('#pt-cover .pt-g').count(),1);
+ assert.equal(await page.locator('#pt-cover .loader-emblem').count(),0);
  assert.equal(await page.locator('#pt-cover .pt-word, #pt-cover .pt-run').count(),0);
 
  await page.locator('.testa .links a[href$="/prodotti"]').isVisible().then(async visible=>{if(visible){await page.locator('.testa .links a[href$="/prodotti"]').click();await page.waitForTimeout(120);assert(await page.locator('#pt-cover').evaluate(e=>e.classList.contains('in')),'transition starts');await capture('transition');await page.waitForURL('**/prodotti');await page.waitForTimeout(650);assert.equal(await page.locator('#pt-cover').evaluate(e=>e.classList.contains('in')||document.documentElement.classList.contains('pt-arrive')),false,'arrival clears');await page.goBack();await page.waitForTimeout(650);assert.equal(await page.locator('#pt-cover').evaluate(e=>e.classList.contains('in')),false,'back restores page');}});

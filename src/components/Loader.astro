@@ -1,5 +1,6 @@
 ---
-import LoaderFace from './LoaderFace.astro';
+/* ARDAKÉ-inspired left-to-right letter build, no reflection or loading blockers. */
+import art from './loader-art.txt?raw';
 ---
 <script is:inline>
 (function () {
@@ -20,11 +21,44 @@ import LoaderFace from './LoaderFace.astro';
   }, 2200);
 })();
 </script>
-<div class="gl-intro" id="intro" aria-hidden="true"><LoaderFace /></div>
+<div class="gl-intro" id="intro" aria-hidden="true"><Fragment set:html={art} /></div>
 <style is:global>
-.gl-intro{position:fixed;inset:0;z-index:var(--z-loader);display:grid;place-items:center;overflow:hidden;cursor:pointer;background:var(--cream);opacity:1;transition:opacity .24s ease-out}
+.gl-intro{
+  --bg:#FFFFFF;--w1:#0C5A61;--w2:#0F6870;--w3:#12757E;
+  position:fixed;inset:0;z-index:var(--z-loader);display:grid;
+  place-items:center;overflow:hidden;cursor:pointer;background:#fff;
+  opacity:1;transition:opacity .24s ease-out;
+}
 .no-loader .gl-intro{display:none}
 .gl-intro.via{opacity:0;pointer-events:none}
+.gl-intro .sfondo{position:absolute;inset:0;z-index:0;pointer-events:none}
+.gl-intro .sfondo svg{width:100%;height:100%;display:block}
+.gl-intro .sfondo .b{animation:none!important;transform:none!important}
+.gl-intro .intro-logo{
+  position:relative;z-index:1;width:min(84vw,980px);display:flex;
+  flex-direction:column;align-items:center;
+}
+.gl-intro .ld-mask{display:block;width:100%}
+.gl-intro .intro-wm{
+  display:block;width:100%;height:auto;overflow:visible;
+  color:#0F6870;filter:none!important;mask:none!important;-webkit-mask:none!important;
+}
+.gl-intro .ld-letter{
+  opacity:0;
+  transform-box:view-box;
+  transform-origin:50% 100%;
+  will-change:transform,opacity;
+}
+.gl-intro.gioca .ld-letter{
+  animation:ld-letter-pop 560ms cubic-bezier(.2,.9,.25,1) both;
+  animation-delay:var(--ld-delay,0ms);
+}
+@keyframes ld-letter-pop{
+  from{opacity:0;transform:translateY(18px) scaleY(.9)}
+  65%{opacity:1}
+  to{opacity:1;transform:translateY(0) scaleY(1)}
+}
+@media(max-width:767px){.gl-intro .intro-logo{width:88vw}}
 @media(prefers-reduced-motion:reduce){.gl-intro{display:none}}
 </style>
 <script is:inline>
@@ -47,6 +81,6 @@ import LoaderFace from './LoaderFace.astro';
   window.addEventListener('keydown',skip);
   // Starts immediately after the markup is parsed. Never wait for window.load.
   requestAnimationFrame(function(){intro.classList.add('gioca')});
-  window.setTimeout(finish,900);
+  window.setTimeout(finish,1520);
 })();
 </script>

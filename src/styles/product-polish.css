@@ -1,9 +1,18 @@
 /* Shared layout fixes: normal-flow header, readable product surfaces, safe mascot placement. */
-.site-header{background:var(--cream);padding:14px var(--gutter);position:relative;z-index:var(--z-header)}
+/* One header for every page: it takes the colour of the section it sits on (no separate band),
+   only the text switches between petrol and cream when needed (Header.astro, detectTone). */
+.site-header{background:var(--hdr-bg,var(--hdr-top,var(--cream)));padding:14px var(--gutter);position:relative;z-index:var(--z-header)}
+/* no panel of its own: only the text colour changes */
+.site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.site-header .sx-header[data-tone] .links a{text-shadow:none}
 .site-header .sx-header .testa{position:relative;inset:auto;--hc:#0F6870;background:transparent;box-shadow:none;backdrop-filter:none;border-radius:20px;padding:0;opacity:1;visibility:visible;transform:none}
 .site-header .mark img{filter:none}
-.site-header-products{display:contents}
-.site-header-products .testa{display:none!important}
+.site-header .sx-header[data-tone="dark"] .testa{--hc:#F4EFE8}
+.site-header .sx-header[data-tone="dark"] .mark img{filter:brightness(0) invert(1)}
+.site-header .sx-header[data-tone="dark"] .btn-pre:hover{color:var(--petrol)}
+.site-header .sx-header[data-tone="light"] .btn-pre:hover{color:#F4EFE8}
+/* /prodotti: the same header floats over the first product scene, transparent. */
+.site-header-products{position:absolute;top:0;left:0;right:0;background:transparent!important}
 html.product-immersive .sx-header .barra,html.product-sheet-open .sx-header .barra{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 html.product-immersive .p3-skip{display:inline-flex}
 #h-mf,#h-ml{display:none!important}
@@ -24,13 +33,13 @@ html.product-immersive .p3-skip{display:inline-flex}
 .sx-cat .ct-description{font-size:15px;color:#395a5e}
 .sx-cat .ct-detail{position:absolute;bottom:28px;left:24px;font-size:13px!important;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .sx-cat .ct-go{background:#0F6870;color:#fff}
-.sx-p3 .p3-skip{display:none;position:fixed;right:max(20px,env(safe-area-inset-right));top:max(20px,env(safe-area-inset-top));z-index:80;align-items:center;gap:16px;min-height:50px;padding:0 22px;border:2px solid #08393e;border-radius:999px;background:#ffe28a;color:#08393e;font:800 14px/1.2 var(--f-display);text-decoration:none;box-shadow:0 5px 0 #08393e}
+.sx-p3 .p3-skip{display:none;position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:80;align-items:center;gap:16px;min-height:50px;padding:0 22px;border:2px solid #08393e;border-radius:999px;background:#ffe28a;color:#08393e;font:800 14px/1.2 var(--f-display);text-decoration:none;box-shadow:0 5px 0 #08393e}
 .sx-p3 .p3-txt{background:#fff;color:#133b40;padding:clamp(22px,2.2vw,34px);border-radius:28px;box-shadow:0 12px 40px rgb(8 57 62 / .12)}
 .sx-p3 .p3-txt .p3-note,.sx-p3 .p3-txt .p3-k{color:#0F6870}
 .sx-p3 .p3-copy{width:min(30vw,420px)}
 .sx-p3 .p3-txt h3{font-size:clamp(30px,3vw,46px);line-height:1.04}
 .sx-p3 .p3-hint{background:#fff;color:#133b40!important;opacity:1!important;padding:14px 20px;border-radius:999px;letter-spacing:.04em;line-height:1.4;text-align:center;white-space:nowrap}
-.sx-p3 .p3s{background:#e0ece8 url('/img/svg/pattern-wave-seamless.svg') center/500px}
+.sx-p3 .p3s{background:#e0ece8 url('/img/svg/liquido-crema-tono.svg') center/cover}
 .sx-p3 .p3s-pat{display:none}
 .sx-p3 .p3s-in{min-height:100svh;padding-block:88px 100px;align-items:center}
 .sx-p3 .p3s-tx{padding:clamp(24px,3vw,40px);background:#fff;color:#133b40;border-radius:28px;box-shadow:0 12px 40px rgb(8 57 62 / .1)}
@@ -61,18 +70,32 @@ html.product-immersive .p3-skip{display:inline-flex}
 @media(max-width:767px){.site-header{padding:10px 16px}.sx-cat .ct-intro{display:grid;gap:12px}.sx-cat .ct-grid{grid-template-columns:1fr}.sx-cat .ct-head{padding-top:40px}.sx-cat .ct-band-in{padding-block:32px}.pp-art{min-height:330px}.pp-tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pp-tile{padding:16px 10px;border-radius:16px}.pp-tile b{font-size:clamp(16px,4.5vw,24px)}.pp-tile span{font-size:10px;letter-spacing:.04em}.pp-more ul{grid-template-columns:1fr}.sx-p3 .p3s-tx dl div{grid-template-columns:1fr}.sx-p3 .p3s-in{padding-bottom:40px}.sx-dove .contact-action{grid-template-columns:90px 1fr}.sx-dove #pg-telefono{width:90px}.e404-page .e{grid-template-columns:1fr;gap:24px}.e404-page .e img{width:min(80vw,360px);justify-self:center;margin:0}}
 @media(prefers-reduced-motion:reduce){.sx-p3 .p3-skip{box-shadow:none}}
 
-.sx-p3 .p3-bg,.sx-p3 .p3c-bg{background-repeat:repeat;background-size:360px auto}
-.sx-p3 .p3-bg[data-i="3"]{background-blend-mode:screen}
+.sx-p3 .p3-bg,.sx-p3 .p3c-bg{background-repeat:no-repeat;background-size:cover;background-position:center}
+/* The liquid backgrounds breathe very slowly; vector, so the zoom never softens them. */
+@media (prefers-reduced-motion:no-preference){.sx-p3 .p3-bg,.sx-p3 .p3c-bg{animation:liqDrift 38s ease-in-out infinite alternate}}
+@keyframes liqDrift{from{transform:scale(1.04) translate3d(0,0,0)}to{transform:scale(1.14) translate3d(-2%,1.5%,0)}}
+.sx-p3 .p3c{overflow:hidden}
 .sx-p3 .p3-skip{z-index:75}
 html.product-sheet-open .p3-skip{display:none!important}
 
-/* Restore the rounded mobile masthead while keeping it in the page flow. */
+/* Phones: the header is part of the page too, no separate white pill; only the text colour adapts. */
 @media(max-width:767px){
- .site-header{padding:10px 12px;background:var(--cream)}
- .site-header .sx-header .testa{gap:12px;padding:8px 12px;border-radius:22px;background:#fff;border:1px solid rgb(15 104 112 / .14);box-shadow:0 6px 16px rgb(8 57 62 / .08);min-height:60px}
+ .site-header{padding:10px 16px;background:var(--hdr-bg,var(--hdr-top,var(--cream)))}
+ .site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{gap:12px;padding:6px 0;border:0;border-radius:0;background:transparent;box-shadow:none;min-height:56px}
  .site-header .sx-header .mark img{height:21px;width:auto;max-width:44vw;object-fit:contain}
- .site-header .sx-header .burger{background:#e6efec;color:#0f6870}
+ .site-header .sx-header .burger{background:color-mix(in srgb,var(--hc) 14%,transparent)}
 }
+/* Copy sits on white cards: always petrol/ink, whatever the product palette (crema was cream on white). */
+.sx-p3 .p3-copy .p3-txt,.sx-p3 .p3-copy .p3-txt h3,.sx-p3 .p3-copy .p3-price,.sx-p3 .p3-copy .p3-more{color:#133b40}
+.sx-p3 .p3-copy .p3-txt .p3-note,.sx-p3 .p3-copy .p3-txt .p3-k{color:#0F6870}
+.sx-p3 .p3c .p3c-in .p3-k{color:#0F6870}
+/* Catalogue: category header as a full-width row, cards in a clean grid, no overlapping copy. */
+.sx-cat .ct-band .ct-band-in{grid-template-columns:minmax(0,1fr)}
+.sx-cat .ct-band .ct-intro{position:static;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.sx-cat .ct-band .ct-intro h3{overflow-wrap:normal;word-break:normal;white-space:nowrap}
+.sx-cat .ct-band .ct-tx{padding:22px 24px 26px}
+.sx-cat .ct-band .ct-detail{position:static;margin-top:6px;padding-right:56px}
+@media(max-width:767px){.sx-cat .ct-band .ct-intro{display:grid;gap:10px}.sx-cat .ct-band .ct-intro h3{white-space:normal}}
 /* Secondary copy must stay legible over every product palette. */
 .sx-p3 .p3-txt .p3-sub,.sx-p3 .p3-txt .p3-desc{color:#315459;opacity:1}
 .sx-cat .ct-head .k,.sx-cat .ct-head .marker{color:#0F6870}

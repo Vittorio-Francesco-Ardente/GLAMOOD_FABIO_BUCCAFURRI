@@ -898,6 +898,16 @@
    1921
   ]
  },
+ "prodotti/barattoli-3-insieme": {
+  "w": 2400,
+  "h": 1600,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
+  ]
+ },
  "prodotti/barattoli-4-insieme": {
   "w": 2400,
   "h": 1600,

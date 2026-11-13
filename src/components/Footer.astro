@@ -15,8 +15,6 @@ const year = new Date().getFullYear();
     <h2 class="big" aria-label="Ci vediamo da Glamood">Ci vediamo<span class="fb" data-bubble="da" data-style="bounce" data-seed="9" style="--bc:#B8935A"></span>Glamood</h2>
     <div class="peekwrap"><img class="pk-body" {...img('mascotte/pose/spunta-bordo', 960)} alt="La mascotte Glamood si aggrappa al bordo e saluta" loading="lazy" /></div>
   </div>
-  <img class="leaf-frame l" {...img('piante/09_monstera_grande', 960)} alt="" loading="lazy" />
-  <img class="leaf-frame r" {...img('piante/12_palma_areca', 960)} alt="" loading="lazy" style="transform:scaleX(-1)" />
   <div class="cta"><a class="btn-pop" href={wa()} target="_blank" rel="noopener">Prenota su WhatsApp</a><a class="btn-pop fill" href={maps} data-maps>Apri in Mappe</a></div>
   <div class="checker" style="position:relative;z-index:5"></div>
   <div class="cols">
@@ -101,8 +99,6 @@ bubbles(foot); wireMaps(foot);
 if (!reduced) {
   gsap.from('#foot .big', { scrollTrigger: { trigger: '#foot', start: 'top 90%' }, yPercent: 30, opacity: 0, duration: 0.7, ease: 'expo.out' });
   gsap.from('#foot .peekwrap img', { scrollTrigger: { trigger: '#foot .peekwrap', start: 'top 95%' }, yPercent: 18, opacity: 0, duration: 0.7, ease: "back.out(1.6)" });
-  gsap.from('#foot .leaf-frame.l', { scrollTrigger: { trigger: '#foot', start: 'top 90%', end: 'bottom bottom', scrub: 0.25 }, xPercent: -40, rotate: -10 });
-  gsap.from('#foot .leaf-frame.r', { scrollTrigger: { trigger: '#foot', start: 'top 90%', end: 'bottom bottom', scrub: 0.25 }, xPercent: 40, rotate: 10 });
 }
 // easter egg: 3 taps on the G (within 1.5 s), the Konami code, or typing "fabio"
 const g = document.getElementById('egg-g')!; let taps = 0, tt = 0;

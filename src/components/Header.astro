@@ -246,23 +246,34 @@ const onScroll = () => {
   const rect = immersive?.getBoundingClientRect();
   const active = !!rect && rect.top < innerHeight * .65 && rect.bottom > 80;
   document.documentElement.classList.toggle('product-immersive', active);
-  root.toggleAttribute('inert', active);
   root.classList.remove('header-hidden');
   root.classList.toggle('scorre', !active && y > 140);
 };
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
 // link colour follows what is really under the header (light page, photo, petrol hero…)
 const lum = (c: string) => { const m = c.match(/[\d.]+/g); if (!m) return null; const [r, g, b, a = '1'] = m.map(Number) as any; if (+a < .5) return null; return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; };
+const shell = root.closest<HTMLElement>('.site-header');
+const opaqueBg = (el: HTMLElement | null) => { while (el && el !== document.documentElement) { if (el.tagName !== 'IMG' && el.tagName !== 'CANVAS') { const c = getComputedStyle(el).backgroundColor; if (lum(c) !== null) return c; } el = el.parentElement; } return null; };
+// The header band takes the colour of the first section under it, so header and page read as one piece.
+const matchBand = () => {
+  if (!shell || shell.classList.contains('site-header-products')) return;
+  const b = shell.getBoundingClientRect(); if (b.bottom < 0) return;
+  const el = document.elementFromPoint(innerWidth / 2, b.bottom + 6) as HTMLElement | null;
+  const c = el && !shell.contains(el) ? opaqueBg(el) : null; if (c) shell.style.setProperty('--hdr-bg', c);
+};
 const detectTone = () => {
+  matchBand();
   const head = root.querySelector<HTMLElement>('.testa')!; const r = head.getBoundingClientRect(); const y = r.top + r.height / 2;
+  const clear = !shell || lum(getComputedStyle(shell).backgroundColor) === null;
   let light = 0, n = 0;
   for (const x of [innerWidth * .12, innerWidth * .5, innerWidth * .88]) {
-    let el = document.elementsFromPoint(x, y).find((e) => !root.contains(e)) as HTMLElement | undefined;
-    while (el && el !== document.documentElement) { const L = el.tagName === 'IMG' || el.tagName === 'CANVAS' ? null : lum(getComputedStyle(el).backgroundColor); if (L !== null) { light += L > .6 ? 1 : 0; n++; break; } el = el.parentElement as HTMLElement; }
+    let el = document.elementsFromPoint(x, y).find((e) => !root.contains(e) && !(clear && shell!.contains(e))) as HTMLElement | undefined;
+    while (el && el !== document.documentElement) { if (el.dataset.toneBg) { light += el.dataset.toneBg === 'light' ? 1 : 0; n++; break; } const L = el.tagName === 'IMG' || el.tagName === 'CANVAS' ? null : lum(getComputedStyle(el).backgroundColor); if (L !== null) { light += L > .6 ? 1 : 0; n++; break; } el = el.parentElement as HTMLElement; }
   }
   if (n) root.dataset.tone = light * 2 >= n ? 'light' : 'dark';
 };
 requestAnimationFrame(detectTone); addEventListener('load', detectTone); addEventListener('resize', detectTone, { passive: true });
+let toneRaf = 0; addEventListener('scroll', () => { if (!toneRaf) toneRaf = requestAnimationFrame(() => { toneRaf = 0; if (scrollY < innerHeight) detectTone(); }); }, { passive: true });
 addEventListener('resize', onScroll, { passive: true });
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
 const cur = barra.querySelector('.cursore') as HTMLElement;

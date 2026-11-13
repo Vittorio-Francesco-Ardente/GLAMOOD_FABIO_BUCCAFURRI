@@ -1,15 +1,21 @@
 ---
 // /prodotti index (aggiornamento 12): the whole line by category, each product opens /prodotti/<slug>.
-// Each category is its own coloured band; cards rise in with a short stagger when they enter the screen.
+// Each category is its own band on a liquid vector background. A filter bar shows one category at a time
+// (Tutti = the whole line); the choice is kept in the URL hash (#cat-barba) so it can be shared.
 import { img, productImg } from '../data/img';
 import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
+const LIQ: Record<string, string> = { styling: 'crema-tono', barba: 'salvia', capelli: 'petrolio-tono', dopobarba: 'abisso' };
+const count = (k: string) => PRODUCTS.filter((p) => p.cat === k).length;
 ---
 <div class="sx-cat">
 <section class="ct" id="catalogo" aria-labelledby="ct-t">
-  <div class="ct-head"><p class="ct-k">Tutta la linea</p><h2 id="ct-t" tabindex="-1">Scegli il tuo</h2><p class="ct-lead">Trova il tuo gesto quotidiano: scegli una categoria e scopri come usare ogni prodotto.</p>
-    <nav class="ct-nav" aria-label="Categorie">{CATS.map((c) => <a href={`#cat-${c.k}`}>{c.n}</a>)}</nav></div>
+  <div class="ct-head"><p class="ct-k">Tutta la linea</p><h2 id="ct-t" tabindex="-1">Scegli il tuo</h2><p class="ct-lead">Scegli una categoria: vedi solo i prodotti che ti servono, poi apri la scheda per sapere come si usano.</p></div>
+  <div class="ct-filter-wrap"><div class="ct-filter" role="group" aria-label="Filtra per categoria">
+    <button type="button" data-f="all" aria-pressed="true">Tutti <span>{PRODUCTS.length}</span></button>
+    {CATS.map((c) => <button type="button" data-f={c.k} aria-pressed="false" aria-controls={`cat-${c.k}`}>{c.n} <span>{count(c.k)}</span></button>)}
+  </div><p class="ct-status" id="ct-status" aria-live="polite">Tutta la linea: {PRODUCTS.length} prodotti</p></div>
   {CATS.map((c) => (
-    <div class={`ct-band has-bgref`} id={`cat-${c.k}`} style={`--bg:${c.bg};--ink:${c.ink};--ac:${c.accent}`}>
+    <div class={`ct-band has-bgref`} id={`cat-${c.k}`} data-cat={c.k} data-n={c.n} data-count={count(c.k)} style={`--bg:${c.bg};--ink:${c.ink};--ac:${c.accent};--liq:url('/img/svg/liquido-${LIQ[c.k]}.svg')`}>
       <div class="ct-band-in">
         <div class="ct-intro ct-rise"><h3>{c.n}</h3><p>{c.d}</p></div>
         <ul class="ct-grid">{PRODUCTS.filter((p) => p.cat === c.k).map((p, i) => (
@@ -36,7 +42,21 @@ import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
 .ct-nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
 .ct-nav a{min-height:44px;display:inline-flex;align-items:center;padding:0 18px;border-radius:999px;border:2px solid var(--petrol);color:var(--petrol);font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;text-decoration:none}
 .ct-nav a:hover{background:var(--petrol);color:#F4EFE8}
-.ct-band{position:relative;background:var(--bg);color:var(--ink);scroll-margin-top:20px}
+.ct-band{position:relative;background:var(--bg) var(--liq) center/cover no-repeat;color:var(--ink);scroll-margin-top:96px}
+.ct-band[hidden]{display:none}
+.ct-band.ct-in{animation:ctIn .55s var(--ease-out) both}
+@keyframes ctIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.ct-filter-wrap{position:sticky;top:0;z-index:5;padding:12px var(--gutter);background:rgb(244 239 232 / .92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-block:1px solid rgb(15 104 112 / .12)}
+.ct-filter{max-width:1360px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ct-filter::-webkit-scrollbar{display:none}
+.ct-filter button{flex:none;display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:0 8px 0 18px;border-radius:999px;border:2px solid var(--petrol);background:#fff;color:var(--petrol);font:800 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;transition:background .25s,color .25s,transform .2s var(--ease-out)}
+.ct-filter button span{display:grid;place-items:center;min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:#E3ECE8;font-size:13px;letter-spacing:0}
+.ct-filter button:hover{background:#E3ECE8}
+.ct-filter button[aria-pressed="true"]{background:var(--petrol);color:#F4EFE8}
+.ct-filter button[aria-pressed="true"] span{background:#F4EFE8;color:var(--petrol)}
+.ct-filter button:active{transform:scale(.97)}
+.ct-status{max-width:1360px;margin:8px auto 0;font-size:13px;color:#456366}
+.ct-intro{padding:20px 24px!important;border-radius:22px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-bottom:0!important}
 .ct-band-in{position:relative;z-index:1;max-width:1360px;margin:0 auto;padding:clamp(56px,7vw,110px) var(--gutter);display:grid;gap:clamp(24px,3vw,40px)}
 .ct-intro h3{font:900 clamp(40px,6vw,96px)/.85 var(--f-display);text-transform:uppercase;letter-spacing:-.03em}
 .ct-intro p{margin-top:12px;max-width:46ch;font-size:17px;line-height:1.5;opacity:.9}
@@ -58,6 +78,24 @@ import { CATS, PRODUCTS, imgOf } from '../data/catalogo';
 }
 </style>
 <script>
+const bands = [...document.querySelectorAll<HTMLElement>('.ct-band')];
+const btns = [...document.querySelectorAll<HTMLButtonElement>('.ct-filter button')];
+const status = document.getElementById('ct-status')!;
+const total = btns[0].querySelector('span')!.textContent;
+function show(f: string, scroll: boolean) {
+  if (f !== 'all' && !bands.some((b) => b.dataset.cat === f)) f = 'all';
+  btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === f)));
+  bands.forEach((b) => { const on = f === 'all' || b.dataset.cat === f; b.hidden = !on; b.classList.remove('ct-in'); if (on) { void b.offsetWidth; b.classList.add('ct-in'); b.querySelectorAll('.ct-rise').forEach((el) => el.classList.add('ct-on')); } });
+  const cur = bands.find((b) => b.dataset.cat === f);
+  status.textContent = cur ? `${cur.dataset.n}: ${cur.dataset.count} prodotti` : `Tutta la linea: ${total} prodotti`;
+  history.replaceState(null, '', f === 'all' ? location.pathname + location.search : `#cat-${f}`);
+  dispatchEvent(new Event('resize'));
+  if (scroll) { const head = document.querySelector('.ct-filter-wrap') as HTMLElement; const y = head.getBoundingClientRect().top + scrollY; if (Math.abs(head.getBoundingClientRect().top) > 4) { const l = (window as any).lenis; l ? l.scrollTo(y, { duration: .7 }) : scrollTo({ top: y, behavior: 'smooth' }); } }
+}
+btns.forEach((b) => b.addEventListener('click', () => show(b.dataset.f!, true)));
+const fromHash = location.hash.match(/^#cat-([a-z]+)$/);
+if (fromHash) show(fromHash[1], false);
+addEventListener('hashchange', () => { const m = location.hash.match(/^#cat-([a-z]+)$/); if (m) show(m[1], false); });
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('ct-on'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
 document.querySelectorAll('.ct-rise').forEach((el) => io.observe(el));
 </script>
