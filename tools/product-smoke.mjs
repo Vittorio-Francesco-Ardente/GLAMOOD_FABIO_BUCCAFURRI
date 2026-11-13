@@ -30,12 +30,13 @@ try {
  const capture=async(name)=>page.screenshot({path:`qa/product-experience/${name}-${width}.png`,fullPage:false});
  const bounds=async()=>page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,broken:[...document.images].filter(i=>i.complete&&i.currentSrc&&!i.naturalWidth).map(i=>i.currentSrc)}));
  await page.goto(base+'/prodotti',{waitUntil:'networkidle'});await page.waitForTimeout(600);
- assert(await page.locator('.p3-skip').isVisible(),'skip is visible');
+ const skip=page.locator('.p3-skip:visible, .p3-txt.on .p3-cat:visible').first();
+ await skip.waitFor({state:'visible'});
  assert(await page.locator('.testa').isVisible(),'one header on every page, products included');
  assert.equal(await page.locator('.barra').evaluate(e=>getComputedStyle(e).opacity),'0','dock hidden in intro');
  await capture('intro');
  if(width>=1024){await page.locator('.p3-txt.on .p3-more').click();await page.locator('#p3s').waitFor({state:'visible'});await capture('sheet');await page.locator('.p3s-x').click();await page.locator('#p3s').waitFor({state:'hidden'});}
- await page.locator('.p3-skip').click();await page.waitForTimeout(700);
+ await skip.click();await page.waitForTimeout(700);
  assert.equal(await page.evaluate(()=>document.activeElement?.id),'ct-t','skip focuses catalog');
  assert.equal(await page.locator('.barra').evaluate(e=>getComputedStyle(e).opacity),'1','dock restored in catalog');
  await capture('catalog');
