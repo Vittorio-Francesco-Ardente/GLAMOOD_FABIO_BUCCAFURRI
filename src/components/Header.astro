@@ -297,6 +297,7 @@ const detectTone = () => {
   root.dataset.tone = best === 'petrol' || best === 'night' ? 'dark' : 'light';
 };
 requestAnimationFrame(detectTone); addEventListener('load', detectTone);
+addEventListener('glamood:surface', () => detectTone());   // a section changed what is under the header (product slides)
 // re-check while images, fonts and the first animations settle (no wrong-colour flash)
 [150, 500, 1200, 2500].forEach((t) => setTimeout(detectTone, t)); document.fonts.ready.then(detectTone);
 new ResizeObserver(() => detectTone()).observe(document.getElementById('main') || document.body); addEventListener('resize', detectTone, { passive: true });

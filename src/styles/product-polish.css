@@ -178,3 +178,14 @@ html.product-sheet-open .p3-skip{display:none!important}
  .sx-p3 .p3-txt .p3-desc{font-size:16px}
  .sx-p3 .p3-cat{top:20px;right:22px}
 }
+/* Touch tablets: the bottom bar shows every label (no hover on touch), seven equal targets, centred. */
+@media (pointer:coarse) and (min-width:768px){
+ .sx-header .barra{width:min(620px,calc(100vw - 48px));max-width:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;padding:5px;border-radius:22px}
+ .sx-header .barra .cursore{top:5px;height:calc(100% - 10px);border-radius:16px}
+ .sx-header .barra .voce{flex-direction:column;justify-content:center;gap:4px;height:58px;padding:0 2px;border-radius:16px;font-size:11px;letter-spacing:0}
+ .sx-header .barra .voce span,.sx-header .barra .voce.on span{display:block!important;opacity:1!important;max-width:100%!important;margin:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .sx-header .barra .voce svg{width:22px;height:22px}
+ .sx-header .barra .menu-btn{display:flex}
+ /* the bar never covers the last lines of a page */
+ #foot{padding-bottom:96px}
+}

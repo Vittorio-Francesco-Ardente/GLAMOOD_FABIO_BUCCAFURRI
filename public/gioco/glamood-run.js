@@ -391,6 +391,10 @@ export function createGame(root, opts = {}) {
       for (let i = 0; i < nD; i++) pickups.push({ x: o.x - 10 + (o.w + 20) * i / (nD - 1), y: y0 + Math.sin(Math.PI * i / (nD - 1)) * amp, ph: rnd(0, TAU), kind: dropsKind });
     } else if (o.kind === 'hang' || (o.kind === 'fly' && o.y === 44)) {
       for (let i = 0; i < 3; i++) pickups.push({ x: o.x + 4 + i * 20, y: 14, ph: rnd(0, TAU), kind: dropsKind });
+    } else if (wantPower && gap > 170) {
+      // the power-up floats in the middle of the free gap, away from any obstacle: reachable running (low) or with a small hop
+      wantPower = false; const kinds = Object.keys(POWER);
+      powers.push({ kind: kinds[Math.floor(Math.random() * kinds.length)], x: o.x + o.w + gap * .5, y: rnd(24, 58), ph: rnd(0, TAU) });
     } else if (Math.random() < .35) {
       const cx = o.x + o.w + gap * .5;
       for (let i = 0; i < 3; i++) pickups.push({ x: cx + (i - 1) * 28, y: 16 + (i === 1 ? 6 : 0), ph: rnd(0, TAU), kind: dropsKind });
@@ -398,6 +402,7 @@ export function createGame(root, opts = {}) {
     gapLeft = gap + o.w;
   }
 
+  let wantPower = false;
   function spawnPower() {
     const kinds = Object.keys(POWER); const k = kinds[Math.floor(Math.random() * kinds.length)];
     powers.push({ kind: k, x: VW + 40, y: rnd(46, 84), ph: rnd(0, TAU) });
@@ -429,6 +434,8 @@ export function createGame(root, opts = {}) {
     }
   }
   function heroBox() { return p.duck ? [PX - 12, PX + 20, p.h + 2, p.h + 30] : [PX - 11, PX + 11, p.h + 2, p.h + 66]; }   // matches the drawn body (run / slide)
+  // pickups and power-ups are taken when their circle touches the hero's body box (not a single centre point)
+  function touches(x, y, rad) { const [x0, x1, y0, y1] = heroBox(); const cx = clamp(x, x0, x1), cy = clamp(y, y0, y1); return Math.hypot(x - cx, y - cy) < rad; }
   function hits(o) {
     const bx = o.x + o.box[0], by = o.y + o.box[1], bw = o.box[2], bh = o.box[3];
     const [px0, px1, py0, py1] = heroBox();
@@ -493,7 +500,7 @@ export function createGame(root, opts = {}) {
       if (grace > 0) grace -= dt;
       gapLeft -= speed * dt;
       if (grace <= 0 && gapLeft <= 0) spawn();
-      powerLeft -= dt; if (powerLeft <= 0 && grace <= 0) { spawnPower(); powerLeft = rnd(14, 22); }
+      powerLeft -= dt; if (powerLeft <= 0 && grace <= 0) { wantPower = true; powerLeft = rnd(14, 22); }
       }
       
       const nl = Math.floor(score / LVLEN) % LEVELS.length;
@@ -535,7 +542,7 @@ export function createGame(root, opts = {}) {
       if (living && !k.got) {
         const cy = p.h + (p.duck ? 14 : 30);
         if (buff.magnet > 0 && Math.hypot(k.x - PX, GY - k.y - (GY - cy)) < 170) { k.x += (PX - k.x) * Math.min(1, dt * 7); k.y += (cy - k.y) * Math.min(1, dt * 7); }
-        if (Math.hypot(k.x - PX, k.y - cy) < 24) {
+        if (touches(k.x, k.y, 13)) {
           k.got = true; drops++; const val = k.kind === 'berg' ? 25 : 10; if (!tut) score += val;
           addFx('fx_spark_', 6, k.x, GY - k.y, 34, 18);
           texts.push({ x: k.x, y: GY - k.y, life: .7, s: '+' + val });
@@ -548,8 +555,7 @@ export function createGame(root, opts = {}) {
     for (const k of powers) {
       k.x -= speed * dt;
       if (living && !k.got) {
-        const cy = p.h + (p.duck ? 14 : 30);
-        if (Math.hypot(k.x - PX, k.y - cy) < 28) { k.got = true; takePower(k.kind); }
+        if (touches(k.x, k.y, 20)) { k.got = true; takePower(k.kind); }
       }
     }
     powers = powers.filter(k => k.x > -40 && !k.got);

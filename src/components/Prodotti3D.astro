@@ -180,9 +180,11 @@ const slots = [
  .p3-titles{padding-top:calc(64px + 2svh)}
  .p3-title{font-size:min(23vw,14svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
  .p3-ing{scale:.72}
+ .p3{height:100svh;height:100dvh}
+ .p3-pin{position:relative}
  .p3-chips,.p3-hint{display:none}
  .p3-nav{display:block;position:absolute;inset:0;z-index:7;pointer-events:none}
- .p3-nb{position:absolute;top:var(--jar-y,50%);translate:0 -50%;width:52px;height:52px;border-radius:50%;border:0;display:grid;place-items:center;background:#fff;color:#0F6870;box-shadow:0 10px 24px -12px rgb(6 40 44 / .6);pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .2s}
+ .p3-nb{position:absolute;top:var(--jar-y,50%);translate:0 -50%;width:46px;height:46px;border-radius:50%;border:0;display:grid;place-items:center;background:#fff;color:#0F6870;box-shadow:0 10px 24px -12px rgb(6 40 44 / .6);pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .2s}
  .p3-nb svg{width:22px;height:22px}
  .p3-nb:active{transform:scale(.92)}
  .p3-nb[data-dir="-1"]{left:max(10px,env(safe-area-inset-left))}
@@ -329,6 +331,10 @@ if (!reduced) sec.querySelectorAll<HTMLButtonElement>('.p3-lj').forEach((b) => {
 function stills() { document.querySelectorAll<HTMLCanvasElement>('canvas[data-still]').forEach((cv) => still(cv, +cv.dataset.still!)); }
 
 // ---------- desktop pinned stage ----------
+// compact screens (phones, touch tablets): the stage is a one-screen slider instead of a scroll-pinned scene
+const compact = () => coarse || innerHeight > innerWidth * 1.05;
+const stepOf = (v: number) => (v > N - .5 ? N : Math.round(Math.min(v, N - 1)));
+let goStep: (k: number, keepInLine?: boolean) => void = () => {};
 function startDesk() {
   const cv = document.getElementById('p3-cv') as HTMLCanvasElement, c = cv.getContext('2d')!;
   const bgs = [...sec.querySelectorAll<HTMLElement>('.p3-bg')], titles = [...sec.querySelectorAll<HTMLElement>('.p3-title')];
@@ -337,24 +343,36 @@ function startDesk() {
   const fitT = () => titles.forEach((el) => { el.style.fontSize = ''; const max = innerWidth * (innerHeight > innerWidth ? .94 : .9), w = el.scrollWidth; if (w > max) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * max / w) + 'px'; });
   document.fonts.ready.then(() => { fitT(); measure(); }); fitT(); addEventListener('resize', fitT);
   let hover = 0, hoverTarget = 0;
-  let lastKey = '', lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
+  let slideT = 0, jarBox = [0, 0, 0, 0], lastKey = '', lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on && !raf) raf = requestAnimationFrame(tick); }).observe(sec);
   cv.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') return; dragging = { x: e.clientX, d: drag }; dragV = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
   cv.addEventListener('pointerleave', () => { hoverTarget = 0; });
   cv.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') hoverTarget = ((e.clientX / innerWidth) - .5) * .5; if (!dragging) return; const nd = Math.max(-.2, Math.min(.2, dragging.d + (e.clientX - dragging.x) / (e.pointerType === 'mouse' ? 900 : 420))); dragV = nd - drag; drag = nd; });
   const up = () => { dragging = null; cv.classList.remove('drag'); };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-  // Touch (phones, tablets): a mostly horizontal swipe on the jar turns the label; vertical swipes keep scrolling.
-  let tx0 = 0, ty0 = 0, td0 = 0, lock: 0 | 1 | 2 = 0;
-  cv.addEventListener('touchstart', (e) => { const t0 = e.touches[0]; tx0 = t0.clientX; ty0 = t0.clientY; td0 = drag; lock = 0; dragV = 0; }, { passive: true });
+  // Touch (phones, tablets): horizontal swipe ON the jar turns the label, horizontal swipe elsewhere changes
+  // product (slides); vertical swipes always scroll the page.
+  let tx0 = 0, ty0 = 0, td0 = 0, lock: 0 | 1 | 2 = 0, onJar = false, slide0 = 0;
+  cv.addEventListener('touchstart', (e) => {
+    const t0 = e.touches[0], r = cv.getBoundingClientRect(); tx0 = t0.clientX; ty0 = t0.clientY; td0 = drag; lock = 0; dragV = 0;
+    const x = t0.clientX - r.left, y = t0.clientY - r.top;
+    onJar = x > jarBox[0] && x < jarBox[1] && y > jarBox[2] && y < jarBox[3]; slide0 = slideT;
+  }, { passive: true });
   cv.addEventListener('touchmove', (e) => {
     const t0 = e.touches[0], dx = t0.clientX - tx0, dy = t0.clientY - ty0;
     if (!lock && Math.hypot(dx, dy) > 8) lock = Math.abs(dx) > Math.abs(dy) * 1.1 ? 1 : 2;
     if (lock !== 1) return;
     e.preventDefault();
-    const nd = Math.max(-.2, Math.min(.2, td0 + dx / Math.max(420, cw * 1.4)));   // the label never turns past its own edge dragV = nd - drag; drag = nd; dragging = { x: t0.clientX, d: drag };
+    if (onJar) {
+      const nd = Math.max(-.2, Math.min(.2, td0 + dx / Math.max(420, cw * 1.4)));   // never past the label's own edge
+      dragV = nd - drag; drag = nd; dragging = { x: t0.clientX, d: drag };
+    } else if (compact()) slideT = Math.max(0, Math.min(N + .4, slide0 - dx / (cw * .9)));
   }, { passive: false });
-  const tEnd = () => { if (lock === 1) dragging = null; lock = 0; };
+  const tEnd = (e: TouchEvent) => {
+    if (lock === 1 && onJar) dragging = null;
+    if (lock === 1 && !onJar && compact()) { const dx = (e.changedTouches[0]?.clientX ?? tx0) - tx0, k0 = stepOf(slide0); goStep(Math.abs(dx) > 40 ? k0 + (dx < 0 ? 1 : -1) : k0, true); }
+    lock = 0;
+  };
   cv.addEventListener('touchend', tEnd); cv.addEventListener('touchcancel', tEnd);
   cv.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.preventDefault(); dragV += e.deltaX / 3000; } }, { passive: false });
   let secTop = 0, span = 1, cw = 0, chh = 0;
@@ -368,11 +386,13 @@ function startDesk() {
   const stepPos = (k: number) => k >= N ? 1 : k / (N + .4);
   const scrollToY = (y: number) => { const l = (window as any).lenis; if (l) l.scrollTo(y, { duration: .8 }); else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' }); };
   let snapping = 0;
-  const goStep = (k: number) => {
-    if (k > N) { const cat = document.getElementById('catalogo')!; scrollToY(cat.getBoundingClientRect().top + scrollY); return; }
-    snapping = performance.now() + 900; scrollToY(secTop + span * stepPos(Math.max(0, k)));
+  goStep = (k: number, keepInLine = false) => {
+    if (k > N) { if (keepInLine) { slideT = N + .4; return; } const cat = document.getElementById('catalogo')!; scrollToY(cat.getBoundingClientRect().top + scrollY); return; }
+    k = Math.max(0, k);
+    if (compact()) { slideT = k >= N ? N + .4 : k; return; }              // slides: the page does not move
+    snapping = performance.now() + 900; scrollToY(secTop + span * stepPos(k));
   };
-  const curStep = () => (shown > N - .5 ? N : Math.round(Math.min(shown, N - 1)));
+  const curStep = () => stepOf(compact() ? slideT : shown);
   prevB.addEventListener('click', () => goStep(curStep() - 1));
   nextB.addEventListener('click', () => goStep(curStep() + 1));
   let navStep = -1;
@@ -384,23 +404,12 @@ function startDesk() {
     nextB.setAttribute('aria-label', k >= N ? 'Vedi tutti i prodotti' : 'Prodotto successivo');
   };
   (window as any).__p3sync = syncNav; syncNav();
-  if (coarse || portrait()) {
-    // snapping: when a swipe ends inside the stage, settle on the nearest product (like slides)
-    let idle = 0;
-    addEventListener('scroll', () => {
-      clearTimeout(idle);
-      idle = window.setTimeout(() => {
-        if (performance.now() < snapping) return;
-        const prog = (scrollY - secTop) / span; if (prog <= 0.002 || prog >= .999) return;
-        const pos = prog * (N + .4); const k = pos > N - .5 + .45 ? N : Math.round(Math.min(pos, N - 1));
-        const y = secTop + span * stepPos(k); if (Math.abs(y - scrollY) > 4) goStep(k);
-      }, 140);
-    }, { passive: true });
-  }
+  // compact screens are real slides (arrows / swipe), no scroll-linked snapping: nothing to fight with the browser scroll
+
   function tick(now: number) {
     raf = on ? requestAnimationFrame(tick) : 0;
     const dt = Math.min(.05, (now - (lastT || now)) / 1000); lastT = now;
-    const target = Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
+    const target = compact() ? slideT : Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
     shown += (target - shown) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(target - shown) < 1e-4) shown = target;
     hover += (hoverTarget - hover) * .09; if (Math.abs(hoverTarget - hover) < 1e-4) hover = hoverTarget;
     if (!dragging) { drag = Math.max(-.2, Math.min(.2, drag + dragV)); dragV *= .9; drag *= coarse ? .975 : .92; if (Math.abs(drag) < 1e-4 && Math.abs(dragV) < 1e-4) drag = dragV = 0; }            // inertia, then snaps back to the front
@@ -410,13 +419,13 @@ function startDesk() {
     const sw = sm(sm((t - .6) / .4)), nx = Math.min(N - 1, i + 1);
     bgs.forEach((b, k) => { b.style.opacity = String(k === N ? lineK : k === i ? 1 - (i < N - 1 ? sw : 0) : k === nx && i < N - 1 ? sw : 0); });
     const active = sw > .5 && i < N - 1 ? nx : i;
-    if (active !== lastActive) { lastActive = active; txts.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); x.querySelectorAll<HTMLElement>('a,button').forEach((b) => (b.tabIndex = k === active ? 0 : -1)); }); chips.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); }); sec.style.setProperty('--hint', P[active].ink); }
+    if (active !== lastActive) { lastActive = active; dispatchEvent(new Event('glamood:surface')); txts.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); x.querySelectorAll<HTMLElement>('a,button').forEach((b) => (b.tabIndex = k === active ? 0 : -1)); }); chips.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); }); sec.style.setProperty('--hint', P[active].ink); }
     // copy fades out while the jars swap, so a moving jar never passes over readable text
     const swapK = i < N - 1 ? Math.abs(sw - .5) * 2 : 1, copyK = Math.min(swapK, 1 - lineK);
     txts.forEach((x, k) => { x.style.opacity = k === active ? String(copyK) : '0'; x.inert = k !== active || lineK > .6; });
     chips.forEach((x, k) => (x.style.opacity = k === active ? String(copyK) : '0'));
     hint.style.opacity = String((1 - lineK) * (shown < .15 ? 1 : .45));
-    line.style.opacity = String(lineK); line.classList.toggle('on', lineK > .6); sec.classList.toggle('p3-at-line', lineK > .5); (window as any).__p3sync?.(); line.querySelectorAll('button').forEach((b) => (b.tabIndex = lineK > .6 ? 0 : -1));
+    line.style.opacity = String(lineK); line.classList.toggle('on', lineK > .6); const atLine = lineK > .5; if (sec.classList.contains('p3-at-line') !== atLine) { sec.classList.toggle('p3-at-line', atLine); dispatchEvent(new Event('glamood:surface')); } (window as any).__p3sync?.(); line.querySelectorAll('button').forEach((b) => (b.tabIndex = lineK > .6 ? 0 : -1));
     // giant titles: mask wipe up for the current, down for the next
     titles.forEach((el, k) => {
       let reveal = 0, dy = 0;
@@ -445,7 +454,8 @@ function startDesk() {
     const jarYv = `${Math.round(tall ? tBottom + 14 + (cTop - tBottom - 28) / 2 : h * .55)}px`; if (pin.style.getPropertyValue('--jar-y') !== jarYv) pin.style.setProperty('--jar-y', jarYv);
     // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
     const avail = cTop - tBottom - 28;
-    const jw = tall ? Math.max(120, Math.min(w * .74, 620, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
+    const jw = tall ? Math.max(120, Math.min(w < 768 ? w * .6 : w * .62, 620, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
+    jarBox = [w / 2 - jw * .55, w / 2 + jw * .55, base - jh * 1.05, base + 6];
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
