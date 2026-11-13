@@ -175,7 +175,7 @@ const slots = [
 /* ---------- portrait screens: same scroll stage, phone layout ---------- */
 @media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1){
  .p3-titles{padding-top:calc(64px + 2svh)}
- .p3-title{font-size:min(25vw,16svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
+ .p3-title{font-size:min(23vw,12.5svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
  .p3-ing{scale:.72}
  .p3-chips,.p3-hint{display:none}
  .p3-txt .p3-k{min-height:28px;display:flex;align-items:center}
@@ -323,7 +323,7 @@ function startDesk() {
   const txts = [...sec.querySelectorAll<HTMLElement>('.p3-txt')], chips = [...sec.querySelectorAll<HTMLElement>('.p3-chip')];
   const ings = [...sec.querySelectorAll<HTMLElement>('.p3-ing')], line = sec.querySelector<HTMLElement>('.p3-line')!, hint = sec.querySelector<HTMLElement>('.p3-hint')!;
   const fitT = () => titles.forEach((el) => { el.style.fontSize = ''; const max = innerWidth * (innerHeight > innerWidth ? .94 : .9), w = el.scrollWidth; if (w > max) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * max / w) + 'px'; });
-  document.fonts.ready.then(fitT); fitT(); addEventListener('resize', fitT);
+  document.fonts.ready.then(() => { fitT(); measure(); }); fitT(); addEventListener('resize', fitT);
   let hover = 0, hoverTarget = 0;
   let lastKey = '', lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on && !raf) raf = requestAnimationFrame(tick); }).observe(sec);
@@ -334,8 +334,9 @@ function startDesk() {
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
   cv.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.preventDefault(); dragV += e.deltaX / 3000; } }, { passive: false });
   let secTop = 0, span = 1, cw = 0, chh = 0;
-  let SDPR = DPR;
-  const measure = () => { SDPR = portrait() ? Math.min(DPR, 2) : DPR; secTop = sec.getBoundingClientRect().top + scrollY; span = sec.offsetHeight - innerHeight; const r = cv.getBoundingClientRect(); cw = r.width; chh = r.height; cv.width = Math.round(cw * SDPR); cv.height = Math.round(chh * SDPR); };
+  let SDPR = DPR, tBottom = 0, cTop = 0;
+  const pin = sec.querySelector<HTMLElement>('.p3-pin')!, copyEl = sec.querySelector<HTMLElement>('.p3-copy')!;
+  const measure = () => { SDPR = portrait() ? Math.min(DPR, 2) : DPR; const pr = pin.getBoundingClientRect(); tBottom = Math.max(...titles.map((t) => t.getBoundingClientRect().bottom)) - pr.top; cTop = copyEl.getBoundingClientRect().top - pr.top; secTop = sec.getBoundingClientRect().top + scrollY; span = sec.offsetHeight - innerHeight; const r = cv.getBoundingClientRect(); cw = r.width; chh = r.height; cv.width = Math.round(cw * SDPR); cv.height = Math.round(chh * SDPR); };
   measure(); addEventListener('resize', measure); addEventListener('load', measure);
   function tick(now: number) {
     raf = on ? requestAnimationFrame(tick) : 0;
@@ -382,15 +383,18 @@ function startDesk() {
     if (key === lastKey) return; lastKey = key;
     const w = cw, h = chh; c.setTransform(SDPR, 0, 0, SDPR, 0, 0); c.clearRect(0, 0, w, h);
     const tall = h > w * 1.05;
-    const jw = tall ? Math.min(w * .86, h * .38 * 1.21) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? h * .64 : h * .9;
+    // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
+    const avail = cTop - tBottom - 28;
+    const jw = tall ? Math.max(120, Math.min(w * .86, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
       c.globalAlpha = jarAlpha;
       const lift = Math.sin(Math.PI * Math.min(1, t / .6)) * jh * .04;
       if (i < N - 1 && sw > 0) {
-        drawJar(c, arts[i], w / 2 - sw * w * .62, base, jw, jh, rotOf(t), lift);
-        drawJar(c, arts[nx], w / 2 + (1 - sw) * w * .62, base, jw, jh, rotOf(0), 0);
+        const travel = tall ? w * 1.08 : w * .62;   // on phones the outgoing jar leaves before the next one arrives: no overlap
+        drawJar(c, arts[i], w / 2 - sw * travel, base, jw, jh, rotOf(t), lift);
+        drawJar(c, arts[nx], w / 2 + (1 - sw) * travel, base, jw, jh, rotOf(0), 0);
       } else drawJar(c, arts[i], w / 2, base, jw, jh, rotOf(Math.min(1, t / .6)), lift);
       c.globalAlpha = 1;
     }

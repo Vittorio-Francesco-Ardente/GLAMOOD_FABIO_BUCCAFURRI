@@ -163,3 +163,10 @@ html.product-sheet-open .p3-skip{display:none!important}
 
 /* No decorative pattern behind product photos (catalogue cards, product page gallery and story art). */
 .sx-cat .ct-band .ct-ph::before,.product-main-image::before,.product-story-art::before{display:none!important}
+
+/* Phones: all category filters visible at once (two rows), nothing cut at the edge. */
+@media (max-width:767px){
+ .sx-cat .ct-filter{flex-wrap:wrap;overflow:visible;gap:6px}
+ .sx-cat .ct-filter button{min-height:40px;padding:0 6px 0 14px;font-size:12.5px;gap:8px}
+ .sx-cat .ct-filter button span{min-width:24px;height:24px;font-size:11px}
+}

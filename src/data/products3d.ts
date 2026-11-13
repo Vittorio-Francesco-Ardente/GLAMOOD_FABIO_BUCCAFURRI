@@ -18,7 +18,7 @@ export const P3D: Product3D[] = [
   { k: 'cera', n: 'Cera', full: 'Cera opaca', note: 'al miele di zagara', ml: '100 ml',
     use: 'Lavora poca cera tra le dita e modella le ciocche asciutte.',
     desc: 'Tenuta forte, effetto opaco: il capello resta dove lo metti, tutto il giorno.',
-    ing: ['Cera d’api', 'Miele di zagara'], pics: ['cera-api-01', 'miele-zagara-01', 'miele-zagara-03', 'cera-api-03', 'miele-zagara-05', 'cera-api-05'],
+    ing: ['Cera d’api', 'Miele di zagara'], pics: ['cera-api-02', 'miele-zagara-03', 'miele-zagara-01', 'cera-api-03', 'miele-zagara-05', 'cera-api-05'],
     ink: '#08393E', accent: '#9A6B1F' },
   { k: 'balsamo', n: 'Balsamo barba', full: 'Balsamo barba', note: 'con bergamotto di Reggio', ml: '50 ml',
     use: 'Scalda poco balsamo tra le mani e distribuiscilo sulla barba asciutta, poi pettina.',

@@ -25,7 +25,7 @@ const gallery = [
       <div class="product-gallery">
         <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" {...productImg(imgOf(p), '(max-width:767px) 82vw, 40vw')} alt={gallery[0].alt} fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">+</span></button>
         <div class="product-thumbnails" aria-label="Immagini del prodotto">{gallery.map((g,i)=><button type="button" class="product-thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-src={g.src} data-alt={g.alt} data-srcset={i === 0 ? productImg(imgOf(p), '(max-width:767px) 82vw, 40vw').srcset : undefined}><img src={g.src} alt="" width="120" height="120" loading="lazy"/><span>{g.label}</span></button>)}</div>
-        <p class="product-gallery-hint">Seleziona una foto, poi toccala per ingrandirla.</p>
+        <p class="product-gallery-hint"><span>Seleziona una foto, poi toccala per ingrandirla.</span></p>
       </div>
       <div class="product-summary">
         <p class="product-eyebrow">La cura, firmata Glamood</p>
@@ -42,7 +42,7 @@ const gallery = [
     <div class="product-ribbon" aria-hidden="true"><span>Glamood</span><i>•</i><span>Il tuo stile, ogni giorno</span><i>•</i><span>Reggio Calabria</span></div>
     <section class="product-story" aria-labelledby="product-story-title">
       <div class="product-story-art"><img {...img(p.hero,960)} alt={`Illustrazione della linea ${p.n}`} loading="lazy"/><span class="product-art-seal">Cura<br/>e stile.</span></div>
-      <div class="product-story-copy"><p class="product-eyebrow">Dentro il prodotto</p><h2 id="product-story-title">Piccoli gesti.<br/>Il tuo stile.</h2><p>{p.long}</p><div class="product-ingredient-list">{p.ing.map((name,i)=><div class="product-ingredient"><img {...img(p.pics[Math.min(i,p.pics.length-1)],480)} alt="" loading="lazy"/><span>{name}</span></div>)}</div></div>
+      <div class="product-story-copy"><p class="product-eyebrow">Dentro il prodotto</p><h2 id="product-story-title">Piccoli gesti.<br/>Il tuo stile.</h2><p>{p.long}</p><div class="product-ingredient-list">{p.ing.map((name,i)=>{const pic=p.ingPics ? p.ingPics[i] : p.pics[i]; return <div class="product-ingredient">{pic && <img {...img(pic,480)} alt="" loading="lazy"/>}<span>{name}</span></div>;})}</div></div>
     </section>
     <section class="product-routine" aria-labelledby="product-routine-title"><div><p class="product-eyebrow">Dal salone a casa tua</p><h2 id="product-routine-title">Il gesto<br/>che fa la differenza.</h2></div><div class="product-use-card"><span class="product-step">01</span><h3>Usalo così</h3><p>{p.use}</p></div><div class="product-use-card product-use-advice"><span class="product-step">02</span><h3>Fallo tuo</h3><p>Quantità, finish, abbinamenti: chiedi a Fabio come inserirlo nella tua routine.</p><a href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedi un consiglio <span aria-hidden="true">↗</span></a></div></section>
     {p.splash && <figure class="product-splash"><img {...img(p.splash,1600)} alt={`${p.n}: il prodotto e la sua texture`} loading="lazy"/><figcaption>{p.n} <span>{p.sub}</span></figcaption></figure>}
@@ -70,7 +70,7 @@ const gallery = [
 .product-thumb[aria-pressed="true"]{border-color:#0F6870;background:#f8fffc}
 .product-thumb img{width:100%;height:72px;object-fit:contain}
 .product-thumb span{font:700 12px/1.4 var(--f-body)}
-.product-gallery-hint{font-size:12px;margin-top:12px;color:var(--product-ink);line-height:1.5}
+.product-gallery-hint{margin-top:12px}.product-gallery-hint span{display:inline-block;padding:8px 14px;border-radius:12px;background:#fff;color:#133b40;font-size:12px;line-height:1.4;box-shadow:0 6px 14px -10px rgb(8 57 62 / .4)}
 .product-summary{background:#fff;padding:clamp(24px,3vw,40px);border-radius:24px;min-width:0}
 .product-eyebrow{font:800 11px/1.5 var(--f-display);text-transform:uppercase;letter-spacing:.16em;color:#0F6870;margin:0 0 14px}
 .product-summary h1{font:900 clamp(38px,4.5vw,68px)/.98 var(--f-display);text-transform:uppercase;letter-spacing:-.035em;overflow-wrap:anywhere;color:#0f6870}

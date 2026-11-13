@@ -196,7 +196,7 @@ function draw() {
   if (photoEl.complete && photoEl.naturalWidth) { ctx.drawImage(photoEl, ...R); photoEl.style.opacity = '0'; }
   ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.drawImage(mask, 0, 0); ctx.restore();
   rx.globalCompositeOperation = 'destination-out'; rx.drawImage(mask, 0, 0); rx.globalCompositeOperation = 'source-over';
-  if (full < 1) { ctx.globalAlpha = 1 - full; ctx.drawImage(rim, 0, 0); ctx.globalAlpha = 1; }
+  // no cream outline around the cloud: it traced odd shapes over the background
   if (tmp.width !== W || tmp.height !== H) { tmp.width = W; tmp.height = H; } else tx.clearRect(0, 0, W, H);
   tx.globalCompositeOperation = 'source-over'; tx.drawImage(mask, 0, 0); tx.globalCompositeOperation = 'source-in';
   if (cart.complete && cart.naturalWidth) tx.drawImage(cart, ...R);
