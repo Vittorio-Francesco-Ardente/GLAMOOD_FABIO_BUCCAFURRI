@@ -2139,6 +2139,24 @@
    2048
   ]
  },
+ "v2/prodotti-3d/banner/splash-balsamo": {
+  "w": 1254,
+  "h": 1254,
+  "widths": [
+   480,
+   960,
+   1254
+  ]
+ },
+ "v2/prodotti-3d/banner/splash-pomata": {
+  "w": 1254,
+  "h": 1254,
+  "widths": [
+   480,
+   960,
+   1254
+  ]
+ },
  "v2/prodotti-3d/barattolo/barattolo-nudo-3q": {
   "w": 2048,
   "h": 2048,
@@ -2199,84 +2217,184 @@
    2048
   ]
  },
- "v2/prodotti-3d/etichette/coperchio-balsamo": {
-  "w": 1800,
-  "h": 1800,
+ "v2/prodotti-3d/confezioni/barattolo-balsamo": {
+  "w": 2125,
+  "h": 2128,
   "widths": [
    480,
    960,
    1600,
-   1800
+   2125
+  ]
+ },
+ "v2/prodotti-3d/confezioni/barattolo-cera": {
+  "w": 2125,
+  "h": 2128,
+  "widths": [
+   480,
+   960,
+   1600,
+   2125
+  ]
+ },
+ "v2/prodotti-3d/confezioni/barattolo-crema": {
+  "w": 2125,
+  "h": 2128,
+  "widths": [
+   480,
+   960,
+   1600,
+   2125
+  ]
+ },
+ "v2/prodotti-3d/confezioni/barattolo-pomata": {
+  "w": 2125,
+  "h": 2128,
+  "widths": [
+   480,
+   960,
+   1600,
+   2125
+  ]
+ },
+ "v2/prodotti-3d/confezioni/crema-barba": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
+ "v2/prodotti-3d/confezioni/dopobarba": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
+ "v2/prodotti-3d/confezioni/olio-barba": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
+ "v2/prodotti-3d/confezioni/pomata-latta": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
+ "v2/prodotti-3d/confezioni/shampoo": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
+ "v2/prodotti-3d/confezioni/spray-sale": {
+  "w": 2048,
+  "h": 2048,
+  "widths": [
+   480,
+   960,
+   1600,
+   2048
+  ]
+ },
+ "v2/prodotti-3d/etichette/coperchio-balsamo": {
+  "w": 3600,
+  "h": 3600,
+  "widths": [
+   480,
+   960,
+   1600,
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/coperchio-cera": {
-  "w": 1800,
-  "h": 1800,
+  "w": 3600,
+  "h": 3600,
   "widths": [
    480,
    960,
    1600,
-   1800
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/coperchio-crema": {
-  "w": 1802,
-  "h": 1802,
+  "w": 3600,
+  "h": 3600,
   "widths": [
    480,
    960,
    1600,
-   1802
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/coperchio-pomata": {
-  "w": 1801,
-  "h": 1801,
+  "w": 3600,
+  "h": 3600,
   "widths": [
    480,
    960,
    1600,
-   1801
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/etichetta-balsamo-completa": {
-  "w": 2172,
-  "h": 724,
+  "w": 6516,
+  "h": 2172,
   "widths": [
    480,
    960,
    1600,
-   2172
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/etichetta-cera-completa": {
-  "w": 2172,
-  "h": 724,
+  "w": 6516,
+  "h": 2172,
   "widths": [
    480,
    960,
    1600,
-   2172
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/etichetta-crema-completa": {
-  "w": 2172,
-  "h": 724,
+  "w": 6516,
+  "h": 2172,
   "widths": [
    480,
    960,
    1600,
-   2172
+   2400
   ]
  },
  "v2/prodotti-3d/etichette/etichetta-pomata-completa": {
-  "w": 2172,
-  "h": 724,
+  "w": 6516,
+  "h": 2172,
   "widths": [
    480,
    960,
    1600,
-   2172
+   2400
   ]
  },
  "v2/prodotti-3d/illustrazioni/illustrazione-balsamo": {

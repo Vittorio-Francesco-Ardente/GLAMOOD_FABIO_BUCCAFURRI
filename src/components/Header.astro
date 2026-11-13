@@ -57,6 +57,9 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 /* ---------- top header (pattern from Vittorio's site): visible at the top, fades up after 70 px ---------- */
 .testa{position:fixed;z-index:var(--z-header);top:max(14px,env(safe-area-inset-top));left:var(--gutter);right:var(--gutter);display:flex;align-items:center;gap:24px;pointer-events:none;--hc:#F4EFE8;transition:opacity .22s ease,transform .32s var(--ease-out),visibility 0s linear .32s}
 &[data-tone="light"] .testa{--hc:var(--petrol)}
+/* the header sits on a soft panel of its own tone, never floating over random content */
+.testa{padding:8px 12px;border-radius:24px;background:rgb(8 57 62 / .42);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 10px 30px -18px rgb(0 0 0 / .45)}
+&[data-tone="light"] .testa{background:rgb(244 239 232 / .78)}
 .testa>*{pointer-events:auto}
 /* Fade the floating header immediately after the first scroll; keep the bottom
    dock's separate 120px phone threshold. Do not leave invisible buttons tappable. */
@@ -218,7 +221,7 @@ const sc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 
 <script>
 import { reduced, trapTab, lockScroll, wireMaps } from '../scripts/core.js';
-const root = document.querySelector('.sx-header')!;
+const root = document.querySelector<HTMLElement>('.sx-header')!;
 const menu = document.getElementById('menu')!, burger = document.getElementById('burger')!, burger2 = document.getElementById('burger2')!;
 const barra = document.getElementById('barra')!;
 wireMaps(menu);
@@ -243,6 +246,18 @@ const onScroll = () => {
   root.classList.toggle('scorre', y > (phoneViewport.matches ? 120 : 4));
 };
 onScroll(); addEventListener('scroll', onScroll, { passive: true });
+// link colour follows what is really under the header (light page, photo, petrol hero…)
+const lum = (c: string) => { const m = c.match(/[\d.]+/g); if (!m) return null; const [r, g, b, a = '1'] = m.map(Number) as any; if (+a < .5) return null; return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; };
+const detectTone = () => {
+  const head = root.querySelector<HTMLElement>('.testa')!; const r = head.getBoundingClientRect(); const y = r.top + r.height / 2;
+  let light = 0, n = 0;
+  for (const x of [innerWidth * .12, innerWidth * .5, innerWidth * .88]) {
+    let el = document.elementsFromPoint(x, y).find((e) => !root.contains(e)) as HTMLElement | undefined;
+    while (el && el !== document.documentElement) { const L = el.tagName === 'IMG' || el.tagName === 'CANVAS' ? null : lum(getComputedStyle(el).backgroundColor); if (L !== null) { light += L > .6 ? 1 : 0; n++; break; } el = el.parentElement as HTMLElement; }
+  }
+  if (n) root.dataset.tone = light * 2 >= n ? 'light' : 'dark';
+};
+requestAnimationFrame(detectTone); addEventListener('load', detectTone); addEventListener('resize', detectTone, { passive: true });
 addEventListener('resize', onScroll, { passive: true });
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
 const cur = barra.querySelector('.cursore') as HTMLElement;

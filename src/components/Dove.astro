@@ -11,14 +11,16 @@ import { business, wa, hoursLabel } from '../data/business';
   <div class="in">
     <p class="marker" style="color:var(--ink-soft);margin-bottom:22px">Dove siamo</p>
     <h2 id="dove-t">Passa a<br />trovarci</h2>
-    <Personaggio pose="telefono" id="pg-telefono" />
     <p class="sub">{business.city}, zona Sbarre. Tocca la foto per aprire le indicazioni.</p>
     <div class="grid">
+      <div class="pm-wrap">
       <a class="map photo-map" href="https://www.google.com/maps/search/?api=1&query=Glamood%2C%20Via%20Sbarre%20Centrali%20282%2FG%2C%20Reggio%20Calabria" data-maps id="dove-map" aria-label={`Apri le indicazioni per Glamood, ${business.address}`}>
         <span class="pm-fr"><Img src="salone/salone-12-facciata" alt={`L'ingresso del salone Glamood in ${business.address}`} sizes="(min-width:900px) 50vw, 92vw" /></span>
         <span class="pin-l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z" fill="#0F6870"/><circle cx="12" cy="10" r="2.6" fill="#F4EFE8"/></svg>Glamood<small>{business.address}</small></span>
         <span class="pm-go">Apri in Mappe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
       </a>
+        <Personaggio pose="telefono" id="pg-telefono" />
+      </div>
       <div class="info">
         <h3>{business.city}</h3>
         <div class="rows">
@@ -55,7 +57,7 @@ import { business, wa, hoursLabel } from '../data/business';
 .pm-fr::before{content:"";position:absolute;z-index:-1;left:-240px;top:0;width:calc(100% + 480px);height:calc(100% + 480px);background:url("/img/svg/pattern-agrumi.svg") 0 0/240px;animation:frpan 30s linear infinite;will-change:transform}
 @keyframes frpan{to{transform:translate3d(240px,-240px,0)}}
 @media (prefers-reduced-motion:reduce){.pm-fr::before{animation:none}}
-.pm-fr img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:calc(30px - clamp(12px,1.2vw,18px));box-shadow:0 0 0 4px #F4EFE8;transition:transform 1s var(--ease-out)}
+.pm-fr img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:calc(30px - clamp(12px,1.2vw,18px));transition:transform 1s var(--ease-out)}
 .photo-map:hover .pm-fr img{transform:scale(1.03)}
 .photo-map .pin-l{position:absolute;left:clamp(20px,2.4vw,34px);top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center}
 .photo-map .pin-l svg{grid-row:1/span 2;width:28px;height:28px}

@@ -4,7 +4,6 @@ import Personaggio from './Personaggio.astro';
 // stand spine-out on a petrol ledge; the active one turns in 3D to show its cover. Drag, arrows, wheel,
 // keyboard; the caption slides through a mask; the cover opens into a full-screen sheet with WhatsApp booking.
 import { CUTS, LAB } from '../data/haircuts';
-import Fascia from './Fascia.astro';
 import { wa, waText } from '../data/business';
 const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 ---
@@ -15,7 +14,6 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
   <div class="shelf" id="shelf" tabindex="0" aria-label="Scaffale dei tagli. Trascina o usa le frecce della tastiera per scorrere, Invio per aprire"><i class="probe" id="probe"></i><div class="stage" id="tg-stage"></div><div class="ledge"></div></div>
   <div class="cap sr-only" aria-live="polite"><h3 class="m" id="cn"></h3><p class="m" id="cd"></p></div>
   <noscript><ul class="nojs">{CUTS.map((c) => <li><b>{c[0]}</b> · {c[3]} · {c[2]}</li>)}</ul></noscript>
-  <Fascia name="tagli" />
 </section>
 <div class="cur" id="tg-cur" aria-hidden="true"><i></i><b></b><em>APRI</em></div>
 <div class="sheet" id="tg-sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" data-lenis-prevent tabindex="-1" hidden>
@@ -40,7 +38,7 @@ const data = JSON.stringify({ CUTS, LAB, wa: wa('__X__') });
 .head .hint{font:800 clamp(14px,1.3vw,18px)/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;color:var(--petrol);transform:rotate(-3deg);margin-bottom:1.4em}
 .tagli{--H:min(46vh,31vw);--ws:calc(var(--H)*.1355);--d:calc(var(--H)*.52);--ledge:clamp(20px,2.4vw,30px)}
 @media (max-width:767px){.tagli{--H:min(92vw,50svh)}}
-.tagli{padding-bottom:0}.tagli .fascia{margin-top:clamp(28px,4vw,56px)}
+
 .shelf{position:relative;height:calc(70px + var(--H) + var(--ledge));margin-top:clamp(20px,4vh,50px);perspective:2200px;perspective-origin:50% 50%;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline:none}
 .shelf:focus-visible{outline:2px solid currentColor;outline-offset:-6px}
 @media (pointer:fine){.shelf{cursor:none}}

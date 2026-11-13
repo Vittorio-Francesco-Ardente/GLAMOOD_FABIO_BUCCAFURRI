@@ -1,0 +1,95 @@
+---
+// One page per product (aggiornamento 12): big hero in the product colours, three info tiles, story,
+// how to use, ingredients (full list "in arrivo"), splash photo where available, "ti potrebbe piacere".
+import Site from '../../layouts/Site.astro';
+import { img } from '../../data/img';
+import { PRODUCTS, CATS, imgOf, type Product } from '../../data/catalogo';
+import { wa, waText } from '../../data/business';
+export function getStaticPaths() { return PRODUCTS.map((p) => ({ params: { slug: p.slug }, props: { p } })); }
+const { p } = Astro.props as { p: Product };
+const cat = CATS.find((c) => c.k === p.cat)!;
+const more = [...PRODUCTS.filter((q) => q.cat === p.cat && q.slug !== p.slug), ...PRODUCTS.filter((q) => q.cat !== p.cat)].slice(0, 3);
+const light = (c: string) => { const n = parseInt(c.slice(1), 16); return ((n >> 16) * .2126 + ((n >> 8) & 255) * .7152 + (n & 255) * .0722) / 255 > .55; };
+---
+<Site title={`${p.n} | Prodotti Glamood, barber shop a Reggio Calabria`} description={`${p.n} Glamood ${p.sub}: ${p.desc}`} path={`/prodotti/${p.slug}`} top={p.bg} tone={light(p.bg) ? 'light' : 'dark'}>
+<div class="pp" style={`--bg:${p.bg};--bg2:${p.bg2};--ink:${p.ink};--ac:${p.accent}`}>
+  <section class="pp-hero has-bgref"><div class={`bgref ${p.pattern}`} style="opacity:.35"></div>
+    <div class="pp-hero-in">
+      <div class="pp-tx">
+        <a class="pp-back" href="/prodotti#catalogo">← {cat.n}</a>
+        <h1>{p.n}</h1>
+        <p class="pp-sub">{p.sub}</p>
+        <p class="pp-desc">{p.desc}</p>
+        <div class="pp-btns"><a class="btn-pop fill" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedilo in salone</a><span class="pp-price">Prezzo da confermare</span></div>
+      </div>
+      <div class="pp-art">
+        {p.pics.slice(0, 3).map((f, i) => <img class={`pp-ing pp-ing${i}`} {...img(f, 480)} alt="" loading="lazy" decoding="async" />)}
+        <img class="pp-prod" {...img(imgOf(p), 1600)} alt={`${p.n} Glamood`} decoding="async" fetchpriority="high" />
+      </div>
+    </div>
+  </section>
+  <section class="pp-tiles" aria-label="In breve">{p.tiles.map((t) => <div class="pp-tile pp-rise"><b>{t.v}</b><span>{t.l}</span></div>)}</section>
+  <section class="pp-story">
+    <div class="pp-ill pp-rise"><img {...img(p.hero, 960)} alt="" loading="lazy" decoding="async" /></div>
+    <div class="pp-rise">
+      <h2>Com'è</h2><p>{p.long}</p>
+      <h3>Come si usa</h3><p>{p.use}</p>
+      <h3>Ingredienti</h3><p>{p.ing.join(', ')}. <span class="pp-soft">L'elenco completo è in arrivo.</span></p>
+      <h3>Formato</h3><p>{p.ml}</p>
+    </div>
+  </section>
+  {p.splash && <section class="pp-splash pp-rise"><img {...img(p.splash, 1600)} alt={`${p.n} Glamood con il prodotto in primo piano`} loading="lazy" decoding="async" /></section>}
+  <section class="pp-more">
+    <h2>Ti potrebbe piacere</h2>
+    <ul>{more.map((q) => <li class="pp-rise"><a href={`/prodotti/${q.slug}`} style={`--cb:${q.bg};--ci:${q.ink}`}><img {...img(imgOf(q), 960)} alt="" loading="lazy" decoding="async" /><b>{q.n}</b><span>{q.sub}</span></a></li>)}</ul>
+  </section>
+</div>
+</Site>
+
+<style is:global>
+.pp{background:var(--bg);color:var(--ink)}
+.pp-hero{position:relative;overflow:hidden;min-height:100svh;display:grid;align-items:center}
+.pp-hero .bgref{background-size:520px}
+.pp-hero-in{position:relative;z-index:1;width:100%;max-width:1360px;margin:0 auto;padding:clamp(110px,14vh,150px) var(--gutter) clamp(48px,7vh,90px);display:grid;gap:clamp(20px,4vw,64px);align-items:center}
+.pp-back{display:inline-flex;min-height:44px;align-items:center;color:var(--ink);font:800 14px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;opacity:.85}
+.pp-tx h1{margin-top:8px;font:900 clamp(56px,9vw,150px)/.84 var(--f-display);text-transform:uppercase;letter-spacing:-.04em}
+.pp-sub{margin-top:12px;font-size:clamp(18px,1.6vw,24px);font-style:italic;color:var(--ink);opacity:.85}
+.pp-desc{margin-top:16px;font-size:18px;line-height:1.5;max-width:38ch}
+.pp-btns{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:26px}
+.pp-price{font:800 13px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.pp-art{position:relative;display:grid;place-items:center;min-height:min(60svh,560px)}
+.pp-prod{position:relative;z-index:2;width:min(100%,520px);height:auto;filter:drop-shadow(0 34px 34px rgb(0 0 0 / .28));animation:ppIn 1s var(--ease-out) both}
+.pp-ing{position:absolute;z-index:1;width:auto;height:clamp(70px,11vw,150px);filter:drop-shadow(0 16px 16px rgb(0 0 0 / .22));animation:ppFloat 6s ease-in-out infinite alternate}
+.pp-ing0{left:2%;top:6%}.pp-ing1{right:2%;top:12%;animation-duration:7.5s}.pp-ing2{right:8%;bottom:4%;z-index:3;animation-duration:8.5s}
+.pp-tiles{max-width:1360px;margin:0 auto;padding:0 var(--gutter) clamp(48px,6vw,90px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,2vw,22px)}
+.pp-tile{background:var(--bg2);border-radius:24px;padding:clamp(18px,2.4vw,34px);display:grid;gap:8px}
+.pp-tile b{font:900 clamp(24px,3vw,46px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.02em}
+.pp-tile span{font:800 12px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
+.pp-story{max-width:1360px;margin:0 auto;padding:clamp(40px,6vw,90px) var(--gutter);display:grid;gap:clamp(24px,5vw,80px);align-items:center}
+.pp-ill img{width:min(100%,560px);height:auto;display:block;margin:0 auto}
+.pp-story h2{font:900 clamp(36px,4vw,64px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.02em}
+.pp-story h3{margin-top:24px;font:800 13px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
+.pp-story p{margin-top:10px;font-size:18px;line-height:1.6;max-width:52ch}
+.pp-soft{opacity:.75}
+.pp-splash{max-width:1360px;margin:0 auto;padding:0 var(--gutter) clamp(40px,6vw,90px)}
+.pp-splash img{width:100%;height:auto;border-radius:28px;display:block}
+.pp-more{background:var(--bg2);padding:clamp(56px,7vw,110px) var(--gutter) calc(clamp(56px,7vw,110px) + 60px)}
+.pp-more h2{max-width:1360px;margin:0 auto;font:900 clamp(36px,5vw,80px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.03em}
+.pp-more ul{list-style:none;padding:0;max-width:1360px;margin:28px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px)}
+.pp-more a{display:grid;gap:6px;padding:18px 18px 22px;border-radius:24px;background:var(--cb);color:var(--ci);text-decoration:none;transition:transform .4s var(--ease-out)}
+.pp-more a:hover{transform:translateY(-6px)}
+.pp-more img{width:100%;aspect-ratio:1;object-fit:contain;height:auto}
+.pp-more b{font:900 20px/1 var(--f-display);text-transform:uppercase}
+.pp-more span{font-size:15px;opacity:.85}
+.pp-rise{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+.pp-rise.pp-on{opacity:1;transform:none}
+@keyframes ppIn{from{opacity:0;transform:translateY(30px) scale(.96)}}
+@keyframes ppFloat{from{translate:0 -8px;rotate:-3deg}to{translate:0 8px;rotate:3deg}}
+@media (min-width:1024px){.pp-hero-in{grid-template-columns:1fr 1fr}.pp-story{grid-template-columns:1fr 1fr}}
+@media (max-width:767px){.pp-tiles{grid-template-columns:1fr}.pp-more ul{grid-template-columns:1fr}.pp-art{min-height:42svh}}
+@media (prefers-reduced-motion:reduce){.pp-rise{opacity:1;transform:none;transition:none}.pp-ing,.pp-prod{animation:none}}
+</style>
+<script>
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('pp-on'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+document.querySelectorAll('.pp-rise').forEach((el) => io.observe(el));
+</script>

@@ -4,7 +4,6 @@ import Personaggio from './Personaggio.astro';
 // salon photos in pattern frames (arch, wide pill, circle, tall, blob);
 // tablet and phone use native swipe with snap.
 import Img from './Img.astro';
-import Fascia from './Fascia.astro';
 import { img } from '../data/img';
 import { business } from '../data/business';
 interface Props { homeMobile?: boolean }
@@ -28,9 +27,8 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
       <figure class={`card ${shape}`}><div class="fr"><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1200px) 40vw, 82vw" style={pos ? `object-position:${pos}` : undefined} /></div></div><figcaption>{cap}</figcaption></figure>
     ))}
   </div></div>
-  <p class="credit">{business.architect ? `Progetto degli interni: ${business.architect}.` : "Progetto degli interni: nome dell'architetto da confermare."}</p>
+  {business.architect && <p class="credit">Progetto degli interni: {business.architect}.</p>}
 </section>
-<Fascia name="salone" bg="var(--petrol-darker)" pattern="r-corallo-tono" />
 <div class="bottom-edge salone-edge"></div>
 </div>
 

@@ -2,23 +2,21 @@
 // Page-to-page transition (link tree feel): a petrol curtain with the mascot face rises, the next page loads underneath,
 // then the curtain lifts. Clicking the logo (or Home) while already on the home page eases back to the top:
 // it accelerates, then slows down just before arriving.
+import { img } from '../data/img';
 ---
 <script is:inline>
   (function(){try{if(sessionStorage.getItem('glamood-pt')==='1'){document.documentElement.classList.add('pt-arrive');sessionStorage.removeItem('glamood-pt');}}catch(e){}})();
 </script>
-<div class="pt-cover" id="pt-cover" aria-hidden="true"><span class="pt-face"><img src="/img/svg/faccia-petrolio.svg" width="2118" height="2550" alt="" decoding="async" /></span></div>
+<div class="pt-cover" id="pt-cover" aria-hidden="true"><img class="pt-run" {...img("v2/personaggio/posa-corre", 480)} alt="" decoding="async" /></div>
 <style is:global>
 .pt-cover{position:fixed;inset:0;z-index:calc(var(--z-loader) - 1);display:grid;place-items:center;pointer-events:none;background:var(--petrol-darker) url("/img/svg/pattern-liquido-tono.svg") center/cover;clip-path:inset(100% 0 0 0)}
-.pt-face{display:grid;place-items:center;width:clamp(124px,13vw,176px);aspect-ratio:1;border-radius:50%;background:#F4EFE8;box-shadow:0 22px 40px -18px rgb(0 0 0 / .6),inset 0 0 0 5px rgb(15 104 112 / .12)}
-.pt-cover img{width:68%;height:auto;margin-top:6%;animation:ptNod 1.1s ease-in-out infinite alternate}
-.pt-cover .pt-face{opacity:0;transform:translateY(20px) scale(.9);transition:opacity .35s,transform .5s cubic-bezier(.16,1,.3,1)}
-.pt-cover.in{clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.76,0,.24,1);pointer-events:auto}
-.pt-cover.in .pt-face{opacity:1;transform:none;transition-delay:.25s}
+.pt-cover.in{clip-path:inset(0 0 0 0);transition:clip-path .32s cubic-bezier(.76,0,.24,1);pointer-events:auto}
 .pt-arrive .pt-cover{clip-path:inset(0 0 0 0)}
-.pt-arrive .pt-cover .pt-face{opacity:1;transform:none}
-.pt-cover.out{clip-path:inset(0 0 100% 0)!important;transition:clip-path .75s cubic-bezier(.76,0,.24,1) .05s}
-.pt-cover.out .pt-face{opacity:0;transform:translateY(-20px);transition:opacity .3s,transform .5s}
-@keyframes ptNod{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+.pt-cover.out{clip-path:inset(0 0 100% 0)!important;transition:clip-path .36s cubic-bezier(.76,0,.24,1)}
+/* the barber runs across the curtain, once per session */
+.pt-run{position:absolute;left:0;top:50%;width:clamp(140px,16vw,230px);height:auto;translate:-120% -50%;opacity:0}
+.pt-cover.runs .pt-run{opacity:1;animation:ptRun .7s cubic-bezier(.45,.05,.4,1) forwards}
+@keyframes ptRun{from{translate:-120% -50%}to{translate:calc(100vw + 20%) -50%}}
 @media (prefers-reduced-motion:reduce){.pt-cover{display:none}}
 </style>
 <script>
@@ -27,7 +25,7 @@ const html = document.documentElement;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // arrival: lift the curtain
 if (html.classList.contains('pt-arrive')) {
-  requestAnimationFrame(() => requestAnimationFrame(() => { cover.classList.add('out'); setTimeout(() => { html.classList.remove('pt-arrive'); cover.classList.remove('out'); }, 900); }));
+  requestAnimationFrame(() => requestAnimationFrame(() => { cover.classList.add('out'); setTimeout(() => { html.classList.remove('pt-arrive'); cover.classList.remove('out', 'runs'); }, 420); }));
 }
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 function toTop() {
@@ -54,8 +52,10 @@ document.addEventListener('click', (e) => {
   if (reduced) return;
   e.preventDefault();
   cover.classList.remove('out'); cover.classList.add('in');
+  let first = false; try { first = !sessionStorage.getItem('glamood-runner'); sessionStorage.setItem('glamood-runner', '1'); } catch (err) {}
+  if (first) cover.classList.add('runs');
   try { sessionStorage.setItem('glamood-pt', '1'); } catch (err) {}
-  setTimeout(() => { location.href = url.href; }, 620);
+  setTimeout(() => { location.href = url.href; }, first ? 700 : 340);   // whole change of page ≤ 700 ms
 });
 // back/forward cache: never come back to a covered page
 addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) { cover.classList.remove('in', 'out'); html.classList.remove('pt-arrive'); } });
