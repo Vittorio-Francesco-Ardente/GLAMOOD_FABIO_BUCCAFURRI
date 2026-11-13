@@ -30,6 +30,7 @@ jobs:
         with:
           path: public/img
           key: img-${{ hashFiles('assets/web/**', 'tools/assets.mjs') }}
+          restore-keys: img-
       # Git checkout refreshes source timestamps; trust generated images only when
       # an exact content-hash cache was successfully restored.
       - run: npm run build

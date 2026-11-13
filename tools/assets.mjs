@@ -4,7 +4,8 @@
 // Existing variants are reused only when their source hash matches the restored CI cache.
 // For local builds, preserve the modification-time freshness check.
 import sharp from 'sharp';
-import { readdir, mkdir, stat, writeFile, copyFile } from 'node:fs/promises';
+import { readdir, mkdir, stat, writeFile, copyFile, readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { join, dirname, relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,14 +27,20 @@ async function walk(dir) {
   return out;
 }
 
-const exactCacheHit = process.env.ASSET_CACHE_HIT === 'true';
-const fresh = async (src, dst) => existsSync(dst) && (exactCacheHit || (await stat(dst)).mtimeMs >= (await stat(src)).mtimeMs);
+// Per-file freshness by content hash: after a partial cache restore (or a git checkout that touches
+// every timestamp) only the sources whose bytes changed are converted again.
+const HASHES = join(OUT, '.hashes.json');
+const prev = existsSync(HASHES) ? JSON.parse(await readFile(HASHES, 'utf8')) : {};
+const next = {};
+let cur = '';
+const fresh = async (src, dst) => existsSync(dst) && prev[cur] === next[cur];
 
 const files = await walk(SRC);
 const manifest = {};
 let made = 0;
 for (const file of files) {
   const rel = relative(SRC, file).replace(/\\/g, '/');
+  cur = rel; next[rel] = createHash('sha1').update(await readFile(file)).digest('hex');
   const base = rel.slice(0, -extname(rel).length);
   const meta = await sharp(file).metadata();
   const w = meta.width, h = meta.height;
@@ -59,6 +66,7 @@ for (const file of files) {
     }
   }
 }
+await writeFile(HASHES, JSON.stringify(next));
 await mkdir(join(ROOT, 'src/data'), { recursive: true });
 await writeFile(join(ROOT, 'src/data/images.json'), JSON.stringify(manifest, null, 1));
 // brand SVGs used by CSS (wave strips)
