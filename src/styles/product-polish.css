@@ -129,7 +129,7 @@ html.product-sheet-open .p3-skip{display:none!important}
 .site-header .sx-header .burger:hover{background:#F4EFE8}
 /* Skip link on portrait screens: just above the product card, never over the copy. */
 /* Portrait: the catalogue link lives inside the product card (top right), no floating pill. */
-@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1){
+@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1), (prefers-reduced-motion:no-preference) and (pointer:coarse){
  html.product-immersive .sx-p3 .p3-skip,.sx-p3 .p3-skip{display:none!important}
 }
 /* Touch devices: keep the scroll stage fluid. No continuous re-rasterising of the big vector backgrounds,
@@ -169,4 +169,12 @@ html.product-sheet-open .p3-skip{display:none!important}
  .sx-cat .ct-filter{flex-wrap:wrap;overflow:visible;gap:6px}
  .sx-cat .ct-filter button{min-height:40px;padding:0 6px 0 14px;font-size:12.5px;gap:8px}
  .sx-cat .ct-filter button span{min-width:24px;height:24px;font-size:11px}
+}
+/* Touch tablets: same compact composition as phones, with more air and larger type. */
+@media (prefers-reduced-motion:no-preference) and (pointer:coarse) and (min-width:768px){
+ .sx-p3 .p3-copy{height:236px;bottom:max(22px,env(safe-area-inset-bottom))}
+ .sx-p3 .p3-txt{padding:22px 28px!important}
+ .sx-p3 .p3-txt h3{font-size:clamp(32px,4vw,42px)!important}
+ .sx-p3 .p3-txt .p3-desc{font-size:16px}
+ .sx-p3 .p3-cat{top:20px;right:22px}
 }

@@ -125,7 +125,7 @@ const slots = [
 @media (prefers-reduced-motion:no-preference){
  .p3{height:calc((var(--n) + 1.4) * 100svh)}
  .p3 .p3m{display:none}
- .p3-pin{display:block;position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate}
+ .p3-pin{display:block;position:sticky;top:0;height:100svh;height:100dvh;overflow:hidden;isolation:isolate}
  .p3-bgs,.p3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
  .p3-bg{opacity:0;will-change:opacity}
  .p3-bg[data-i="0"]{opacity:1}   /* first screen is never empty, even before the script runs */
@@ -173,14 +173,15 @@ const slots = [
  .p3-hint{position:absolute;z-index:6;left:50%;bottom:24px;translate:-50% 0;font:800 12px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--hint,#0F6870);opacity:.8;transition:opacity .4s}
 }
 /* ---------- portrait screens: same scroll stage, phone layout ---------- */
-@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1){
+/* compact composition: phones and every touch tablet (portrait or landscape) — name on top, jar centred, card centred below */
+@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1), (prefers-reduced-motion:no-preference) and (pointer:coarse){
  .p3-titles{padding-top:calc(64px + 2svh)}
- .p3-title{font-size:min(23vw,12.5svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
+ .p3-title{font-size:min(23vw,14svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
  .p3-ing{scale:.72}
  .p3-chips,.p3-hint{display:none}
  .p3-txt .p3-k{min-height:28px;display:flex;align-items:center}
  .p3-cat{position:absolute;top:16px;right:16px;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 11px;border-radius:999px;background:#E3ECE8;color:#0F6870;font:800 11px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
- .p3-copy{left:12px;right:12px;width:auto!important;top:auto;bottom:max(12px,env(safe-area-inset-bottom));translate:none;height:212px}
+ .p3-copy{left:50%;right:auto;width:min(640px,calc(100% - 24px))!important;top:auto;bottom:max(14px,env(safe-area-inset-bottom));translate:-50% 0;height:212px}
  .p3-txt{top:auto;bottom:0;translate:none;padding:18px 20px!important;border-radius:24px!important}
  .p3-txt .p3-k{font-size:11px}
  .p3-txt h3{margin-top:8px;font-size:clamp(26px,8vw,34px)!important}
@@ -268,7 +269,8 @@ const N = P.length;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // The scroll-driven stage now runs on every screen (phones get a portrait layout); reduced motion keeps the static cards.
 const desk = !reduced;
-const portrait = () => innerHeight > innerWidth * 1.05;
+const coarse = matchMedia('(pointer:coarse)').matches;
+const portrait = () => coarse || innerHeight > innerWidth * 1.05;   // compact layout (phones + touch tablets)
 const DPR = Math.min(3, devicePixelRatio || 1); // Physical pixel resolution, including Retina phones/tablets.
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
@@ -327,11 +329,23 @@ function startDesk() {
   let hover = 0, hoverTarget = 0;
   let lastKey = '', lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on && !raf) raf = requestAnimationFrame(tick); }).observe(sec);
-  cv.addEventListener('pointerdown', (e) => { dragging = { x: e.clientX, d: drag }; dragV = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
+  cv.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') return; dragging = { x: e.clientX, d: drag }; dragV = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
   cv.addEventListener('pointerleave', () => { hoverTarget = 0; });
-  cv.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') hoverTarget = ((e.clientX / innerWidth) - .5) * .5; if (!dragging) return; const nd = dragging.d + (e.clientX - dragging.x) / (e.pointerType === 'mouse' ? 900 : 320); dragV = nd - drag; drag = nd; });
+  cv.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') hoverTarget = ((e.clientX / innerWidth) - .5) * .5; if (!dragging) return; const nd = Math.max(-.2, Math.min(.2, dragging.d + (e.clientX - dragging.x) / (e.pointerType === 'mouse' ? 900 : 420))); dragV = nd - drag; drag = nd; });
   const up = () => { dragging = null; cv.classList.remove('drag'); };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  // Touch (phones, tablets): a mostly horizontal swipe on the jar turns the label; vertical swipes keep scrolling.
+  let tx0 = 0, ty0 = 0, td0 = 0, lock: 0 | 1 | 2 = 0;
+  cv.addEventListener('touchstart', (e) => { const t0 = e.touches[0]; tx0 = t0.clientX; ty0 = t0.clientY; td0 = drag; lock = 0; dragV = 0; }, { passive: true });
+  cv.addEventListener('touchmove', (e) => {
+    const t0 = e.touches[0], dx = t0.clientX - tx0, dy = t0.clientY - ty0;
+    if (!lock && Math.hypot(dx, dy) > 8) lock = Math.abs(dx) > Math.abs(dy) * 1.1 ? 1 : 2;
+    if (lock !== 1) return;
+    e.preventDefault();
+    const nd = Math.max(-.2, Math.min(.2, td0 + dx / Math.max(420, cw * 1.4)));   // the label never turns past its own edge dragV = nd - drag; drag = nd; dragging = { x: t0.clientX, d: drag };
+  }, { passive: false });
+  const tEnd = () => { if (lock === 1) dragging = null; lock = 0; };
+  cv.addEventListener('touchend', tEnd); cv.addEventListener('touchcancel', tEnd);
   cv.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.preventDefault(); dragV += e.deltaX / 3000; } }, { passive: false });
   let secTop = 0, span = 1, cw = 0, chh = 0;
   let SDPR = DPR, tBottom = 0, cTop = 0;
@@ -344,7 +358,7 @@ function startDesk() {
     const target = Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
     shown += (target - shown) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(target - shown) < 1e-4) shown = target;
     hover += (hoverTarget - hover) * .09; if (Math.abs(hoverTarget - hover) < 1e-4) hover = hoverTarget;
-    if (!dragging) { drag += dragV; dragV *= .9; drag *= .92; if (Math.abs(drag) < 1e-4 && Math.abs(dragV) < 1e-4) drag = dragV = 0; }            // inertia, then snaps back to the front
+    if (!dragging) { drag = Math.max(-.2, Math.min(.2, drag + dragV)); dragV *= .9; drag *= coarse ? .975 : .92; if (Math.abs(drag) < 1e-4 && Math.abs(dragV) < 1e-4) drag = dragV = 0; }            // inertia, then snaps back to the front
     const p = Math.min(shown, N - 1e-3), i = Math.floor(p), t = p - i;
     const lineK = sm((shown - (N - .15)) / .4);
     // which product is on stage, and the slide between two products in the last 22% of each segment
@@ -379,20 +393,20 @@ function startDesk() {
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
     // redraw the canvas only when something visible changed (idle frames cost nothing, key for phones)
-    const key = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${arts.length}|${arts[i] ? 1 : 0}${arts[nx] ? 1 : 0}`;
+    const key = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${tBottom | 0}|${cTop | 0}|${arts.length}|${arts[i] ? 1 : 0}${arts[nx] ? 1 : 0}`;
     if (key === lastKey) return; lastKey = key;
     const w = cw, h = chh; c.setTransform(SDPR, 0, 0, SDPR, 0, 0); c.clearRect(0, 0, w, h);
-    const tall = h > w * 1.05;
+    const tall = coarse || h > w * 1.05;
     // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
     const avail = cTop - tBottom - 28;
-    const jw = tall ? Math.max(120, Math.min(w * .86, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
+    const jw = tall ? Math.max(120, Math.min(w * .86, 620, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
       c.globalAlpha = jarAlpha;
       const lift = Math.sin(Math.PI * Math.min(1, t / .6)) * jh * .04;
       if (i < N - 1 && sw > 0) {
-        const travel = tall ? w * 1.08 : w * .62;   // on phones the outgoing jar leaves before the next one arrives: no overlap
+        const travel = tall ? w / 2 + jw * .6 : w * .62;   // on phones the outgoing jar leaves before the next one arrives: no overlap
         drawJar(c, arts[i], w / 2 - sw * travel, base, jw, jh, rotOf(t), lift);
         drawJar(c, arts[nx], w / 2 + (1 - sw) * travel, base, jw, jh, rotOf(0), 0);
       } else drawJar(c, arts[i], w / 2, base, jw, jh, rotOf(Math.min(1, t / .6)), lift);
