@@ -47,7 +47,7 @@ const slots = [
     <canvas class="p3-cv" id="p3-cv" aria-hidden="true"></canvas>
     <div class="p3-copy">{P3D.map((p, i) => (
       <div class="p3-txt" data-i={i} style={`--ink:${p.ink};--ac:${p.accent}`}>
-        <p class="p3-k">0{i + 1} / 0{P3D.length} · {p.ml}</p>
+        <p class="p3-k">0{i + 1} / 0{P3D.length} · {p.ml}</p><a class="p3-cat" href="#catalogo" tabindex="-1">Tutta la linea <span aria-hidden="true">↓</span></a>
         <h3>{p.full}</h3><p class="p3-note">{p.note}</p>
         <p class="p3-desc">{p.desc}</p>
         <p class="p3-price">Prezzo da confermare</p>
@@ -130,13 +130,14 @@ const slots = [
  .p3-bg{opacity:0;will-change:opacity}
  .p3-bg[data-i="0"]{opacity:1}   /* first screen is never empty, even before the script runs */
  .p3-titles{position:absolute;inset:0;z-index:1;display:grid;place-items:start center;padding-top:calc(76px + 3vh);pointer-events:none}
- .p3-title{grid-area:1/1;font:900 min(22vw,22vh)/.78 var(--f-display);text-transform:uppercase;letter-spacing:-.05em;white-space:nowrap;color:#fff;opacity:.92;text-shadow:0 30px 60px rgb(6 40 44 / .18);clip-path:inset(0 0 100% 0);will-change:clip-path,transform}
+ .p3-title{grid-area:1/1;font:900 min(22vw,22vh)/.78 var(--f-display);text-transform:uppercase;letter-spacing:-.05em;white-space:nowrap;color:#fff;opacity:.95;clip-path:inset(0 0 100% 0);will-change:clip-path,transform}
  .p3-ing{position:absolute;z-index:2;width:auto;translate:-50% -50%;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 18px 18px rgb(0 0 0 / .25))}
- .p3-ing[data-l="0"]{z-index:1;filter:blur(1.5px) saturate(.9) drop-shadow(0 10px 10px rgb(0 0 0 / .15))}
+ .p3-ing[data-l="0"]{z-index:0;filter:blur(1.5px) saturate(.9) drop-shadow(0 10px 10px rgb(0 0 0 / .15))}
  .p3-ing[data-l="2"]{z-index:5;filter:blur(5px) drop-shadow(0 26px 24px rgb(0 0 0 / .3))}
  .p3-cv{position:absolute;inset:0;z-index:3;width:100%;height:100%;cursor:grab;touch-action:pan-y;pointer-events:auto}
  .p3-cv.drag{cursor:grabbing}
  .p3-copy,.p3-chips{position:absolute;z-index:6;top:50%;translate:0 -50%}
+ .p3-cat{display:none}
  .p3-copy{left:var(--gutter);width:min(26vw,380px)}
  .p3-txt{position:absolute;inset:auto 0 auto 0;top:50%;translate:0 -50%;color:var(--ink);opacity:0;pointer-events:none;transition:opacity .35s}
  .p3-txt.on,.p3-txt[data-i="0"]:not(.off){opacity:1;pointer-events:auto}
@@ -177,6 +178,8 @@ const slots = [
  .p3-title{font-size:min(25vw,16svh);white-space:normal;text-align:center;line-height:.8;max-width:96vw}
  .p3-ing{scale:.72}
  .p3-chips,.p3-hint{display:none}
+ .p3-txt .p3-k{min-height:28px;display:flex;align-items:center}
+ .p3-cat{position:absolute;top:16px;right:16px;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 11px;border-radius:999px;background:#E3ECE8;color:#0F6870;font:800 11px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
  .p3-copy{left:12px;right:12px;width:auto!important;top:auto;bottom:max(12px,env(safe-area-inset-bottom));translate:none;height:212px}
  .p3-txt{top:auto;bottom:0;translate:none;padding:18px 20px!important;border-radius:24px!important}
  .p3-txt .p3-k{font-size:11px}
@@ -269,7 +272,7 @@ const portrait = () => innerHeight > innerWidth * 1.05;
 const DPR = Math.min(3, devicePixelRatio || 1); // Physical pixel resolution, including Retina phones/tablets.
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
-sec.querySelector<HTMLAnchorElement>('.p3-skip')!.addEventListener('click', (e) => {
+sec.querySelectorAll<HTMLAnchorElement>('.p3-skip, .p3-cat').forEach((a) => a.addEventListener('click', (e) => {
   e.preventDefault(); e.stopPropagation();
   const catalog = document.getElementById('catalogo')!;
   const y = catalog.getBoundingClientRect().top + scrollY;
@@ -279,7 +282,7 @@ sec.querySelector<HTMLAnchorElement>('.p3-skip')!.addEventListener('click', (e) 
   document.querySelector('.sx-header')?.removeAttribute('inert');
   history.replaceState(null, '', '#catalogo');
   document.getElementById('ct-t')?.focus({ preventScroll: true });
-});
+}));
 const sm = (x: number) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
 const fitCanvas = (cv: HTMLCanvasElement) => { const r = cv.getBoundingClientRect(); const w = Math.round(r.width * DPR), h = Math.round(r.height * DPR); if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } return { w: r.width, h: r.height }; };
 const pendingArt: Array<Promise<JarArt> | undefined> = [];
@@ -322,7 +325,7 @@ function startDesk() {
   const fitT = () => titles.forEach((el) => { el.style.fontSize = ''; const max = innerWidth * (innerHeight > innerWidth ? .94 : .9), w = el.scrollWidth; if (w > max) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * max / w) + 'px'; });
   document.fonts.ready.then(fitT); fitT(); addEventListener('resize', fitT);
   let hover = 0, hoverTarget = 0;
-  let lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
+  let lastKey = '', lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on && !raf) raf = requestAnimationFrame(tick); }).observe(sec);
   cv.addEventListener('pointerdown', (e) => { dragging = { x: e.clientX, d: drag }; dragV = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
   cv.addEventListener('pointerleave', () => { hoverTarget = 0; });
@@ -338,9 +341,9 @@ function startDesk() {
     raf = on ? requestAnimationFrame(tick) : 0;
     const dt = Math.min(.05, (now - (lastT || now)) / 1000); lastT = now;
     const target = Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
-    shown += (target - shown) * (1 - Math.exp(-dt * 5.5));
-    hover += (hoverTarget - hover) * .09;
-    if (!dragging) { drag += dragV; dragV *= .9; drag *= .92; }            // inertia, then snaps back to the front
+    shown += (target - shown) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(target - shown) < 1e-4) shown = target;
+    hover += (hoverTarget - hover) * .09; if (Math.abs(hoverTarget - hover) < 1e-4) hover = hoverTarget;
+    if (!dragging) { drag += dragV; dragV *= .9; drag *= .92; if (Math.abs(drag) < 1e-4 && Math.abs(dragV) < 1e-4) drag = dragV = 0; }            // inertia, then snaps back to the front
     const p = Math.min(shown, N - 1e-3), i = Math.floor(p), t = p - i;
     const lineK = sm((shown - (N - .15)) / .4);
     // which product is on stage, and the slide between two products in the last 22% of each segment
@@ -374,6 +377,9 @@ function startDesk() {
       el.style.opacity = String(vis); el.style.transform = `translate(${x}px,${y}px) rotate(${Math.sin(time * sp * .6 + k) * 8 + t * 20 * (l - 1)}deg) scale(${.96 + vis * .04})`;
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
+    // redraw the canvas only when something visible changed (idle frames cost nothing, key for phones)
+    const key = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${arts.length}|${arts[i] ? 1 : 0}${arts[nx] ? 1 : 0}`;
+    if (key === lastKey) return; lastKey = key;
     const w = cw, h = chh; c.setTransform(SDPR, 0, 0, SDPR, 0, 0); c.clearRect(0, 0, w, h);
     const tall = h > w * 1.05;
     const jw = tall ? Math.min(w * .86, h * .38 * 1.21) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? h * .64 : h * .9;

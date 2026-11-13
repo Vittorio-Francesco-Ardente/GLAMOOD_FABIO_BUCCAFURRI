@@ -16,7 +16,7 @@ export const loadArt = async (s: { jar: string; light: string; shadow: string; l
   return { jar, light, shadow, label };
 };
 
-const layers = new WeakMap<HTMLCanvasElement, HTMLCanvasElement>();
+const artCache = new WeakMap<JarArt, { tw: number; scaled: HTMLCanvasElement | null; lays: Map<string, HTMLCanvasElement> }>();
 /** Draw the jar so that its opaque box fits (w x h) centred at (cx, bottom), rot in turns (0 = label front). */
 export function drawJar(ctx: CanvasRenderingContext2D, art: JarArt | undefined, cx: number, bottom: number, w: number, h: number, rot: number, lift = 0) {
   if (!art?.jar.naturalWidth) return;
@@ -30,32 +30,49 @@ export function drawJar(ctx: CanvasRenderingContext2D, art: JarArt | undefined, 
   }
   ctx.drawImage(art.jar, ox, oy, J.S * k, J.S * k);
   // label layer, shaded with source-atop so only the paper darkens toward the edges
-  const L = art.label; if (!L.naturalWidth) return;
-  const cv = ctx.canvas; const pixelRatio = Math.max(1, ctx.getTransform().a); let lay = layers.get(cv);
-  if (!lay) { lay = document.createElement('canvas'); layers.set(cv, lay); }
-  const lx0 = Math.floor(ox + J.x0 * k), lx1 = Math.ceil(ox + J.x1 * k), ly0 = oy + J.y0 * k, bandH = (J.y1 - J.y0) * k;
-  const smile = bandH * .045, LW = lx1 - lx0 + 2, LH = Math.ceil(bandH + smile + 2);
-  lay.width = Math.ceil(LW * pixelRatio); lay.height = Math.ceil(LH * pixelRatio);
-  const g = lay.getContext('2d')!; g.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0); g.clearRect(0, 0, LW, LH); g.imageSmoothingQuality = 'high';
-  const r = R * k, mid = ox + MID * k, lw = L.naturalWidth, lh = L.naturalHeight;
-  for (let x = lx0; x < lx1; x += 1 / pixelRatio) {
-    const px = (x + .5 - mid) / r; if (px <= -1 || px >= 1) continue;
-    const th = Math.asin(px);
-    let u = th / (Math.PI * 2) + rot; u -= Math.round(u);              // -0.5 … 0.5 around the cylinder
-    const lu = u / COVER + .5; if (lu < 0 || lu >= 1) continue;          // outside the label: frosted glass
-    // Sample the whole source footprint of a physical pixel. Taking a single
-    // source column aliases fine label text when a large label is reduced.
-    const footprint = Math.max(1, lw / (COVER * Math.PI * 2 * r * Math.sqrt(1 - px * px) * pixelRatio));
-    const sx = Math.max(0, Math.min(lw - 1, lu * lw - footprint / 2));
-    const sourceWidth = Math.min(footprint, lw - sx);
-    const dy = (1 - Math.cos(th)) * smile;                               // labels follow the cylinder (slight smile)
-    g.drawImage(L, sx, 0, sourceWidth, lh, x - lx0, dy, 1.2 / pixelRatio, bandH);
+  const L0 = art.label; if (!L0.naturalWidth) return;
+  const pixelRatio = Math.max(1, ctx.getTransform().a);
+  const ly0 = oy + J.y0 * k, bandH = (J.y1 - J.y0) * k;
+  const r = R * k, mid = ox + MID * k;
+  // the wrapped label is built in the jar's own coordinates (independent of where the jar is on screen)
+  const smile = bandH * .045, LW = Math.ceil(2 * r + 2), LH = Math.ceil(bandH + smile + 2), lx0 = mid - r - 1;
+  // Performance: (1) the 4800px label is pre-scaled once to the size it is shown at, so each column samples a
+  // small bitmap; (2) the wrapped label is cached per rotation and size, so sliding a jar costs one drawImage.
+  let cache = artCache.get(art); if (!cache) { cache = { tw: 0, scaled: null, lays: new Map() }; artCache.set(art, cache); }
+  const need = Math.min(L0.naturalWidth, Math.ceil((COVER * Math.PI * 2 * r * pixelRatio * 1.25) / 128) * 128);
+  if (cache.tw !== need) {
+    const sc2 = document.createElement('canvas'); sc2.width = need; sc2.height = Math.round(need * L0.naturalHeight / L0.naturalWidth);
+    const sg = sc2.getContext('2d')!; sg.imageSmoothingQuality = 'high'; sg.drawImage(L0, 0, 0, sc2.width, sc2.height);
+    cache.tw = need; cache.scaled = sc2; cache.lays.clear();
   }
-  g.globalCompositeOperation = 'source-atop';
-  const gr = g.createLinearGradient(mid - r - lx0, 0, mid + r - lx0, 0);
-  gr.addColorStop(0, 'rgba(5,27,30,.62)'); gr.addColorStop(.14, 'rgba(5,27,30,.2)'); gr.addColorStop(.34, 'rgba(5,27,30,0)');
-  gr.addColorStop(.7, 'rgba(5,27,30,0)'); gr.addColorStop(.88, 'rgba(5,27,30,.22)'); gr.addColorStop(1, 'rgba(5,27,30,.66)');
-  g.fillStyle = gr; g.fillRect(0, 0, LW, LH); g.globalCompositeOperation = 'source-over';
+  const L = cache.scaled!;
+  const rq = Math.round(rot * 800) / 800;
+  const lkey = `${rq.toFixed(5)}|${r.toFixed(1)}|${LH}|${pixelRatio}`;
+  let lay = cache.lays.get(lkey);
+  if (!lay) {
+    lay = document.createElement('canvas');
+    lay.width = Math.ceil(LW * pixelRatio); lay.height = Math.ceil(LH * pixelRatio);
+    const g = lay.getContext('2d')!; g.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0); g.imageSmoothingQuality = 'high';
+    const lw = L.width, lh = L.height;
+    for (let xl = 0; xl < LW; xl += 1 / pixelRatio) {
+      const px = (xl + .5 - (r + 1)) / r; if (px <= -1 || px >= 1) continue;
+      const th = Math.asin(px);
+      let u = th / (Math.PI * 2) + rq; u -= Math.round(u);              // -0.5 … 0.5 around the cylinder
+      const lu = u / COVER + .5; if (lu < 0 || lu >= 1) continue;          // outside the label: frosted glass
+      const footprint = Math.max(1, lw / (COVER * Math.PI * 2 * r * Math.sqrt(1 - px * px) * pixelRatio));
+      const sx = Math.max(0, Math.min(lw - 1, lu * lw - footprint / 2));
+      const sourceWidth = Math.min(footprint, lw - sx);
+      const dy = (1 - Math.cos(th)) * smile;                               // labels follow the cylinder (slight smile)
+      g.drawImage(L, sx, 0, sourceWidth, lh, xl, dy, 1.2 / pixelRatio, bandH);
+    }
+    g.globalCompositeOperation = 'source-atop';
+    const gr = g.createLinearGradient(1, 0, 2 * r + 1, 0);
+    gr.addColorStop(0, 'rgba(5,27,30,.62)'); gr.addColorStop(.14, 'rgba(5,27,30,.2)'); gr.addColorStop(.34, 'rgba(5,27,30,0)');
+    gr.addColorStop(.7, 'rgba(5,27,30,0)'); gr.addColorStop(.88, 'rgba(5,27,30,.22)'); gr.addColorStop(1, 'rgba(5,27,30,.66)');
+    g.fillStyle = gr; g.fillRect(0, 0, LW, LH);
+    if (cache.lays.size > 24) cache.lays.delete(cache.lays.keys().next().value!);
+    cache.lays.set(lkey, lay);
+  }
   ctx.drawImage(lay, lx0, ly0, LW, LH);
   // fixed glass light (highlight + side shade), same 2048 frame as the jar
   if (art.light.naturalWidth) { ctx.save(); ctx.globalAlpha = .9; ctx.drawImage(art.light, ox, oy, J.S * k, J.S * k); ctx.restore(); }

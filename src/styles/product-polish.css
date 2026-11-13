@@ -128,8 +128,19 @@ html.product-sheet-open .p3-skip{display:none!important}
 .site-header .sx-header .burger span,.site-header .sx-header[data-hdr] .burger span{background:#0F6870;box-shadow:0 -6px 0 #0F6870,0 6px 0 #0F6870;filter:none}
 .site-header .sx-header .burger:hover{background:#F4EFE8}
 /* Skip link on portrait screens: just above the product card, never over the copy. */
+/* Portrait: the catalogue link lives inside the product card (top right), no floating pill. */
 @media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1){
- .sx-p3 .p3-skip{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 226px);right:12px;min-height:40px;padding:0 16px;font-size:12px;gap:10px;box-shadow:0 4px 0 #08393e}
+ html.product-immersive .sx-p3 .p3-skip,.sx-p3 .p3-skip{display:none!important}
+}
+/* Touch devices: keep the scroll stage fluid. No continuous re-rasterising of the big vector backgrounds,
+   no blur / shadow filters on moving layers, no huge text shadow on the wiping titles. */
+@media (pointer:coarse){
+ .sx-p3 .p3-bg,.sx-p3 .p3c-bg{animation:none!important;transform:none!important}
+ .sx-p3 .p3-ing,.sx-p3 .p3-ing[data-l="0"],.sx-p3 .p3-ing[data-l="2"]{filter:none!important}
+ .sx-p3 .p3-ing[data-l="2"]{opacity:.85}
+ .sx-p3 .p3-title{text-shadow:none!important}
+ .sx-p3 .p3-lj canvas{filter:none}
+ .sx-p3 .p3-txt{box-shadow:0 8px 20px rgb(8 57 62 / .12)!important}
 }
 .sx-p3 .p3.p3-at-line .p3-skip{opacity:0;pointer-events:none;transition:opacity .3s}
 .sx-p3 .p3-skip{transition:opacity .3s}
@@ -149,3 +160,6 @@ html.product-sheet-open .p3-skip{display:none!important}
 .site-header .sx-header .links a:hover{background:color-mix(in srgb,var(--hc) 12%,transparent)}
 .site-header .sx-header .links a[aria-current]{background:var(--hb);color:var(--hbt);text-shadow:none;box-shadow:0 6px 14px -8px rgb(6 40 44 / .5)}
 @media (min-width:1024px){.site-header .sx-header .links{gap:clamp(4px,1vw,14px)}}
+
+/* No decorative pattern behind product photos (catalogue cards, product page gallery and story art). */
+.sx-cat .ct-band .ct-ph::before,.product-main-image::before,.product-story-art::before{display:none!important}
