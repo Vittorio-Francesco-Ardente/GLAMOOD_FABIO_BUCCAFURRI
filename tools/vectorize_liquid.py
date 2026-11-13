@@ -14,6 +14,7 @@ JOBS = {
  'petrolio-tono':  ('rif-4', 4, ['#07343A', '#0A4A50', '#0C5A61', '#11717A'], None),  # crema styling (dark)
  'salvia':         ('rif-5', 2, ['#C6DCD6', '#E7F0ED'], None),          # balsamo barba (bergamotto)
  'gocce':          ('rif-6', 2, ['#CFE3DE', '#F4EFE8'], (0, 0, 1080, 1560)),  # crop: drop the shadow artefact
+ 'notte':         ('rif-1', 2, ['#0A4A50', '#0C5660'], None),          # the whole line: calm tone-on-tone
  'abisso':         ('rif-7', 4, ['#05292D', '#0A4A50', '#0F6870', '#3E9A9F'], None),  # the whole line, dark
 }
 SCALE = 2  # trace on an upscaled copy: smoother contours

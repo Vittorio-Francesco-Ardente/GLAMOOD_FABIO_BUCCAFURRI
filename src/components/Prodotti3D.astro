@@ -11,7 +11,7 @@ const V = 'v2/prodotti-3d';
 // Liquid vector backgrounds (assets/svg/liquido-*.svg, traced from Vittorio's references): sharp at any size.
 const LIQ: Record<string, { bg: string; liquid: string; slug: string; hdr: string }> = { cera: { bg: '#F1DEAE', liquid: 'miele', slug: 'cera-opaca', hdr: 'honey' }, balsamo: { bg: '#DDEAE7', liquid: 'salvia', slug: 'balsamo-barba', hdr: 'sage' }, crema: { bg: '#0F6870', liquid: 'petrolio-tono', slug: 'crema-styling', hdr: 'petrol' } };
 const surfaces = P3D.map((p) => LIQ[p.k]);
-const liq = (n: string) => `background-color:${n === 'abisso' ? '#0A4A50' : ''};background-image:url('/img/svg/liquido-${n}.svg')`;
+const liq = (n: string) => `background-color:${n === 'abisso' || n === 'notte' ? '#0A4A50' : ''};background-image:url('/img/svg/liquido-${n}.svg')`;
 const shadowFor = (ml: string) => `${V}/luci-ombre/ombra-contatto-barattolo-150ml`;
 const data = P3D.map((p) => ({
   k: p.k, n: p.n, full: p.full, note: p.note, ml: p.ml, use: p.use, desc: p.desc, ing: p.ing, ink: p.ink, accent: p.accent,
@@ -39,7 +39,7 @@ const slots = [
   <a class="p3-skip" href="#catalogo">Salta al catalogo <span aria-hidden="true">↘</span></a>
   <div class="p3-pin">
     <div class="p3-bgs">{P3D.map((p, i) => <div class="p3-bg" data-i={i} data-hdr={surfaces[i].hdr} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>)}
-      <div class="p3-bg p3-bg-line" data-hdr="night" style={liq('abisso')}></div></div>
+      <div class="p3-bg p3-bg-line" data-hdr="night" style={liq('notte')}></div></div>
     <div class="p3-titles">{P3D.map((p, i) => <p class="p3-title" data-i={i}>{p.n}</p>)}</div>
     <div class="p3-ings">{P3D.map((p, i) => p.pics.slice(0, 6).map((f, j) => (
       <img class="p3-ing" data-i={i} data-l={slots[j][3]} style={`left:${slots[j][0]}%;top:${slots[j][1]}%;height:${slots[j][2]}vh`} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />
@@ -154,10 +154,10 @@ const slots = [
  .p3-line{position:absolute;inset:0;z-index:7;display:grid;align-content:center;justify-items:center;gap:3vh;opacity:0;pointer-events:none}
  .p3-line.on{pointer-events:auto}
  .p3-line-k{font:900 clamp(40px,5vw,84px)/.9 var(--f-display);text-transform:uppercase;color:#F4EFE8;letter-spacing:-.02em}
- .p3-line-row{display:flex;gap:2.5vw;align-items:flex-end}
- .p3-lj{display:grid;justify-items:center;gap:12px;background:none;border:0;color:#F4EFE8;font:900 16px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:transform .4s var(--ease-out)}
+ .p3-line-row{display:flex;gap:1.5vw;align-items:flex-end}
+ .p3-lj{display:grid;justify-items:center;gap:12px;background:none;border:0;color:#F4EFE8;font:900 clamp(16px,1.4vw,22px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:transform .4s var(--ease-out)}
  .p3-lj:hover{transform:translateY(-8px)}
- .p3-lj canvas{width:min(17vw,250px);aspect-ratio:1.16}
+ .p3-lj canvas{width:min(27vw,48vh*1.16,460px);aspect-ratio:1.16}
  .p3-hint{position:absolute;z-index:6;left:50%;bottom:24px;translate:-50% 0;font:800 12px/1 var(--f-display);letter-spacing:.16em;text-transform:uppercase;color:var(--hint,#0F6870);opacity:.8;transition:opacity .4s}
 }
 /* ---------- phones / tablets / reduced motion: one card per product ---------- */
