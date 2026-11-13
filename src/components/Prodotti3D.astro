@@ -62,7 +62,7 @@ const slots = [
       <div class="p3-line-row">{P3D.map((p, i) => <button type="button" class="p3-lj" data-open={i} tabindex="-1" style={`--d:${i * 110}ms`} aria-label={`${p.full}, ${p.note}: apri la scheda`}><canvas data-still={i}></canvas><span><b>{p.full}</b><i>{p.note} · {p.ml}</i></span></button>)}</div>
       <p class="p3-line-sub">Tocca un barattolo per la scheda</p>
     </div>
-    <div class="p3-nav" aria-label="Sfoglia i prodotti"><button type="button" class="p3-nb" data-dir="-1" aria-label="Prodotto precedente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" class="p3-nb" data-dir="1" aria-label="Prodotto successivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
+    <div class="p3-nav" aria-label="Sfoglia i prodotti"><div class="p3-dots">{[...P3D.map((p) => p.n), 'La linea'].map((n, i) => <button type="button" data-step={i} aria-label={`Vai a ${n}`}></button>)}</div><button type="button" class="p3-nb" data-dir="-1" aria-label="Prodotto precedente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" class="p3-nb" data-dir="1" aria-label="Prodotto successivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <p class="p3-hint">Muovi il mouse per ruotare · scorri per il prossimo</p>
   </div>
   <!-- phones (and reduced motion): one card per product -->
@@ -184,8 +184,14 @@ const slots = [
  .p3-pin{position:relative}
  .p3-chips,.p3-hint{display:none}
  .p3-nav{display:block;position:absolute;inset:0;z-index:7;pointer-events:none}
- .p3-nb{position:absolute;top:var(--jar-y,50%);translate:0 -50%;width:46px;height:46px;border-radius:50%;border:0;display:grid;place-items:center;background:#fff;color:#0F6870;box-shadow:0 10px 24px -12px rgb(6 40 44 / .6);pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .2s}
- .p3-nb svg{width:22px;height:22px}
+ .p3-nb{position:absolute;top:var(--jar-y,50%);translate:0 -50%;width:50px;height:50px;border-radius:50%;border:3px solid #fff;display:grid;place-items:center;background:#0F6870;color:#fff;box-shadow:0 12px 26px -10px rgb(6 40 44 / .7);pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .2s}
+ .p3-nb svg{width:24px;height:24px}
+ .p3-nb[data-dir="1"]:not(.is-exit){animation:p3nudge 2.4s ease-in-out infinite}
+ @keyframes p3nudge{0%,70%,100%{transform:none}80%{transform:translateX(5px)}90%{transform:translateX(-2px)}}
+ .p3-dots{position:absolute;left:50%;bottom:calc(var(--card-h,212px) + max(14px,env(safe-area-inset-bottom)) + 18px);transition:bottom .4s var(--ease-out);translate:-50% 0;display:flex;gap:7px;padding:7px 10px;border-radius:999px;background:rgb(255 255 255 / .85);pointer-events:auto}
+ .p3.p3-at-line .p3-dots{bottom:calc(max(28px,calc(env(safe-area-inset-bottom) + 20px)) + 66px)}
+ .p3-dots button{width:9px;height:9px;padding:0;border:0;border-radius:99px;background:#0F6870;opacity:.3;transition:width .35s var(--ease-out),opacity .35s;cursor:pointer}
+ .p3-dots button[aria-current="true"]{width:24px;opacity:1}
  .p3-nb:active{transform:scale(.92)}
  .p3-nb[data-dir="-1"]{left:max(10px,env(safe-area-inset-left))}
  .p3-nb[data-dir="1"]{right:max(10px,env(safe-area-inset-right))}
@@ -206,6 +212,7 @@ const slots = [
  .p3-line{padding-top:4svh;gap:1.5svh}
  .p3-line-k{font-size:clamp(34px,10vw,52px);text-align:center;line-height:.95;padding:0 16px}
  .p3-line-row{margin-top:1svh;flex-wrap:wrap;justify-content:center;row-gap:1svh;max-width:100vw}
+ .p3-line{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
  .p3-lj{margin:0 -2vw}
  .p3-lj:nth-child(2){order:-1;flex-basis:100%;--y:0px;--s:1}
  .p3-lj:nth-child(odd){--y:0px;--s:1}
@@ -328,6 +335,8 @@ function turn(cv: HTMLCanvasElement, i: number, to: number) {
   turning.set(cv, requestAnimationFrame(step));
 }
 if (!reduced) sec.querySelectorAll<HTMLButtonElement>('.p3-lj').forEach((b) => { const cv = b.querySelector('canvas')!, i = +b.dataset.open!; const go = (to: number) => () => { if (arts[i]) turn(cv, i, to); };  });
+const stillRO = new ResizeObserver(() => stills());
+document.querySelectorAll<HTMLCanvasElement>('canvas[data-still]').forEach((cv) => stillRO.observe(cv));
 function stills() { document.querySelectorAll<HTMLCanvasElement>('canvas[data-still]').forEach((cv) => still(cv, +cv.dataset.still!)); }
 
 // ---------- desktop pinned stage ----------
@@ -378,7 +387,7 @@ function startDesk() {
   let secTop = 0, span = 1, cw = 0, chh = 0;
   let SDPR = DPR, tBottom = 0, cTop = 0;
   const pin = sec.querySelector<HTMLElement>('.p3-pin')!, copyEl = sec.querySelector<HTMLElement>('.p3-copy')!;
-  const measure = () => { SDPR = portrait() ? Math.min(DPR, 2) : DPR; const pr = pin.getBoundingClientRect(); tBottom = Math.max(...titles.map((t) => t.getBoundingClientRect().bottom)) - pr.top; cTop = copyEl.getBoundingClientRect().top - pr.top; secTop = sec.getBoundingClientRect().top + scrollY; span = sec.offsetHeight - innerHeight; const r = cv.getBoundingClientRect(); cw = r.width; chh = r.height; cv.width = Math.round(cw * SDPR); cv.height = Math.round(chh * SDPR); };
+  const measure = () => { SDPR = portrait() ? Math.min(DPR, 2) : DPR; const pr = pin.getBoundingClientRect(); tBottom = Math.max(...titles.map((t) => t.getBoundingClientRect().bottom)) - pr.top; cTop = Math.min(copyEl.getBoundingClientRect().top, ...[...copyEl.querySelectorAll<HTMLElement>('.p3-txt')].map((x) => x.getBoundingClientRect().top)) - pr.top; /* the tallest card, not its box */ secTop = sec.getBoundingClientRect().top + scrollY; span = sec.offsetHeight - innerHeight; const r = cv.getBoundingClientRect(); cw = r.width; chh = r.height; cv.width = Math.round(cw * SDPR); cv.height = Math.round(chh * SDPR); };
   measure(); addEventListener('resize', measure); addEventListener('load', measure);
   // ---- compact screens (phones, touch tablets): one product per step, arrows + snapping ----
   // first product: only "next"; in between: both; on the whole line: "next" leaves the stage and shows the rest of the page.
@@ -394,6 +403,7 @@ function startDesk() {
   };
   const curStep = () => stepOf(compact() ? slideT : shown);
   prevB.addEventListener('click', () => goStep(curStep() - 1));
+  nav.querySelectorAll<HTMLButtonElement>('.p3-dots button').forEach((d) => d.addEventListener('click', () => goStep(+d.dataset.step!, true)));
   nextB.addEventListener('click', () => goStep(curStep() + 1));
   let navStep = -1;
   const syncNav = () => {
@@ -402,6 +412,7 @@ function startDesk() {
     nextB.classList.toggle('is-exit', k >= N);
     nextB.innerHTML = k >= N ? 'Vedi tutto <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
     nextB.setAttribute('aria-label', k >= N ? 'Vedi tutti i prodotti' : 'Prodotto successivo');
+    nav.querySelectorAll<HTMLButtonElement>('.p3-dots button').forEach((d, i) => d.setAttribute('aria-current', String(i === k)));
   };
   (window as any).__p3sync = syncNav; syncNav();
   // compact screens are real slides (arrows / swipe), no scroll-linked snapping: nothing to fight with the browser scroll
@@ -441,9 +452,9 @@ function startDesk() {
       if (pi === i) { vis = 1 - (i < N - 1 ? sw : 0); enter = -sw; } else if (pi === nx && i < N - 1) { vis = sw; enter = 1 - sw; }
       vis *= 1 - lineK;
       const sp = [.5, .8, 1.2][l], amp = [8, 14, 22][l];
-      const y = enter * 260 * (l + 1) / 2 + Math.sin(time * sp + k) * amp - t * 40 * (l + 1);
+      const y = enter * 260 * (l + 1) / 2 + Math.sin(time * sp + k) * amp;   // only the gentle float + the swap: no jump when the product changes
       const x = Math.cos(time * sp * .7 + k * 1.7) * amp * .8;
-      el.style.opacity = String(vis); el.style.transform = `translate(${x}px,${y}px) rotate(${Math.sin(time * sp * .6 + k) * 8 + t * 20 * (l - 1)}deg) scale(${.96 + vis * .04})`;
+      el.style.opacity = String(vis); el.style.transform = `translate(${x}px,${y}px) rotate(${Math.sin(time * sp * .6 + k) * 8}deg) scale(${.96 + vis * .04})`;
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
     // redraw the canvas only when something visible changed (idle frames cost nothing, key for phones)
@@ -451,9 +462,9 @@ function startDesk() {
     if (key === lastKey) return; lastKey = key;
     const w = cw, h = chh; c.setTransform(SDPR, 0, 0, SDPR, 0, 0); c.clearRect(0, 0, w, h);
     const tall = coarse || h > w * 1.05;
-    const jarYv = `${Math.round(tall ? tBottom + 14 + (cTop - tBottom - 28) / 2 : h * .55)}px`; if (pin.style.getPropertyValue('--jar-y') !== jarYv) pin.style.setProperty('--jar-y', jarYv);
+    const jarYv = `${Math.round(tall ? tBottom + 14 + (cTop - tBottom - 64) / 2 : h * .55)}px`; if (pin.style.getPropertyValue('--jar-y') !== jarYv) pin.style.setProperty('--jar-y', jarYv);
     // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
-    const avail = cTop - tBottom - 28;
+    const avail = cTop - tBottom - 64;   /* room for the page dots between jar and card */
     const jw = tall ? Math.max(120, Math.min(w < 768 ? w * .6 : w * .62, 620, avail * 1.21)) : Math.min(w * .4, h * .6 * 1.21), jh = jw / 1.21, base = tall ? tBottom + 14 + (avail + jh) / 2 : h * .9;
     jarBox = [w / 2 - jw * .55, w / 2 + jw * .55, base - jh * 1.05, base + 6];
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
