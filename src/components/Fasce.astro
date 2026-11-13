@@ -53,8 +53,11 @@ import { gsap, ScrollTrigger } from '../scripts/motion.js';
 import { img } from '../data/img';
 const planks = [...document.querySelectorAll<HTMLElement>('#build .plank')];
 if (!reduced) {
+  // touch screens: the bands are already in place (sliding them in left a big empty petrol area while scrolling on iPad)
+  if (!matchMedia('(hover:none),(pointer:coarse)').matches) {
   const tl = gsap.timeline({ scrollTrigger: { trigger: '#build', start: 'top 90%', end: '+=95%', scrub: 0.25 } });
   planks.forEach((p, i) => tl.fromTo(p, { xPercent: 110 * +p.dataset.d! }, { xPercent: 0, ease: 'power3.out', duration: 0.7 }, i * 0.1));
+  }
   // marquee speed reacts to scroll velocity and reverses on scroll up; runs only while the band is on screen
   const mqs = [...document.querySelectorAll<HTMLElement>('#build [data-mq]')];
   let mw = mqs.map((m) => m.scrollWidth / 4); addEventListener('resize', () => { mw = mqs.map((m) => m.scrollWidth / 4); }); document.fonts.ready.then(() => { mw = mqs.map((m) => m.scrollWidth / 4); });

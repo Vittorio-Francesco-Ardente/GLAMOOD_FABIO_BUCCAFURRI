@@ -202,6 +202,9 @@ html.product-sheet-open .p3-skip{display:none!important}
 }
 
 /* bottom bar host: a plain fixed layer on the viewport */
-.dock-host{display:block!important;position:fixed;left:0;right:0;bottom:0;height:0;z-index:calc(var(--z-header) + 1);pointer-events:none}
+/* no box of its own: a fixed element inside another fixed element is unreliable in iOS Safari (during momentum
+   scrolling the inner bar drifts with the page and the area under it is left unpainted). The bar itself is the
+   only fixed layer and sits directly on the viewport. */
+.dock-host{display:contents!important}
 .dock-host .barra{pointer-events:auto}
 html.product-immersive .dock-host .barra,html.product-sheet-open .dock-host .barra,html.game-on .dock-host .barra{opacity:0!important;pointer-events:none!important;transform:translate(-50%,calc(100% + 40px))!important}
