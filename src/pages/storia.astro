@@ -20,7 +20,7 @@ import { wa } from '../data/business';
  <path class="b b6" fill="var(--w2)" d="M-80 180C60 210 130 300 118 400 108 470 50 510-80 520Z"/>
 </svg></div>
 <div class="top"><a class="chip-back" href="/">&larr; Torna al sito</a><span class="count" id="count">Copertina</span></div>
-<p class="hint" id="hint">scorri per sfogliare<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></p>
+<p class="hint" id="hint">scorri o trascina per sfogliare<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></p>
 
 <nav class="storia-nav" aria-label="Navigazione del libro"><button type="button" id="st-prev" aria-label="Pagina precedente">← Indietro</button><button type="button" id="st-next" aria-label="Pagina successiva">Avanti →</button></nav>
 <div class="scroller" id="scroller">
@@ -157,7 +157,40 @@ function goPage(dir: number) {
 document.getElementById('st-prev')!.addEventListener('click', () => goPage(-1));
 document.getElementById('st-next')!.addEventListener('click', () => goPage(1));
 // tap the right half / left half to jump one page (small effort, like Apple)
-book.addEventListener('click',e=>{if(e.target.closest('a'))return;
+// drag with the mouse (desktop): the page follows the pointer, on release it settles on the nearest page
+let drag: null | {x: number; p: number; moved: boolean} = null, justDragged = false;
+function scrollToPage(n: number) {
+ const sc = document.getElementById('scroller')!;
+ const y = scrollY + sc.getBoundingClientRect().top + (n / N) * Math.max(0, sc.offsetHeight - innerHeight);
+ window.lenis ? window.lenis.scrollTo(y, {duration: reduced ? 0 : .45}) : scrollTo({top: y, behavior: reduced ? 'auto' : 'smooth'});
+}
+book.addEventListener('pointerdown', (e: PointerEvent) => {
+ if (mobile.matches || e.button !== 0 || (e.target as Element).closest('a')) return;
+ drag = {x: e.clientX, p: st.p, moved: false};
+});
+addEventListener('pointermove', (e: PointerEvent) => {
+ if (!drag) return;
+ const dx = e.clientX - drag.x;
+ if (!drag.moved && Math.abs(dx) < 6) return;
+ if (!drag.moved) { drag.moved = true; book.classList.add('dragging'); book.setPointerCapture?.(e.pointerId); }
+ const pw = parseFloat(getComputedStyle(book).width) / 2;
+ st.p = Math.max(0, Math.min(N, drag.p - dx / (pw * 1.1)));
+ gsap.killTweensOf(st); render(st.p);
+});
+const endDrag = (e: PointerEvent) => {
+ if (!drag) return;
+ const d = drag; drag = null; book.classList.remove('dragging');
+ if (!d.moved) return;
+ justDragged = true; setTimeout(() => (justDragged = false), 50);
+ const dx = e.clientX - d.x;
+ const n = Math.abs(dx) > 40 ? (dx < 0 ? Math.ceil(st.p - .15) : Math.floor(st.p + .15)) : Math.round(st.p);
+ const tgt = Math.max(0, Math.min(N, n));
+ gsap.to(st, {p: tgt, duration: reduced ? 0 : .45, ease: 'power2.out', onUpdate: () => render(st.p)});
+ scrollToPage(tgt);
+};
+addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+book.addEventListener('dragstart', (e) => e.preventDefault());
+book.addEventListener('click',e=>{if(justDragged||e.target.closest('a'))return;
  if(mobile.matches){const r0=book.getBoundingClientRect(),right=e.clientX>r0.left+r0.width/2;const n=Math.round(st.p);let leaf,face;if(right&&n<N){leaf=leaves[n];face=leaf.querySelector('.face.front')}else if(!right&&n>0){leaf=leaves[n-1];face=leaf.querySelector('.face.back')}if(face){openZ(face);return}}
 const r=book.getBoundingClientRect();goPage(e.clientX>r.left+r.width/2?1:-1);});
 addEventListener('keydown', e => {

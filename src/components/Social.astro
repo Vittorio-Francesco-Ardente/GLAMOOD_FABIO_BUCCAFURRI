@@ -17,7 +17,7 @@ const igIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
     <div class="btns"><a class="btn-pop" href={follow} target="_blank" rel="noopener">{business.instagram ? 'Seguici su Instagram' : 'Seguici su Facebook'}</a>{business.instagram && <a class="btn-pop fill" href={business.facebook} target="_blank" rel="noopener">Facebook</a>}</div>
   </div>
   <div class="row" id="social-row" aria-live="polite">
-    <a class="post" href={follow} target="_blank" rel="noopener"><img class="cover" {...img('post-social/gioco-anteprima', 960)} alt="Post: Glamood Run, il gioco del salone" loading="lazy" /><div class="cap"><span class="script-over">Il gioco</span><b>Glamood<br />Run</b></div><div class="meta"><span class="chip">Post</span></div><span class="ig" set:html={igIcon} /></a>
+    <a class="post post-run" href="#gioco"><img class="run" {...img('v2/personaggio/posa-corre', 960)} alt="La mascotte Glamood che corre: gioca a Glamood Run" loading="lazy" /><div class="cap"><span class="script-over">Il gioco</span><b>Glamood<br />Run</b></div><div class="meta"><span class="chip">Gioca ora</span></div></a>
     <a class="post" href={follow} target="_blank" rel="noopener"><img class="cover" {...img('post-social/post-3D-maglia-faccia-monstera', 960)} alt="Post: maglia con la faccia della mascotte" loading="lazy" /><div class="cap"><span class="script-over">Novità</span><b>La maglia<br />Glamood</b></div><div class="meta"><span class="chip">Post</span></div><span class="ig" set:html={igIcon} /></a>
     <a class="post ticket" href="/listino"><div class="t"><svg class="clip" viewBox="0 0 70 58" aria-hidden="true"><path d="M14 28h42v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6Z" fill="#17292C"/><path d="M22 30C22 6 48 6 48 30" fill="none" stroke="#B8935A" stroke-width="4"/></svg><h3>Taglio + barba</h3><p>Modellatura barba e taglio, con calma.</p><div class="pr"><span class="chip" style="color:var(--ink)">Totale</span><b>23 €</b></div><div class="bars"></div></div><img class="jar" {...img('prodotti/barattolo-crema-styling', 480)} alt="" loading="lazy" /></a>
   </div>
@@ -35,6 +35,10 @@ const igIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 .post{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:4/5;background:#08393E;color:var(--cream);text-decoration:none;box-shadow:0 30px 60px -30px rgb(0 0 0 / .7)}
 .post>img.cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease-out)}
 .post:hover>img.cover{transform:scale(1.06)}
+.post-run{background:#F1DEAE url('/img/svg/liquido-miele.svg') center/cover}
+.post-run .run{position:absolute;left:50%;bottom:6%;width:74%;height:auto;translate:-50% 0;filter:drop-shadow(0 22px 22px rgb(8 57 62 / .3));transition:transform .5s var(--ease-out)}
+.post-run:hover .run{transform:translateX(6%) rotate(-3deg)}
+.post-run .cap{background:none}.post-run .cap b{color:#08393E}.post-run .cap .script-over{color:#9A6B1F}
 .post .cap{position:absolute;left:0;right:0;top:0;padding:clamp(14px,1.6vw,22px);background:linear-gradient(180deg,rgb(8 57 62 / .85),transparent)}
 .post .cap .script-over{font-size:clamp(22px,2vw,30px);display:block;color:var(--brass);margin-bottom:.2em}
 .post .cap b{font:900 clamp(26px,2.6vw,42px)/.9 var(--f-display);text-transform:uppercase;letter-spacing:-.01em;display:block}

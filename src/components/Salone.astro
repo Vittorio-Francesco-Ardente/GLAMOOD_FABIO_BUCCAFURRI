@@ -1,5 +1,4 @@
 ---
-import Personaggio from './Personaggio.astro';
 // Kit 08: deep petrol with the coral texture (tone on tone). Desktop pins and pans horizontally through
 // salon photos in pattern frames (arch, wide pill, circle, tall, blob);
 // tablet and phone use native swipe with snap.
@@ -9,18 +8,18 @@ import { business } from '../data/business';
 interface Props { homeMobile?: boolean }
 const { homeMobile = false } = Astro.props;
 const cards: [shape: string, src: string, alt: string, cap: string, pos?: string][] = [
-  ['arch', 'salone/salone-12-facciata', "La facciata del salone Glamood con l'insegna", 'si entra da qui'],
+  // two calm formats only (portrait / landscape): the whole photo reads, no blob or circle crops
+  ['tall', 'salone/salone-12-facciata', "La facciata del salone Glamood con l'insegna", 'si entra da qui'],
   ['wide', 'salone/salone-05', 'Le postazioni con specchi in legno e poltrone nere e oro', 'le postazioni'],
-  ['circle', 'salone/salone-01', 'Una poltrona da barbiere nera con dettagli in ottone', 'la poltrona'],
+  ['tall', 'salone/salone-01', 'Una poltrona da barbiere nera con dettagli in ottone', 'la poltrona'],
   ['tall', 'salone/salone-03', 'Specchio con cornice in rovere e luce led', 'luce giusta'],
-  ['blob', 'salone/salone-04', 'Vista del salone con piante e lampade a sospensione', 'ogni dettaglio pensato'],
-  ['arch', 'salone/salone-11-titolare', 'Fabio al lavoro nel salone', 'Fabio al lavoro', '72% 50%'],
+  ['wide', 'salone/salone-04', 'Vista del salone con piante e lampade a sospensione', 'ogni dettaglio pensato'],
+  ['tall', 'salone/salone-11-titolare', 'Fabio al lavoro nel salone', 'Fabio al lavoro', '72% 50%'],
 ];
 ---
 <div class="sx-salone" data-home-mobile={homeMobile ? "true" : undefined}>
 <section class="salone" id="salone" aria-labelledby="salone-t"><div class="bgref r-corallo-tono"></div>
-  {!homeMobile && <Personaggio pose="braccia-conserte" id="pg-braccia" />}
-  <div class="head"><p class="kicker" style="color:#cfe3e1">{business.address}</p><h2 class="giant-title" id="salone-t">Benvenuto</h2><p>Pareti petrolio, rovere, ottone e poltrone vintage. Siediti, il resto lo facciamo noi.</p></div>
+  <div class="head"><h2 class="giant-title" id="salone-t">Il salone</h2></div>
   <div class="track-wrap" id="tw"><div class="track" id="track" tabindex="0" aria-label="Foto del salone, scorri in orizzontale">
     {cards.map(([shape, src, alt, cap, pos]) => (
       <figure class={`card ${shape}`}><div class="fr"><div class="ph"><Img src={src} alt={alt} sizes="(min-width:1200px) 40vw, 82vw" style={pos ? `object-position:${pos}` : undefined} /></div></div><figcaption>{cap}</figcaption></figure>
@@ -36,39 +35,37 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
 .salone{position:relative;background:var(--petrol-darker);color:var(--cream);overflow:hidden;isolation:isolate}
 .salone .bgref{z-index:-1}
 .salone::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgb(10 74 80 / .35),rgb(10 74 80 / .1) 40%,rgb(10 74 80 / .55))}
-.head{position:relative;z-index:2;padding:clamp(70px,10vw,130px) var(--gutter) 10px}
-.head .giant-title{font-size:clamp(46px,min(12.5vw,13vh),200px);color:var(--cream);text-shadow:0 .05em 0 #08393E}
+.head{position:relative;z-index:2;padding:clamp(70px,10vw,130px) var(--gutter) 10px;text-align:center}
+.head .giant-title{font-size:clamp(56px,min(15vw,17vh),240px);line-height:.85;color:var(--cream);text-shadow:0 .05em 0 #08393E;margin:0 auto}
 .head p{max-width:34ch;color:#d6e8e6;margin-top:14px}
 .track-wrap{position:relative;z-index:2}
 .track{display:flex;gap:clamp(24px,3.4vw,64px);align-items:center;padding:30px var(--gutter) clamp(70px,9vw,120px)}
 .card{position:relative;flex:none;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px}
-.card .fr{position:relative;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);padding:clamp(12px,1.1vw,18px);background:#12757E;box-shadow:0 0 0 5px #F4EFE8,0 30px 60px -28px rgb(0 0 0 / .7)}
+.card .fr{position:relative;overflow:hidden;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);padding:8px;background:#F4EFE8;border-radius:30px!important;box-shadow:0 30px 60px -28px rgb(0 0 0 / .7)}
+.card .fr::before{display:none}
 .card .fr::before{content:"";position:absolute;z-index:-1;left:-240px;top:0;width:calc(100% + 480px);height:calc(100% + 480px);background:url("/img/svg/pattern-agrumi.svg") 0 0/240px;animation:frpan 30s linear infinite;will-change:transform}
 .card:nth-child(even) .fr::before{background-image:url("/img/svg/pattern-onde-strati.svg");background-size:200px}
 @keyframes frpan{to{transform:translate3d(240px,-240px,0)}}
 @media (prefers-reduced-motion:reduce){.card .fr::before{animation:none}}
-.card .ph{position:relative;overflow:hidden;background:#082f33;box-shadow:0 0 0 4px #F4EFE8}
-.card .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.12);will-change:transform}
+.card .ph{position:relative;overflow:hidden;background:#082f33;border-radius:23px!important}
+.card .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;transform:scale(1.08);will-change:transform}
 .card figcaption{position:static!important;font:800 clamp(12px,.95vw,14px)/1 var(--f-display)!important;letter-spacing:.12em;text-transform:uppercase;color:var(--petrol);background:var(--cream);padding:9px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 16px -10px rgb(0 0 0 / .5)}
 .arch .ph{width:clamp(240px,26vw,420px);aspect-ratio:3/4.3}.arch .fr,.arch .ph{border-radius:999px 999px 24px 24px}
 .blob .ph{width:clamp(280px,34vw,560px);aspect-ratio:4/3}.blob .fr,.blob .ph{border-radius:46% 54% 40% 60% / 55% 40% 60% 45%}
 .circle .ph{width:clamp(220px,22vw,360px);aspect-ratio:1}.circle .fr,.circle .ph{border-radius:50%}
-.tall .ph{width:clamp(220px,22vw,340px);aspect-ratio:3/4.6}.tall .fr{border-radius:30px}.tall .ph{border-radius:20px}
-.wide .ph{width:clamp(300px,40vw,640px);aspect-ratio:16/10}.wide .fr,.wide .ph{border-radius:999px}
+.tall .ph{width:clamp(240px,24vw,380px);aspect-ratio:4/5}
+.wide .ph{width:clamp(320px,40vw,640px);aspect-ratio:4/3}
 .credit{position:relative;z-index:2;padding:0 var(--gutter) 40px;font-size:14px;color:#cfe3e1}
 .hang{position:absolute;z-index:3;pointer-events:none;top:72px;height:auto}
 @media (max-width:1199px){.hang{display:none}}
 .bottom-edge{position:relative;z-index:2;background-color:var(--petrol-darker)!important;height:clamp(46px,6vw,90px);background:url("/img/svg/onde-bande-striscia.svg") center/cover}
 @media (min-width:1200px){
  .salone{height:100svh;display:flex;flex-direction:column}
- .head{padding:clamp(40px,6vh,80px) var(--gutter) 0;display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:40px;padding-right:calc(var(--gutter) + clamp(110px,10vw,180px))}
- .head .kicker{flex-basis:100%}
- .head .giant-title{font-size:clamp(70px,11vh,170px)}
- .head p{margin:0 0 .6em}
+ .head{padding:clamp(40px,6vh,80px) var(--gutter) 0}
+ .head .giant-title{font-size:clamp(80px,15vh,200px)}
  .track-wrap{flex:1;min-height:0;display:flex;align-items:center}
  .track{padding-top:40px;padding-bottom:40px}
- .arch .ph{width:auto;height:min(46svh,500px)}.tall .ph{width:auto;height:min(44svh,480px)}
- .blob .ph{width:auto;height:min(40svh,420px)}.circle .ph{width:auto;height:min(36svh,360px)}.wide .ph{width:auto;height:min(34svh,380px)}
+ .tall .ph{width:auto;height:min(50svh,540px)}.wide .ph{width:auto;height:min(42svh,450px)}
  .credit{padding-bottom:16px}
 }
 @media (max-width:1199px){
@@ -76,7 +73,7 @@ const cards: [shape: string, src: string, alt: string, cap: string, pos?: string
  .track::-webkit-scrollbar{display:none}
  .card{scroll-snap-align:center}
  .card .ph img{transform:scale(1.04)}
- .arch .ph,.tall .ph{width:min(68vw,340px)}.blob .ph,.wide .ph{width:min(82vw,520px)}.circle .ph{width:min(64vw,320px)}
+ .tall .ph{width:min(68vw,340px)}.wide .ph{width:min(82vw,520px)}
 }
 /* On phones, avoid the extra gallery zoom which cropped heads and tools.
    Keep each photograph's carefully chosen object-position and frame shape. */
@@ -102,7 +99,7 @@ const mm = gsap.matchMedia();
 if (!homeMobile) mm.add('(min-width:1200px) and (prefers-reduced-motion:no-preference)', () => {
   const dist = () => track.scrollWidth - innerWidth;
   const tween = gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '#salone', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.25, invalidateOnRefresh: true } });
-  track.querySelectorAll<HTMLElement>('.card .ph img').forEach((im) => gsap.fromTo(im, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: im.closest('.card')!, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } }));
+  track.querySelectorAll<HTMLElement>('.card .ph img').forEach((im) => gsap.fromTo(im, { xPercent: -3 }, { xPercent: 3, ease: 'none', scrollTrigger: { trigger: im.closest('.card')!, containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } }));
   return () => { gsap.set(track, { clearProps: 'all' }); };
 });
 mm.add(homeMobile ? '(max-width:767px) and (prefers-reduced-motion:no-preference)' : '(prefers-reduced-motion:no-preference)', () => {

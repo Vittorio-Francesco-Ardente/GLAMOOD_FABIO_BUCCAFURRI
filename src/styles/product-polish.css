@@ -133,3 +133,19 @@ html.product-sheet-open .p3-skip{display:none!important}
 }
 .sx-p3 .p3.p3-at-line .p3-skip{opacity:0;pointer-events:none;transition:opacity .3s}
 .sx-p3 .p3-skip{transition:opacity .3s}
+/* Catalogue cards (13/11): coloured photo on top, white text area below; every line readable on every card. */
+.sx-cat .ct-band .ct-card{background:#fff;color:#133b40;border:1px solid rgb(8 57 62 / .1);box-shadow:0 18px 40px -26px rgb(8 57 62 / .45)}
+.sx-cat .ct-band .ct-ph{background:var(--cb)}
+.sx-cat .ct-band .ct-tx{padding:22px 24px 22px;gap:6px;align-content:start}
+.sx-cat .ct-band .ct-tx b{color:#0F6870}
+.sx-cat .ct-band .ct-tx>span{color:#456366}
+.sx-cat .ct-band .ct-tx .ct-description{color:#3d5c60;font-size:15px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.sx-cat .ct-band .ct-detail{display:flex;align-items:center;min-height:44px;margin-top:10px;padding-right:60px;color:#0F6870;font-size:13px!important}
+.sx-cat .ct-band .ct-go{right:22px;bottom:22px;background:#0F6870;color:#fff}
+.sx-cat .ct-band .ct-card:hover .ct-go{background:#B8935A}
+/* Current page in the header: a small rounded card behind the word, not an underline. */
+.site-header .sx-header .links a::after{display:none}
+.site-header .sx-header .links a{padding:9px 14px;border-radius:12px;transition:background .25s,color .25s}
+.site-header .sx-header .links a:hover{background:color-mix(in srgb,var(--hc) 12%,transparent)}
+.site-header .sx-header .links a[aria-current]{background:var(--hb);color:var(--hbt);text-shadow:none;box-shadow:0 6px 14px -8px rgb(6 40 44 / .5)}
+@media (min-width:1024px){.site-header .sx-header .links{gap:clamp(4px,1vw,14px)}}
