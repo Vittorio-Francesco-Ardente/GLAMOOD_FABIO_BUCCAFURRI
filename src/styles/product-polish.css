@@ -6,11 +6,14 @@
 .page-top>.product-page{padding-top:calc(76px + env(safe-area-inset-top))}
 /* no panel of its own: only the text colour changes */
 .site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-.site-header .sx-header[data-tone] .links a{text-shadow:none}
+/* safety net over photos and busy patterns: a soft halo in the opposite tone keeps every word readable */
+.site-header .sx-header[data-tone="dark"] .links a,.site-header .sx-header[data-tone="dark"] .btn-pre{text-shadow:0 1px 10px rgb(6 40 44 / .55)}
+.site-header .sx-header[data-tone="dark"] .mark img,.site-header .sx-header[data-tone="dark"] .icon svg,.site-header .sx-header[data-tone="dark"] .burger span{filter:brightness(0) invert(1) drop-shadow(0 1px 6px rgb(6 40 44 / .5))}
+.site-header .sx-header[data-tone="light"] .links a{text-shadow:0 1px 10px rgb(244 239 232 / .7)}
 .site-header .sx-header .testa{position:relative;inset:auto;--hc:#0F6870;background:transparent;box-shadow:none;backdrop-filter:none;border-radius:20px;padding:0;opacity:1;visibility:visible;transform:none}
 .site-header .mark img{filter:none}
 .site-header .sx-header[data-tone="dark"] .testa{--hc:#F4EFE8}
-.site-header .sx-header[data-tone="dark"] .mark img{filter:brightness(0) invert(1)}
+
 .site-header .sx-header[data-tone="dark"] .btn-pre:hover{color:var(--petrol)}
 .site-header .sx-header[data-tone="light"] .btn-pre:hover{color:#F4EFE8}
 /* /prodotti: the same header floats over the first product scene, transparent. */

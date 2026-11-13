@@ -272,7 +272,10 @@ const detectTone = () => {
   }
   if (n) root.dataset.tone = light * 2 >= n ? 'light' : 'dark';
 };
-requestAnimationFrame(detectTone); addEventListener('load', detectTone); addEventListener('resize', detectTone, { passive: true });
+requestAnimationFrame(detectTone); addEventListener('load', detectTone);
+// re-check while images, fonts and the first animations settle (no wrong-colour flash)
+[150, 500, 1200, 2500].forEach((t) => setTimeout(detectTone, t)); document.fonts.ready.then(detectTone);
+new ResizeObserver(() => detectTone()).observe(document.getElementById('main') || document.body); addEventListener('resize', detectTone, { passive: true });
 let toneRaf = 0; addEventListener('scroll', () => { if (!toneRaf) toneRaf = requestAnimationFrame(() => { toneRaf = 0; if (scrollY < innerHeight) detectTone(); }); }, { passive: true });
 addEventListener('resize', onScroll, { passive: true });
 // sliding highlight: rests on the current page, follows the pointer/focus, returns on leave
