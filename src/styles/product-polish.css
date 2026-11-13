@@ -122,3 +122,14 @@ html.product-sheet-open .p3-skip{display:none!important}
 .site-header .sx-header[data-hdr="honey"] .mark img{filter:brightness(.55) saturate(1.2)}
 .site-header .sx-header[data-hdr="sage"] .mark img{filter:brightness(.8)}
 .site-header .sx-header[data-tone="dark"] .mark img{filter:brightness(0) invert(1) drop-shadow(0 1px 6px var(--hglow))}
+
+/* Menu button: always a solid white disc, readable over photos, palms and patterns. */
+.site-header .sx-header .burger,.site-header .sx-header[data-hdr] .burger{background:#fff;box-shadow:0 8px 18px -10px rgb(6 40 44 / .55),0 0 0 1px rgb(15 104 112 / .08)}
+.site-header .sx-header .burger span,.site-header .sx-header[data-hdr] .burger span{background:#0F6870;box-shadow:0 -6px 0 #0F6870,0 6px 0 #0F6870;filter:none}
+.site-header .sx-header .burger:hover{background:#F4EFE8}
+/* Skip link on portrait screens: just above the product card, never over the copy. */
+@media (prefers-reduced-motion:no-preference) and (max-aspect-ratio:1/1){
+ .sx-p3 .p3-skip{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 226px);right:12px;min-height:40px;padding:0 16px;font-size:12px;gap:10px;box-shadow:0 4px 0 #08393e}
+}
+.sx-p3 .p3.p3-at-line .p3-skip{opacity:0;pointer-events:none;transition:opacity .3s}
+.sx-p3 .p3-skip{transition:opacity .3s}
