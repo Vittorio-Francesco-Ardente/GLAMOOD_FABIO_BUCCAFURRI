@@ -288,7 +288,9 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // The scroll-driven stage now runs on every screen (phones get a portrait layout); reduced motion keeps the static cards.
 const desk = !reduced;
 const coarse = matchMedia('(pointer:coarse)').matches;
-const portrait = () => true;   // one slider layout on every screen (arrows, dots, swipe)
+// desktop (wide, mouse): card on the left of the jar, arrows at the bottom; phones and tablets: jar centred, card below
+const sideQ = matchMedia('(min-width:1024px) and (min-aspect-ratio:1/1) and (hover:hover) and (pointer:fine)');
+const portrait = () => !sideQ.matches;
 const DPR = Math.min(3, devicePixelRatio || 1); // Physical pixel resolution, including Retina phones/tablets.
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
@@ -474,7 +476,7 @@ function startDesk() {
     const key = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${tBottom | 0}|${cTop | 0}|${arts.length}|${arts[i] ? 1 : 0}${arts[nx] ? 1 : 0}`;
     if (key === lastKey) return; lastKey = key;
     const w = cw, h = chh; c.setTransform(SDPR, 0, 0, SDPR, 0, 0); c.clearRect(0, 0, w, h);
-    const tall = true;
+    const tall = !sideQ.matches;
     const jarYv = `${Math.round(tall ? tBottom + 14 + (cTop - tBottom - 64) / 2 : h * .55)}px`; if (pin.style.getPropertyValue('--jar-y') !== jarYv) pin.style.setProperty('--jar-y', jarYv);
     // portrait: the jar fits exactly in the free band between the giant name and the card, never over either
     const avail = cTop - tBottom - 64;   /* room for the page dots between jar and card */
