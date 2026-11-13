@@ -9,7 +9,7 @@ import { P3D } from '../data/products3d';
 import { wa, waText } from '../data/business';
 const V = 'v2/prodotti-3d';
 // Liquid vector backgrounds (assets/svg/liquido-*.svg, traced from Vittorio's references): sharp at any size.
-const LIQ: Record<string, { bg: string; liquid: string; slug: string }> = { cera: { bg: '#F1DEAE', liquid: 'miele', slug: 'cera-opaca' }, balsamo: { bg: '#DDEAE7', liquid: 'salvia', slug: 'balsamo-barba' }, crema: { bg: '#0F6870', liquid: 'petrolio-tono', slug: 'crema-styling' } };
+const LIQ: Record<string, { bg: string; liquid: string; slug: string; hdr: string }> = { cera: { bg: '#F1DEAE', liquid: 'miele', slug: 'cera-opaca', hdr: 'honey' }, balsamo: { bg: '#DDEAE7', liquid: 'salvia', slug: 'balsamo-barba', hdr: 'sage' }, crema: { bg: '#0F6870', liquid: 'petrolio-tono', slug: 'crema-styling', hdr: 'petrol' } };
 const surfaces = P3D.map((p) => LIQ[p.k]);
 const liq = (n: string) => `background-color:${n === 'abisso' ? '#0A4A50' : ''};background-image:url('/img/svg/liquido-${n}.svg')`;
 const shadowFor = (ml: string) => `${V}/luci-ombre/ombra-contatto-barattolo-150ml`;
@@ -38,9 +38,9 @@ const slots = [
   <!-- desktop pinned stage -->
   <a class="p3-skip" href="#catalogo">Salta al catalogo <span aria-hidden="true">↘</span></a>
   <div class="p3-pin">
-    <div class="p3-bgs">{P3D.map((p, i) => <div class="p3-bg" data-i={i} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>)}
-      <div class="p3-bg p3-bg-line" style={liq('abisso')}></div></div>
-    <div class="p3-titles">{P3D.map((p, i) => <p class="p3-title" data-i={i} style={`color:${p.ink}`}>{p.n}</p>)}</div>
+    <div class="p3-bgs">{P3D.map((p, i) => <div class="p3-bg" data-i={i} data-hdr={surfaces[i].hdr} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>)}
+      <div class="p3-bg p3-bg-line" data-hdr="night" style={liq('abisso')}></div></div>
+    <div class="p3-titles">{P3D.map((p, i) => <p class="p3-title" data-i={i}>{p.n}</p>)}</div>
     <div class="p3-ings">{P3D.map((p, i) => p.pics.slice(0, 6).map((f, j) => (
       <img class="p3-ing" data-i={i} data-l={slots[j][3]} style={`left:${slots[j][0]}%;top:${slots[j][1]}%;height:${slots[j][2]}vh`} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />
     )))}</div>
@@ -65,13 +65,13 @@ const slots = [
   </div>
   <!-- phones (and reduced motion): one card per product -->
   <div class="p3m">
-    <article class="p3c p3c-intro" data-tone-bg="dark">
+    <article class="p3c p3c-intro" data-hdr="night">
       <picture><source media="(max-width:767px)" srcset={img(`${V}/sfondi-scroll/controluce-crema-mob`, 960).src} /><img class="p3c-bg" {...img(`${V}/sfondi-scroll/controluce-crema-desk`, 1600)} alt="" loading="lazy" decoding="async" /></picture>
       <div class="p3c-in"><p class="p3-k" style="color:#ECC46C">La linea Glamood</p><h3 class="p3c-h">I barattoli<br />di Fabio</h3><p class="p3c-p">Tre barattoli, gli stessi che usa in salone. Gira il barattolo con il dito per leggere l'etichetta.</p></div>
     </article>
     {P3D.map((p, i) => (
       <article class="p3c" data-i={i} style={`--ink:${p.ink};--ac:${p.accent}`} aria-labelledby={`p3c-${p.k}`}>
-        <div class="p3c-bg" style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>
+        <div class="p3c-bg" data-hdr={surfaces[i].hdr} style={`background-color:${surfaces[i].bg};background-image:url('/img/svg/liquido-${surfaces[i].liquid}.svg')`}></div>
         <div class="p3c-stage" aria-hidden="true">
           {p.pics.slice(0, 3).map((f, j) => <img class="p3c-ing" data-j={j} {...img(`${V}/ingredienti/${p.k}/${f}`, 480)} alt="" loading="lazy" decoding="async" />)}
           <canvas class="p3c-cv" data-i={i}></canvas>
@@ -128,8 +128,8 @@ const slots = [
  .p3-bgs,.p3-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
  .p3-bg{opacity:0;will-change:opacity}
  .p3-bg[data-i="0"]{opacity:1}   /* first screen is never empty, even before the script runs */
- .p3-titles{position:absolute;inset:0;z-index:1;display:grid;place-items:center;pointer-events:none}
- .p3-title{grid-area:1/1;font:900 clamp(120px,19vw,330px)/.8 var(--f-display);text-transform:uppercase;letter-spacing:-.05em;white-space:nowrap;opacity:.13;margin-top:-6vh;clip-path:inset(0 0 100% 0);will-change:clip-path,transform}
+ .p3-titles{position:absolute;inset:0;z-index:1;display:grid;place-items:start center;padding-top:calc(76px + 3vh);pointer-events:none}
+ .p3-title{grid-area:1/1;font:900 min(24vw,30vh)/.78 var(--f-display);text-transform:uppercase;letter-spacing:-.05em;white-space:nowrap;color:#fff;opacity:.92;text-shadow:0 30px 60px rgb(6 40 44 / .18);clip-path:inset(0 0 100% 0);will-change:clip-path,transform}
  .p3-ing{position:absolute;z-index:2;width:auto;translate:-50% -50%;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 18px 18px rgb(0 0 0 / .25))}
  .p3-ing[data-l="0"]{z-index:1;filter:blur(1.5px) saturate(.9) drop-shadow(0 10px 10px rgb(0 0 0 / .15))}
  .p3-ing[data-l="2"]{z-index:5;filter:blur(5px) drop-shadow(0 26px 24px rgb(0 0 0 / .3))}
@@ -270,10 +270,10 @@ function startDesk() {
   const bgs = [...sec.querySelectorAll<HTMLElement>('.p3-bg')], titles = [...sec.querySelectorAll<HTMLElement>('.p3-title')];
   const txts = [...sec.querySelectorAll<HTMLElement>('.p3-txt')], chips = [...sec.querySelectorAll<HTMLElement>('.p3-chip')];
   const ings = [...sec.querySelectorAll<HTMLElement>('.p3-ing')], line = sec.querySelector<HTMLElement>('.p3-line')!, hint = sec.querySelector<HTMLElement>('.p3-hint')!;
-  const fitT = () => titles.forEach((el) => { el.style.fontSize = ''; const max = innerWidth * .92, w = el.scrollWidth; if (w > max) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * max / w) + 'px'; });
+  const fitT = () => titles.forEach((el) => { el.style.fontSize = ''; const max = innerWidth * .97, w = el.scrollWidth; if (w > max) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * max / w) + 'px'; });
   document.fonts.ready.then(fitT); fitT(); addEventListener('resize', fitT);
   let hover = 0, hoverTarget = 0;
-  let shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
+  let lastT = 0, shown = 0, drag = 0, dragV = 0, dragging: null | { x: number; d: number } = null, on = false, raf = 0, t0 = performance.now(), lastActive = -1;
   new IntersectionObserver((es) => { on = es[0].isIntersecting; if (on && !raf) raf = requestAnimationFrame(tick); }).observe(sec);
   cv.addEventListener('pointerdown', (e) => { dragging = { x: e.clientX, d: drag }; dragV = 0; cv.setPointerCapture(e.pointerId); cv.classList.add('drag'); });
   cv.addEventListener('pointerleave', () => { hoverTarget = 0; });
@@ -286,14 +286,15 @@ function startDesk() {
   measure(); addEventListener('resize', measure); addEventListener('load', measure);
   function tick(now: number) {
     raf = on ? requestAnimationFrame(tick) : 0;
+    const dt = Math.min(.05, (now - (lastT || now)) / 1000); lastT = now;
     const target = Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
-    shown += (target - shown) * .14;
+    shown += (target - shown) * (1 - Math.exp(-dt * 5.5));
     hover += (hoverTarget - hover) * .09;
     if (!dragging) { drag += dragV; dragV *= .9; drag *= .92; }            // inertia, then snaps back to the front
     const p = Math.min(shown, N - 1e-3), i = Math.floor(p), t = p - i;
     const lineK = sm((shown - (N - .15)) / .4);
     // which product is on stage, and the slide between two products in the last 22% of each segment
-    const sw = sm((t - .78) / .22), nx = Math.min(N - 1, i + 1);
+    const sw = sm(sm((t - .6) / .4)), nx = Math.min(N - 1, i + 1);
     bgs.forEach((b, k) => { b.style.opacity = String(k === N ? lineK : k === i ? 1 - (i < N - 1 ? sw : 0) : k === nx && i < N - 1 ? sw : 0); });
     const active = sw > .5 && i < N - 1 ? nx : i;
     if (active !== lastActive) { lastActive = active; txts.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); x.querySelectorAll<HTMLElement>('a,button').forEach((b) => (b.tabIndex = k === active ? 0 : -1)); }); chips.forEach((x, k) => { x.classList.toggle('on', k === active); x.classList.toggle('off', k !== active); }); sec.style.setProperty('--hint', P[active].ink); }
@@ -324,16 +325,16 @@ function startDesk() {
     });
     // the jar: each product sweeps its label across the front (right panel, front, left panel)
     const w = cw, h = chh; c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, w, h);
-    const jw = Math.min(w * .38, h * .68 * 1.21), jh = jw / 1.21, base = h * .78;
+    const jw = Math.min(w * .36, h * .6 * 1.21), jh = jw / 1.21, base = h * .86;
     const rotOf = (_tt: number) => hover + drag;   // front → side panel → front
     const jarAlpha = 1 - lineK;
     if (jarAlpha > .01) {
       c.globalAlpha = jarAlpha;
-      const lift = Math.sin(Math.PI * Math.min(1, t / .78)) * jh * .04;
+      const lift = Math.sin(Math.PI * Math.min(1, t / .6)) * jh * .04;
       if (i < N - 1 && sw > 0) {
         drawJar(c, arts[i], w / 2 - sw * w * .62, base, jw, jh, rotOf(t), lift);
         drawJar(c, arts[nx], w / 2 + (1 - sw) * w * .62, base, jw, jh, rotOf(0), 0);
-      } else drawJar(c, arts[i], w / 2, base, jw, jh, rotOf(Math.min(1, t / .78)), lift);
+      } else drawJar(c, arts[i], w / 2, base, jw, jh, rotOf(Math.min(1, t / .6)), lift);
       c.globalAlpha = 1;
     }
   }

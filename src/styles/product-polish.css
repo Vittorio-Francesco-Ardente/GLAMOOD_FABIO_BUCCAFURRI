@@ -6,16 +6,10 @@
 .page-top>.product-page{padding-top:calc(76px + env(safe-area-inset-top))}
 /* no panel of its own: only the text colour changes */
 .site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-/* safety net over photos and busy patterns: a soft halo in the opposite tone keeps every word readable */
-.site-header .sx-header[data-tone="dark"] .links a,.site-header .sx-header[data-tone="dark"] .btn-pre{text-shadow:0 1px 10px rgb(6 40 44 / .55)}
-.site-header .sx-header[data-tone="dark"] .mark img,.site-header .sx-header[data-tone="dark"] .icon svg,.site-header .sx-header[data-tone="dark"] .burger span{filter:brightness(0) invert(1) drop-shadow(0 1px 6px rgb(6 40 44 / .5))}
-.site-header .sx-header[data-tone="light"] .links a{text-shadow:0 1px 10px rgb(244 239 232 / .7)}
-.site-header .sx-header .testa{position:relative;inset:auto;--hc:#0F6870;background:transparent;box-shadow:none;backdrop-filter:none;border-radius:20px;padding:0;opacity:1;visibility:visible;transform:none}
+.site-header .sx-header .testa{position:relative;inset:auto;background:transparent;box-shadow:none;backdrop-filter:none;border-radius:20px;padding:0;opacity:1;visibility:visible;transform:none}
 .site-header .mark img{filter:none}
-.site-header .sx-header[data-tone="dark"] .testa{--hc:#F4EFE8}
 
-.site-header .sx-header[data-tone="dark"] .btn-pre:hover{color:var(--petrol)}
-.site-header .sx-header[data-tone="light"] .btn-pre:hover{color:#F4EFE8}
+
 /* /prodotti: the same header floats over the first product scene, transparent. */
 .site-header-products{position:absolute;top:0;left:0;right:0;background:transparent!important}
 html.product-immersive .sx-header .barra,html.product-sheet-open .sx-header .barra{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
@@ -105,3 +99,26 @@ html.product-sheet-open .p3-skip{display:none!important}
 /* Secondary copy must stay legible over every product palette. */
 .sx-p3 .p3-txt .p3-sub,.sx-p3 .p3-txt .p3-desc{color:#315459;opacity:1}
 .sx-cat .ct-head .k,.sx-cat .ct-head .marker{color:#0F6870}
+
+/* ---------- Header palettes (13/11) ----------
+   Each family of backgrounds gets its own studied ink: text, active underline, and a SOLID "Prenota" pill
+   (never an outline that disappears on busy surfaces). Chosen in Header.astro from the surface under the header. */
+.site-header .sx-header{--hc:#0F6870;--ha:#B8935A;--hb:#0F6870;--hbt:#F4EFE8;--hglow:rgb(244 239 232 / .65)}
+.site-header .sx-header[data-hdr="cream"]{--hc:#0F6870;--ha:#B8935A;--hb:#0F6870;--hbt:#F4EFE8;--hglow:rgb(244 239 232 / .7)}
+.site-header .sx-header[data-hdr="honey"]{--hc:#08393E;--ha:#9A6B1F;--hb:#08393E;--hbt:#F8EDD0;--hglow:rgb(248 237 208 / .7)}
+.site-header .sx-header[data-hdr="sage"]{--hc:#0A4A50;--ha:#0F6870;--hb:#0A4A50;--hbt:#E7F0ED;--hglow:rgb(231 240 237 / .7)}
+.site-header .sx-header[data-hdr="petrol"]{--hc:#F4EFE8;--ha:#ECC46C;--hb:#F4EFE8;--hbt:#0A4A50;--hglow:rgb(6 40 44 / .5)}
+.site-header .sx-header[data-hdr="night"]{--hc:#F4EFE8;--ha:#ECC46C;--hb:#ECC46C;--hbt:#08393E;--hglow:rgb(4 22 24 / .6)}
+.site-header .sx-header .testa,.site-header .sx-header[data-tone] .testa{--hc:inherit;color:var(--hc)}
+.site-header .sx-header .links a{color:var(--hc);text-shadow:0 1px 10px var(--hglow);transition:color .35s}
+.site-header .sx-header .links a::after{background:var(--ha)}
+.site-header .sx-header .soc,.site-header .sx-header .icon{color:var(--hc)}
+.site-header .sx-header .icon svg{filter:drop-shadow(0 1px 6px var(--hglow))}
+.site-header .sx-header .burger span{background:var(--hc);box-shadow:0 -6px 0 var(--hc),0 6px 0 var(--hc)}
+.site-header .sx-header .burger{background:color-mix(in srgb,var(--hc) 14%,transparent)}
+.site-header .sx-header .btn-pre{border:0;background:var(--hb);color:var(--hbt);text-shadow:none;box-shadow:0 8px 18px -10px rgb(6 40 44 / .6);transition:background .35s,color .35s,transform .2s}
+.site-header .sx-header .btn-pre:hover{background:var(--hb);color:var(--hbt);filter:brightness(1.08);transform:translateY(-1px)}
+.site-header .sx-header .mark img{transition:filter .35s}
+.site-header .sx-header[data-hdr="honey"] .mark img{filter:brightness(.55) saturate(1.2)}
+.site-header .sx-header[data-hdr="sage"] .mark img{filter:brightness(.8)}
+.site-header .sx-header[data-tone="dark"] .mark img{filter:brightness(0) invert(1) drop-shadow(0 1px 6px var(--hglow))}

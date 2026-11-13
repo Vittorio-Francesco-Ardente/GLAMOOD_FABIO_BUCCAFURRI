@@ -261,16 +261,40 @@ const matchBand = () => {
   const el = document.elementFromPoint(innerWidth / 2, b.bottom + 6) as HTMLElement | null;
   const c = el && !shell.contains(el) ? opaqueBg(el) : null; if (c) shell.style.setProperty('--hdr-bg', c);
 };
+// Header palettes, one per family of backgrounds used on the site (see product-polish.css, [data-hdr]).
+const themeOf = (c: string) => {
+  const m = c.match(/[\d.]+/g); if (!m) return null; const [r, g, b, a = 1] = m.map(Number); if (a < .5) return null;
+  const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  if (L < .14) return 'night';
+  if (L < .5) return 'petrol';
+  if (r - b > 40 && g - b > 25) return 'honey';
+  if (g >= r) return 'sage';
+  return 'cream';
+};
 const detectTone = () => {
   matchBand();
   const head = root.querySelector<HTMLElement>('.testa')!; const r = head.getBoundingClientRect(); const y = r.top + r.height / 2;
   const clear = !shell || lum(getComputedStyle(shell).backgroundColor) === null;
-  let light = 0, n = 0;
-  for (const x of [innerWidth * .12, innerWidth * .5, innerWidth * .88]) {
-    let el = document.elementsFromPoint(x, y).find((e) => !root.contains(e) && !(clear && shell!.contains(e))) as HTMLElement | undefined;
-    while (el && el !== document.documentElement) { if (el.dataset.toneBg) { light += el.dataset.toneBg === 'light' ? 1 : 0; n++; break; } const L = el.tagName === 'IMG' || el.tagName === 'CANVAS' ? null : lum(getComputedStyle(el).backgroundColor); if (L !== null) { light += L > .6 ? 1 : 0; n++; break; } el = el.parentElement as HTMLElement; }
+  // Sample the surface under the logo, the links and the actions; pick the theme of the dominant surface.
+  const votes: Record<string, number> = {};
+  for (const x of [innerWidth * .1, innerWidth * .5, innerWidth * .9]) {
+    const stack = document.elementsFromPoint(x, y).filter((e) => !root.contains(e) && !(clear && shell!.contains(e))) as HTMLElement[];
+    // a visible layer that declares its palette wins (e.g. the product backgrounds behind the jar)
+    const declared = stack.find((e) => e.dataset.hdr && +getComputedStyle(e).opacity > .5);
+    if (declared) { votes[declared.dataset.hdr!] = (votes[declared.dataset.hdr!] || 0) + 1; continue; }
+    let el = stack[0] as HTMLElement | undefined;
+    while (el && el !== document.documentElement) {
+      if (el.dataset.hdr) { votes[el.dataset.hdr] = (votes[el.dataset.hdr] || 0) + 1; break; }
+      if (el.dataset.toneBg) { const k = el.dataset.toneBg === 'light' ? 'cream' : 'night'; votes[k] = (votes[k] || 0) + 1; break; }
+      const c = el.tagName === 'IMG' || el.tagName === 'CANVAS' ? null : getComputedStyle(el).backgroundColor;
+      const k = c ? themeOf(c) : null; if (k) { votes[k] = (votes[k] || 0) + 1; break; }
+      el = el.parentElement as HTMLElement;
+    }
   }
-  if (n) root.dataset.tone = light * 2 >= n ? 'light' : 'dark';
+  const best = Object.entries(votes).sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (!best) return;
+  root.dataset.hdr = best;
+  root.dataset.tone = best === 'petrol' || best === 'night' ? 'dark' : 'light';
 };
 requestAnimationFrame(detectTone); addEventListener('load', detectTone);
 // re-check while images, fonts and the first animations settle (no wrong-colour flash)
