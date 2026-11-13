@@ -417,13 +417,26 @@ function startDesk() {
   (window as any).__p3sync = syncNav; syncNav();
   // compact screens are real slides (arrows / swipe), no scroll-linked snapping: nothing to fight with the browser scroll
 
+  let lastPaint = 0, lastScene = '';
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
+    else if (on && !raf) { lastT = 0; raf = requestAnimationFrame(tick); }
+  });
   function tick(now: number) {
-    raf = on ? requestAnimationFrame(tick) : 0;
+    raf = on && !document.hidden ? requestAnimationFrame(tick) : 0;
+    if (!on || document.hidden) return;
+    // Limit touch rendering to 30fps; scrolling itself remains native and unrestricted.
+    if (coarse && now - lastPaint < 1000 / 30) return;
+    lastPaint = now;
     const dt = Math.min(.05, (now - (lastT || now)) / 1000); lastT = now;
     const target = compact() ? slideT : Math.max(0, Math.min(1, (scrollY - secTop) / span)) * (N + 0.4);   // 0..N products, last 0.4 = the line
     shown += (target - shown) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(target - shown) < 1e-4) shown = target;
     hover += (hoverTarget - hover) * .09; if (Math.abs(hoverTarget - hover) < 1e-4) hover = hoverTarget;
     if (!dragging) { drag = Math.max(-.2, Math.min(.2, drag + dragV)); dragV *= .9; drag *= coarse ? .975 : .92; if (Math.abs(drag) < 1e-4 && Math.abs(dragV) < 1e-4) drag = dragV = 0; }            // inertia, then snaps back to the front
+    const scene = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${tBottom}|${cTop}|${arts.length}`;
+    // A stationary touch slide needs no DOM writes or canvas work.
+    if (coarse && scene === lastScene) return;
+    lastScene = scene;
     const p = Math.min(shown, N - 1e-3), i = Math.floor(p), t = p - i;
     const lineK = sm((shown - (N - .15)) / .4);
     // which product is on stage, and the slide between two products in the last 22% of each segment
@@ -446,7 +459,7 @@ function startDesk() {
       el.style.clipPath = `inset(${(1 - reveal) * 100}% 0 0 0)`; el.style.transform = `translateY(${dy}px)`;
     });
     // ingredients: three depth layers, own drift; enter from below, leave upward
-    const time = (now - t0) / 1000;
+    const time = coarse ? 0 : (now - t0) / 1000;
     ings.forEach((el, k) => {
       const pi = +el.dataset.i!, l = +el.dataset.l!; let vis = 0, enter = 0;
       if (pi === i) { vis = 1 - (i < N - 1 ? sw : 0); enter = -sw; } else if (pi === nx && i < N - 1) { vis = sw; enter = 1 - sw; }

@@ -10,7 +10,16 @@ const R = (J.x1 - J.x0) / 2, MID = (J.x0 + J.x1) / 2;
 export const COVER = ((J.y1 - J.y0) * 3) / (Math.PI * (J.x1 - J.x0));
 
 export type JarArt = { jar: HTMLImageElement; light: HTMLImageElement; shadow: HTMLImageElement; label: HTMLImageElement };
-const load = (src: string) => new Promise<HTMLImageElement>((ok) => { const i = new Image(); i.decoding = 'async'; i.onload = () => ok(i); i.onerror = () => ok(i); i.src = src; });
+// Reuse decoded glass/light textures across products instead of downloading and decoding each again.
+const sourceCache = new Map<string, Promise<HTMLImageElement>>();
+const load = (src: string) => {
+  let pending = sourceCache.get(src);
+  if (!pending) {
+    pending = new Promise<HTMLImageElement>((ok) => { const i = new Image(); i.decoding = 'async'; i.onload = () => ok(i); i.onerror = () => { sourceCache.delete(src); ok(i); }; i.src = src; });
+    sourceCache.set(src, pending);
+  }
+  return pending;
+};
 export const loadArt = async (s: { jar: string; light: string; shadow: string; label: string }): Promise<JarArt> => {
   const [jar, light, shadow, label] = await Promise.all([load(s.jar), load(s.light), load(s.shadow), load(s.label)]);
   return { jar, light, shadow, label };
