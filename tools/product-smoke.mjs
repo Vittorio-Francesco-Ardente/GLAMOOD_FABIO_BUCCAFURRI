@@ -39,7 +39,7 @@ try {
  await page.getByRole('button',{name:'Etichetta',exact:true}).click();
  await page.locator('.product-main-image').click();assert(await page.locator('.product-lightbox').isVisible());await capture('label');
  await page.keyboard.press('Escape');assert.equal(await page.locator('.product-lightbox').isVisible(),false);
- await page.getByText('Ingredienti indicati',{exact:true}).click();assert(await page.locator('.product-small').isVisible());
+ await page.locator('summary',{hasText:'Ingredienti indicati'}).click();assert(await page.locator('.product-small').isVisible());
  await page.locator('.product-routine').scrollIntoViewIfNeeded();await capture('routine');
  await page.locator('.product-related').scrollIntoViewIfNeeded();await capture('related');
  }
