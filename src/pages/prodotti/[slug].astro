@@ -21,7 +21,7 @@ const gallery = [
     <nav class="product-breadcrumb" aria-label="Percorso"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/prodotti#catalogo">Prodotti</a><span aria-hidden="true">/</span><span>{p.n}</span></nav>
     <section class="product-top" aria-labelledby="product-title">
       <div class="product-gallery">
-        <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" {...productImg(imgOf(p), '(max-width:767px) 82vw, 40vw')} alt={gallery[0].alt} fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">＋</span></button>
+        <button class="product-main-image" type="button" aria-label={`Ingrandisci ${p.n}`} aria-haspopup="dialog"><img id="product-image" {...productImg(imgOf(p), '(max-width:767px) 82vw, 40vw')} alt={gallery[0].alt} fetchpriority="high" decoding="async"/><span class="product-image-tag">{cat.n} · {p.ml}</span><span class="product-zoom" aria-hidden="true">+</span></button>
         <div class="product-thumbnails" aria-label="Immagini del prodotto">{gallery.map((g,i)=><button type="button" class="product-thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-src={g.src} data-alt={g.alt} data-srcset={i === 0 ? productImg(imgOf(p), '(max-width:767px) 82vw, 40vw').srcset : undefined}><img src={g.src} alt="" width="120" height="120" loading="lazy"/><span>{g.label}</span></button>)}</div>
         <p class="product-gallery-hint">Scegli un dettaglio. Tocca l’immagine per ingrandirlo.</p>
       </div>
@@ -31,15 +31,15 @@ const gallery = [
         <div class="product-facts">{p.tiles.map(t=><div><span>{t.l}</span><b>{t.v}</b></div>)}</div>
         <div class="product-buy"><div><b>{p.ml}</b><span>Prezzo e disponibilità da confermare in salone</span></div><a class="btn-pop fill" href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedilo a Fabio <span aria-hidden="true">↗</span></a></div>
         <div class="product-accordions">
-          <details open><summary>Come si usa <span aria-hidden="true">＋</span></summary><p>{p.use}</p></details>
-          <details><summary>Ingredienti indicati <span aria-hidden="true">＋</span></summary><p>{p.ing.join(', ')}.</p><p class="product-small">L’elenco completo degli ingredienti è in arrivo. Per la formula completa, chiedi in salone.</p></details>
-          <details><summary>Il prodotto giusto per te <span aria-hidden="true">＋</span></summary><p>{p.long}</p></details>
+          <details open><summary>Come si usa <span aria-hidden="true">+</span></summary><p>{p.use}</p></details>
+          <details><summary>Ingredienti indicati <span aria-hidden="true">+</span></summary><p>{p.ing.join(', ')}.</p><p class="product-small">L’elenco completo degli ingredienti è in arrivo. Per la formula completa, chiedi in salone.</p></details>
+          <details><summary>Il prodotto giusto per te <span aria-hidden="true">+</span></summary><p>{p.long}</p></details>
         </div>
       </div>
     </section>
-    <div class="product-ribbon" aria-hidden="true"><span>Glamood</span><i>✳</i><span>Il tuo stile, ogni giorno</span><i>✳</i><span>Reggio Calabria</span></div>
+    <div class="product-ribbon" aria-hidden="true"><span>Glamood</span><i>•</i><span>Il tuo stile, ogni giorno</span><i>•</i><span>Reggio Calabria</span></div>
     <section class="product-story" aria-labelledby="product-story-title">
-      <div class="product-story-art"><img {...img(p.hero,960)} alt={`Illustrazione della linea ${p.n}`} loading="lazy"/><span class="product-art-seal">Cura<br/>e carattere.</span></div>
+      <div class="product-story-art"><img {...img(p.hero,960)} alt={`Illustrazione della linea ${p.n}`} loading="lazy"/><span class="product-art-seal">Cura<br/>e stile.</span></div>
       <div class="product-story-copy"><p class="product-eyebrow">Dentro il prodotto</p><h2 id="product-story-title">Piccoli gesti.<br/>Il tuo stile.</h2><p>{p.long}</p><div class="product-ingredient-list">{p.ing.map((name,i)=><div class="product-ingredient"><img {...img(p.pics[Math.min(i,p.pics.length-1)],480)} alt="" loading="lazy"/><span>{name}</span></div>)}</div></div>
     </section>
     <section class="product-routine" aria-labelledby="product-routine-title"><div><p class="product-eyebrow">Dal salone a casa tua</p><h2 id="product-routine-title">Il gesto<br/>che fa la differenza.</h2></div><div class="product-use-card"><span class="product-step">01</span><h3>Usalo così</h3><p>{p.use}</p></div><div class="product-use-card product-use-advice"><span class="product-step">02</span><h3>Fallo tuo</h3><p>Quantità, finish, abbinamenti: chiedi a Fabio come inserirlo nella tua routine.</p><a href={wa(waText.info(p.n))} target="_blank" rel="noopener">Chiedi un consiglio <span aria-hidden="true">↗</span></a></div></section>
