@@ -433,7 +433,7 @@ function startDesk() {
     shown += (target - shown) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(target - shown) < 1e-4) shown = target;
     hover += (hoverTarget - hover) * .09; if (Math.abs(hoverTarget - hover) < 1e-4) hover = hoverTarget;
     if (!dragging) { drag = Math.max(-.2, Math.min(.2, drag + dragV)); dragV *= .9; drag *= coarse ? .975 : .92; if (Math.abs(drag) < 1e-4 && Math.abs(dragV) < 1e-4) drag = dragV = 0; }            // inertia, then snaps back to the front
-    const scene = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${tBottom}|${cTop}|${arts.length}`;
+    const scene = `${shown.toFixed(4)}|${(hover + drag).toFixed(4)}|${cw}|${chh}|${tBottom}|${cTop}|${P.map((_, i) => arts[i] ? 1 : 0).join('')}`;
     // A stationary touch slide needs no DOM writes or canvas work.
     if (coarse && scene === lastScene) return;
     lastScene = scene;
