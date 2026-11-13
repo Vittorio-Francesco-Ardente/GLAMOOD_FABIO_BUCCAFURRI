@@ -58,7 +58,7 @@ const slots = [
       <ul class="p3-chip" data-i={i} style={`--ink:${p.ink}`}>{p.ing.map((t) => <li>{t}</li>)}<li class="ml">{p.ml}</li></ul>
     ))}</div>
     <div class="p3-line">
-      <p class="p3-line-k" data-bubble="la linea|glamood" data-seed="4" style="--bc:#F4EFE8">La linea Glamood</p>
+      <p class="p3-line-k">La linea Glamood</p>
       <div class="p3-line-row">{P3D.map((p, i) => <button type="button" class="p3-lj" data-open={i} tabindex="-1" style={`--d:${i * 110}ms`} aria-label={`${p.full}, ${p.note}: apri la scheda`}><canvas data-still={i}></canvas><span><b>{p.full}</b><i>{p.note} · {p.ml}</i></span></button>)}</div>
       <p class="p3-line-sub">Tocca un barattolo per la scheda</p>
     </div>
@@ -282,7 +282,6 @@ const slots = [
 <script>
 import { drawJar, loadArt, type JarArt } from '../scripts/jar';
 import { lockScroll, trapTab } from '../scripts/core.js';
-import { bubbles } from '../scripts/bubble.js';
 const { P, art } = JSON.parse(document.getElementById('p3-data')!.textContent!) as { P: any[]; art: Record<string, string> };
 const N = P.length;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -295,7 +294,6 @@ const portrait = () => !sideQ.matches;
 const DPR = Math.min(3, devicePixelRatio || 1); // Physical pixel resolution, including Retina phones/tablets.
 const arts: JarArt[] = [];
 const sec = document.getElementById('prodotti')!;
-bubbles(sec);   // "La linea Glamood" title in the site's bubble lettering
 sec.querySelectorAll<HTMLAnchorElement>('.p3-skip, .p3-cat').forEach((a) => a.addEventListener('click', (e) => {
   e.preventDefault(); e.stopPropagation();
   const catalog = document.getElementById('catalogo')!;
